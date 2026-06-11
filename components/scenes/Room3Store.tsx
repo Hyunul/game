@@ -7,6 +7,8 @@ import { fx } from '../../lib/effects';
 import Narration from '../Narration';
 import Keypad from '../Keypad';
 import Whackamole from '../Whackamole';
+import TapLabel from '../TapLabel';
+import { useTwoTap } from '../../lib/useTwoTap';
 
 const SNACKS = [
   { id: 'apollo',   name: '아폴로',   price: 100 },
@@ -23,6 +25,7 @@ export default function Room3Store() {
   const { state, dispatch } = useGame();
   const { solved, selectedItem, lastResult } = state;
 
+  const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
   const [shelfOpen, setShelfOpen] = useState(false);
@@ -172,7 +175,7 @@ export default function Room3Store() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleShelf}
+          onClick={() => guard('shelf', handleShelf)}
           role="button"
           aria-label="과자 진열대"
           tabIndex={0}
@@ -234,7 +237,7 @@ export default function Room3Store() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleArcade}
+          onClick={() => guard('arcade', handleArcade)}
           role="button"
           aria-label="오락기"
           tabIndex={0}
@@ -272,7 +275,7 @@ export default function Room3Store() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handlePaperdoll}
+          onClick={() => guard('paperdoll', handlePaperdoll)}
           role="button"
           aria-label="종이인형 책"
           tabIndex={0}
@@ -300,7 +303,7 @@ export default function Room3Store() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleGacha}
+          onClick={() => guard('gacha', handleGacha)}
           role="button"
           aria-label="뽑기 기계"
           tabIndex={0}
@@ -389,11 +392,21 @@ export default function Room3Store() {
         onClose={() => setKeypadOpen(false)}
       />
 
+      {/* ── Two-tap label (touch devices) ── */}
+      <TapLabel name={STORE_ARMED_NAMES[armedId ?? ''] ?? null} />
+
       {/* ── Narration ── */}
       <Narration text={narration} onDone={() => setNarration(null)} />
     </div>
   );
 }
+
+const STORE_ARMED_NAMES: Record<string, string> = {
+  shelf: '진열대',
+  arcade: '오락기',
+  paperdoll: '종이인형 책',
+  gacha: '뽑기 기계',
+};
 
 const OL: Record<string, React.CSSProperties> = {
   overlay: {

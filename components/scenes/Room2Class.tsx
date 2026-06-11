@@ -6,6 +6,8 @@ import { playSfx, playBgm, playNote } from '../../lib/audio';
 import { fx } from '../../lib/effects';
 import Narration from '../Narration';
 import Keypad from '../Keypad';
+import TapLabel from '../TapLabel';
+import { useTwoTap } from '../../lib/useTwoTap';
 
 const NOTE_KEYS = [
   { note: 'C', freq: 261.63, label: '도' },
@@ -23,6 +25,7 @@ export default function Room2Class() {
   const { state, dispatch } = useGame();
   const { solved, inventory, selectedItem, lastResult } = state;
 
+  const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
   const [timetableOpen, setTimetableOpen] = useState(false);
   const [keypadConfig, setKeypadConfig] = useState<{
@@ -220,7 +223,7 @@ export default function Room2Class() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleBoard}
+          onClick={() => guard('board', handleBoard)}
           role="button"
           aria-label="칠판"
           tabIndex={0}
@@ -261,7 +264,7 @@ export default function Room2Class() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleTimetable}
+          onClick={() => guard('timetable', handleTimetable)}
           role="button"
           aria-label="시간표"
           tabIndex={0}
@@ -308,7 +311,7 @@ export default function Room2Class() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleLocker}
+          onClick={() => guard('locker', handleLocker)}
           role="button"
           aria-label="사물함"
           tabIndex={0}
@@ -361,7 +364,7 @@ export default function Room2Class() {
           <g
             className="hotspot"
             style={{ cursor: 'pointer' }}
-            onClick={handleOrganBody}
+            onClick={() => guard('organ', handleOrganBody)}
             role="button"
             aria-label="풍금 몸체"
             tabIndex={0}
@@ -406,6 +409,8 @@ export default function Room2Class() {
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleOrganKey(note, freq)}
               >
+                {/* Enlarged hit area */}
+                <rect x={kx - 4} y={248} width="36" height="58" rx="2" fill="transparent" pointerEvents="all" />
                 <rect
                   x={kx}
                   y={253}
@@ -426,7 +431,7 @@ export default function Room2Class() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleDrawer}
+          onClick={() => guard('drawer', handleDrawer)}
           role="button"
           aria-label="교탁 서랍"
           tabIndex={0}
@@ -465,7 +470,7 @@ export default function Room2Class() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handlePot}
+          onClick={() => guard('pot', handlePot)}
           role="button"
           aria-label="화분"
           tabIndex={0}
@@ -569,11 +574,23 @@ export default function Room2Class() {
         onClose={() => setKeypadConfig(null)}
       />
 
+      {/* ── Two-tap label (touch devices) ── */}
+      <TapLabel name={CLASS_ARMED_NAMES[armedId ?? ''] ?? null} />
+
       {/* ── Narration ── */}
       <Narration text={narration} onDone={() => setNarration(null)} />
     </div>
   );
 }
+
+const CLASS_ARMED_NAMES: Record<string, string> = {
+  board: '칠판',
+  timetable: '시간표',
+  locker: '사물함',
+  organ: '풍금',
+  drawer: '교탁',
+  pot: '화분',
+};
 
 const overlayStyles: Record<string, React.CSSProperties> = {
   overlay: {

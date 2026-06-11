@@ -6,11 +6,14 @@ import { playSfx, playBgm } from '../../lib/audio';
 import { fx } from '../../lib/effects';
 import Narration from '../Narration';
 import Keypad from '../Keypad';
+import TapLabel from '../TapLabel';
+import { useTwoTap } from '../../lib/useTwoTap';
 
 export default function Room1Home() {
   const { state, dispatch } = useGame();
   const { solved, inventory, selectedItem, lastResult } = state;
 
+  const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [keypadConfig, setKeypadConfig] = useState<{
@@ -198,13 +201,15 @@ export default function Room1Home() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleSewingbox}
+          onClick={() => guard('sewingbox', handleSewingbox)}
           role="button"
           aria-label="장롱 위 반짇고리"
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleSewingbox()}
           transform={sewingboxSolved ? 'translate(0, 50)' : 'translate(0, 0)'}
         >
+          {/* Enlarged hit area */}
+          <rect x="62" y="128" width="72" height="44" rx="4" fill="transparent" pointerEvents="all" />
           {/* Sewing box body */}
           <rect x="68" y="135" width="60" height="30" rx="4" fill="#e8c090" stroke="#c8a060" strokeWidth="1.5" />
           <rect x="68" y="135" width="60" height="10" rx="4" fill="#f0d0a0" />
@@ -218,7 +223,7 @@ export default function Room1Home() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleCalendar}
+          onClick={() => guard('calendar', handleCalendar)}
           role="button"
           aria-label="벽걸이 달력"
           tabIndex={0}
@@ -256,7 +261,7 @@ export default function Room1Home() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handlePhoto}
+          onClick={() => guard('photo', handlePhoto)}
           role="button"
           aria-label="가족사진 액자"
           tabIndex={0}
@@ -281,7 +286,7 @@ export default function Room1Home() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handlePhone}
+          onClick={() => guard('phone', handlePhone)}
           role="button"
           aria-label="다이얼 전화기"
           tabIndex={0}
@@ -319,7 +324,7 @@ export default function Room1Home() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleTv}
+          onClick={() => guard('tv', handleTv)}
           role="button"
           aria-label="브라운관 TV"
           tabIndex={0}
@@ -375,12 +380,14 @@ export default function Room1Home() {
           <g
             className="hotspot"
             style={{ cursor: 'pointer' }}
-            onClick={handleBackscratcher}
+            onClick={() => guard('backscratcher', handleBackscratcher)}
             role="button"
             aria-label="효자손"
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && handleBackscratcher()}
           >
+            {/* Enlarged hit area */}
+            <rect x="190" y="278" width="44" height="70" rx="4" fill="transparent" pointerEvents="all" />
             {/* Leaning in corner */}
             <line x1="200" y1="290" x2="215" y2="310" stroke="#9b6e4c" strokeWidth="6" strokeLinecap="round" />
             <line x1="215" y1="310" x2="215" y2="340" stroke="#c8a060" strokeWidth="4" strokeLinecap="round" />
@@ -394,7 +401,7 @@ export default function Room1Home() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleChest}
+          onClick={() => guard('chest', handleChest)}
           role="button"
           aria-label="자개장"
           tabIndex={0}
@@ -489,11 +496,24 @@ export default function Room1Home() {
         onClose={() => setKeypadConfig(null)}
       />
 
+      {/* ── Two-tap label (touch devices) ── */}
+      <TapLabel name={HOME_ARMED_NAMES[armedId ?? ''] ?? null} />
+
       {/* ── Narration ── */}
       <Narration text={narration} onDone={() => setNarration(null)} />
     </div>
   );
 }
+
+const HOME_ARMED_NAMES: Record<string, string> = {
+  sewingbox: '반짇고리',
+  calendar: '달력',
+  photo: '가족사진',
+  phone: '전화기',
+  tv: 'TV',
+  backscratcher: '효자손',
+  chest: '자개장',
+};
 
 const overlayStyles: Record<string, React.CSSProperties> = {
   overlay: {
