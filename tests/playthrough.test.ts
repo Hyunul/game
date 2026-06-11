@@ -59,8 +59,8 @@ describe('full playthrough', () => {
     s = reducer(s, { type: 'SOLVE', puzzleId: 'class-timetable' });
     expect(s.solved).toContain('class-timetable');
 
-    // ATTEMPT class-locker '33' → rewardItem sheet-music
-    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'class-locker', answer: '33' });
+    // ATTEMPT class-locker '13' → rewardItem sheet-music
+    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'class-locker', answer: '13' });
     expect(s.solved).toContain('class-locker');
     expect(s.inventory).toContain('sheet-music');
 

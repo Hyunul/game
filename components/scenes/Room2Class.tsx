@@ -78,7 +78,7 @@ export default function Room2Class() {
     if (canAttempt(state, 'class-locker')) {
       setKeypadConfig({ title: '몇 번 사물함일까?', length: 2, puzzleId: 'class-locker' });
     } else if (solved.includes('class-locker')) {
-      say('33번 사물함 — 이미 열려 있다.');
+      say('13번 사물함 — 이미 열려 있다.');
     } else {
       say('수많은 사물함… 몇 번이더라?');
     }
@@ -168,8 +168,8 @@ export default function Room2Class() {
     const { puzzleId } = keypadConfig;
     dispatch({ type: 'ATTEMPT', puzzleId, answer });
     setKeypadConfig(null);
-    if (puzzleId === 'class-locker' && answer === '33') {
-      setTimeout(() => say('33번 사물함에서 낡은 풍금 악보를 찾았다!'), 50);
+    if (puzzleId === 'class-locker' && answer === '13') {
+      setTimeout(() => say('13번 사물함에서 낡은 풍금 악보를 찾았다!'), 50);
     }
   }
 
@@ -284,7 +284,7 @@ export default function Room2Class() {
             <g key={`row-${row}`}>
               <text x="518" y={75 + row * 20} fontSize="7" fill="#666">{row + 1}</text>
               {days.map((_, col) => {
-                const isHighlighted = col === 2 && row === 2; // 수요일(index 2), 3교시(index 2)
+                const isHighlighted = col === 0 && row === 2; // 월요일(index 0), 3교시(index 2)
                 return (
                   <rect
                     key={`cell-${row}-${col}`}
@@ -303,7 +303,7 @@ export default function Room2Class() {
             </g>
           ))}
           {timetableSolved && (
-            <text x="576" y="158" textAnchor="middle" fontSize="7" fill="#c04040">수3 → 33?</text>
+            <text x="576" y="158" textAnchor="middle" fontSize="7" fill="#c04040">월3 → 13?</text>
           )}
         </g>
 
@@ -319,34 +319,34 @@ export default function Room2Class() {
         >
           {/* Locker frame */}
           <rect x="645" y="80" width="145" height="170" rx="3" fill="#8a7a60" stroke="#6a5a40" strokeWidth="2" />
-          {/* Locker grid: 7 cols × 5 rows = 1~35 (정답 33번 포함) */}
-          {Array.from({ length: 5 }).map((_, row) =>
-            Array.from({ length: 7 }).map((_, col) => {
-              const num = row * 7 + col + 1;
-              const isTarget = num === 33;
+          {/* Locker grid: 5 cols × 4 rows = 1~20 (정답 13번 포함) */}
+          {Array.from({ length: 4 }).map((_, row) =>
+            Array.from({ length: 5 }).map((_, col) => {
+              const num = row * 5 + col + 1;
+              const isTarget = num === 13;
               return (
                 <g key={`lk-${row}-${col}`}>
                   <rect
-                    x={649 + col * 20}
-                    y={84 + row * 33}
-                    width="18"
-                    height="29"
+                    x={650 + col * 27}
+                    y={85 + row * 40}
+                    width="24"
+                    height="36"
                     rx="2"
                     fill={isTarget && lockerSolved ? '#c8a050' : '#a09070'}
                     stroke="#6a5a40"
                     strokeWidth="1"
                   />
                   <circle
-                    cx={658 + col * 20}
-                    cy={106 + row * 33}
-                    r="2"
+                    cx={662 + col * 27}
+                    cy={112 + row * 40}
+                    r="2.5"
                     fill="#5a4a30"
                   />
                   <text
-                    x={658 + col * 20}
-                    y={96 + row * 33}
+                    x={662 + col * 27}
+                    y={100 + row * 40}
                     textAnchor="middle"
-                    fontSize="6"
+                    fontSize="7"
                     fill="#3a2a10"
                     opacity="0.7"
                   >
@@ -559,7 +559,7 @@ export default function Room2Class() {
               </tbody>
             </table>
             <div style={overlayStyles.memo}>
-              색칠된 칸: <strong>수요일(3) × 3교시</strong> — 사물함 번호의 단서?
+              색칠된 칸: <strong>월요일(1) × 3교시</strong> — 사물함 번호의 단서?
             </div>
           </div>
         </div>

@@ -28,9 +28,9 @@ export const PUZZLES: Puzzle[] = [
     hints: ['자개장은 열쇠와 숫자 둘 다 필요해 보인다.', 'TV 화면에 떠 있던 숫자 1987을 입력해.'] },
   // 방 2 — 교실
   { id: 'class-timetable', room: 'class', requires: [],
-    hints: ['칠판 옆 시간표가 이상하다.', '색칠된 칸: 수요일 3교시 → 사물함 번호의 단서.'] },
-  { id: 'class-locker', room: 'class', requires: ['class-timetable'], answer: '33', rewardItem: 'sheet-music',
-    hints: ['시간표의 좌표가 사물함 번호.', '수요일(3)+3교시 → 33번 사물함.'] },
+    hints: ['칠판 옆 시간표가 이상하다.', '색칠된 칸: 월요일 3교시 → 사물함 번호의 단서.'] },
+  { id: 'class-locker', room: 'class', requires: ['class-timetable'], answer: '13', rewardItem: 'sheet-music',
+    hints: ['시간표의 좌표가 사물함 번호.', '월요일(1)+3교시 → 13번 사물함.'] },
   { id: 'class-organ', room: 'class', requires: ['class-locker'], answer: 'C-E-G-E-C', rewardItem: 'chalk',
     hints: ['악보를 풍금 앞에서 펼쳐보자.', '도-미-솔-미-도 순서로 건반을 눌러.'] },
   { id: 'class-board', room: 'class', requires: ['class-organ'], requiresItem: 'chalk',
