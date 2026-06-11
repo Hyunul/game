@@ -33,7 +33,6 @@ export default function Room2Class() {
   } | null>(null);
   const [shake, setShake] = useState(false);
   const [organSequence, setOrganSequence] = useState<string[]>([]);
-  const [diaryExamined, setDiaryExamined] = useState(false);
 
   const prevLastResult = useRef<typeof lastResult>(null);
   const prevSolvedLen = useRef(solved.length);
@@ -140,8 +139,9 @@ export default function Room2Class() {
   // ── 화분 ─────────────────────────────────────────────────────────────────────
   function handlePot() {
     if (solved.includes('class-board')) {
-      if (!diaryExamined) {
-        setDiaryExamined(true);
+      if (!inventory.includes('diary')) {
+        dispatch({ type: 'PICKUP', itemId: 'diary' });
+        playSfx('pickup');
         say('화분 아래에서 교환일기를 찾았다! "우리의 비밀번호는 졸업하는 해"');
       } else {
         say('화분 아래 교환일기가 있던 자리 — 이미 가져갔다.');
@@ -490,7 +490,7 @@ export default function Room2Class() {
           <ellipse cx="595" cy="238" rx="14" ry="26" fill="#4a8a4a" opacity="0.8" transform="rotate(12 595 238)" />
           <ellipse cx="585" cy="235" rx="10" ry="22" fill="#5a9a5a" opacity="0.75" />
           {/* Diary hint marker */}
-          {boardSolved && !diaryExamined && (
+          {boardSolved && !inventory.includes('diary') && (
             <circle cx="610" cy="264" r="5" fill="#f0d040" opacity="0.9">
               <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite" />
             </circle>

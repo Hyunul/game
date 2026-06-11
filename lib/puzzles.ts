@@ -33,7 +33,7 @@ export const PUZZLES: Puzzle[] = [
     hints: ['시간표의 좌표가 사물함 번호.', '수요일(3)+3교시 → 33번 사물함.'] },
   { id: 'class-organ', room: 'class', requires: ['class-locker'], answer: 'C-E-G-E-C', rewardItem: 'chalk',
     hints: ['악보를 풍금 앞에서 펼쳐보자.', '도-미-솔-미-도 순서로 건반을 눌러.'] },
-  { id: 'class-board', room: 'class', requires: ['class-organ'], requiresItem: 'chalk', rewardItem: 'diary',
+  { id: 'class-board', room: 'class', requires: ['class-organ'], requiresItem: 'chalk',
     hints: ['칠판에 희미하게 뭔가 적혀 있던 자국이.', '분필로 칠판을 문질러봐. (화분 아래도 확인!)'] },
   { id: 'class-final', room: 'class', requires: ['class-board'], answer: '2002',
     hints: ['교환일기에 비밀번호 힌트가 있다.', '"졸업하는 해" — 2002를 입력해.'] },

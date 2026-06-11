@@ -73,6 +73,10 @@ describe('full playthrough', () => {
     expect(canAttempt(s, 'class-board')).toBe(true);
     s = reducer(s, { type: 'ATTEMPT', puzzleId: 'class-board', answer: '' });
     expect(s.solved).toContain('class-board');
+
+    // 화분 클릭으로 교환일기 획득 (칠판 글씨가 위치를 알려준 뒤)
+    expect(s.inventory).not.toContain('diary');
+    s = reducer(s, { type: 'PICKUP', itemId: 'diary' });
     expect(s.inventory).toContain('diary');
 
     // ATTEMPT class-final '2002'
