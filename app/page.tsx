@@ -8,6 +8,7 @@ import Attic from '../components/scenes/Attic';
 import Room1Home from '../components/scenes/Room1Home';
 import Room2Class from '../components/scenes/Room2Class';
 import MemoryScene from '../components/MemoryScene';
+import Room3Store from '../components/scenes/Room3Store';
 
 function TitleScreen() {
   const { dispatch } = useGame();
@@ -68,6 +69,10 @@ function InnerApp() {
 
   if (state.room === 'class' && state.phase === 'playing') {
     return <GameShell><Room2Class /></GameShell>;
+  }
+
+  if (state.room === 'store' && state.phase === 'playing') {
+    return <GameShell><Room3Store /></GameShell>;
   }
 
   return (
