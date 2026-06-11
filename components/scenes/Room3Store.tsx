@@ -131,7 +131,11 @@ export default function Room3Store() {
 
   // ── 뽑기 기계 ─────────────────────────────────────────────────────────────────
   function handleGacha() {
-    if (!paperdollSolved || finalSolved) {
+    if (finalSolved) {
+      say('황금 캡슐은 이미 내 손 안에 있다.');
+      return;
+    }
+    if (!paperdollSolved) {
       say('영롱한 캡슐들… 전용 동전이 필요하다.');
       return;
     }
