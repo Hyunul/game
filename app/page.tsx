@@ -5,6 +5,7 @@ import { loadGame, clearSave } from '../lib/save';
 import { GameState } from '../lib/gameState';
 import GameShell from '../components/GameShell';
 import Attic from '../components/scenes/Attic';
+import Room1Home from '../components/scenes/Room1Home';
 
 function TitleScreen() {
   const { dispatch } = useGame();
@@ -53,6 +54,10 @@ function InnerApp() {
 
   if (state.room === 'attic' && (state.phase === 'prologue' || state.phase === 'playing')) {
     return <GameShell><Attic /></GameShell>;
+  }
+
+  if (state.room === 'home' && state.phase === 'playing') {
+    return <GameShell><Room1Home /></GameShell>;
   }
 
   return (
