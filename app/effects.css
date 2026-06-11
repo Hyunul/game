@@ -1,0 +1,26 @@
+/* 클릭 가능 사물: 호버 글로우 + 확대 */
+.hotspot { cursor: zoom-in; transition: transform .15s ease, filter .15s ease; }
+.hotspot:hover { transform: scale(1.03); filter: drop-shadow(0 0 6px rgba(255,200,90,.9)); }
+/* 정답 펄스 (화면 오버레이) */
+@keyframes pulse-warm { from { opacity: .55; } to { opacity: 0; } }
+.pulse-warm { position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background: radial-gradient(circle, rgba(255,220,150,.8), transparent 70%);
+  animation: pulse-warm .7s ease-out forwards; }
+/* 오답 도리도리 */
+@keyframes shake-x { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+.shake { animation: shake-x .3s ease-in-out 2; }
+/* 사물 바운스 (클릭 시) */
+@keyframes squash { 0%{transform:scale(1)} 35%{transform:scale(1.08,.94)} 70%{transform:scale(.97,1.04)} 100%{transform:scale(1)} }
+.bounce { animation: squash .35s ease-out; }
+/* 빛 입자 (기억 조각) */
+@keyframes float-up { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-60vh); opacity: 0; } }
+.light-particle { position: fixed; bottom: 10vh; width: 8px; height: 8px; border-radius: 50%;
+  background: #ffe9a8; box-shadow: 0 0 12px #ffd24a; pointer-events: none; z-index: 60;
+  animation: float-up 2.5s ease-out forwards; }
+/* 방 전환 물결 페이드 */
+@keyframes wave-fade { 0%{opacity:0; filter:blur(0)} 50%{opacity:1; filter:blur(2px)} 100%{opacity:0; filter:blur(0)} }
+.room-transition { position: fixed; inset: 0; z-index: 70; background:#1a1410; animation: wave-fade 1.2s ease-in-out forwards; }
+/* 클릭 리플 파티클 */
+@keyframes sparkle { from { transform: scale(.3); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+.sparkle { position: fixed; width: 24px; height: 24px; margin: -12px; border-radius: 50%;
+  border: 2px solid #ffd24a; pointer-events: none; z-index: 55; animation: sparkle .45s ease-out forwards; }
