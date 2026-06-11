@@ -319,34 +319,34 @@ export default function Room2Class() {
         >
           {/* Locker frame */}
           <rect x="645" y="80" width="145" height="170" rx="3" fill="#8a7a60" stroke="#6a5a40" strokeWidth="2" />
-          {/* Locker grid: 5 cols × 4 rows */}
-          {Array.from({ length: 4 }).map((_, row) =>
-            Array.from({ length: 5 }).map((_, col) => {
-              const num = row * 5 + col + 1;
+          {/* Locker grid: 7 cols × 5 rows = 1~35 (정답 33번 포함) */}
+          {Array.from({ length: 5 }).map((_, row) =>
+            Array.from({ length: 7 }).map((_, col) => {
+              const num = row * 7 + col + 1;
               const isTarget = num === 33;
               return (
                 <g key={`lk-${row}-${col}`}>
                   <rect
-                    x={650 + col * 27}
-                    y={85 + row * 40}
-                    width="24"
-                    height="36"
+                    x={649 + col * 20}
+                    y={84 + row * 33}
+                    width="18"
+                    height="29"
                     rx="2"
                     fill={isTarget && lockerSolved ? '#c8a050' : '#a09070'}
                     stroke="#6a5a40"
                     strokeWidth="1"
                   />
                   <circle
-                    cx={662 + col * 27}
-                    cy={112 + row * 40}
-                    r="2.5"
+                    cx={658 + col * 20}
+                    cy={106 + row * 33}
+                    r="2"
                     fill="#5a4a30"
                   />
                   <text
-                    x={662 + col * 27}
-                    y={100 + row * 40}
+                    x={658 + col * 20}
+                    y={96 + row * 33}
                     textAnchor="middle"
-                    fontSize="7"
+                    fontSize="6"
                     fill="#3a2a10"
                     opacity="0.7"
                   >
