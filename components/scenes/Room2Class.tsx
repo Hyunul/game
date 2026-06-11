@@ -284,7 +284,7 @@ export default function Room2Class() {
             <g key={`row-${row}`}>
               <text x="518" y={75 + row * 20} fontSize="7" fill="#666">{row + 1}</text>
               {days.map((_, col) => {
-                const isHighlighted = col === 0 && row === 2; // 월요일(index 0), 3교시(index 2)
+                const isHighlighted = col === 2 && row === 2; // 수요일(3번째), 3교시 → 좌표 (3,3)
                 return (
                   <rect
                     key={`cell-${row}-${col}`}
@@ -303,7 +303,7 @@ export default function Room2Class() {
             </g>
           ))}
           {timetableSolved && (
-            <text x="576" y="158" textAnchor="middle" fontSize="7" fill="#c04040">월3 → 13?</text>
+            <text x="576" y="158" textAnchor="middle" fontSize="7" fill="#c04040">좌표 (3,3)?</text>
           )}
         </g>
 
@@ -559,7 +559,7 @@ export default function Room2Class() {
               </tbody>
             </table>
             <div style={overlayStyles.memo}>
-              색칠된 칸: <strong>월요일(1) × 3교시</strong> — 사물함 번호의 단서?
+              색칠된 칸: <strong>수요일(3번째) × 3교시</strong> — 좌표 (3,3)… 사물함에도 같은 자리가 있다?
             </div>
           </div>
         </div>
