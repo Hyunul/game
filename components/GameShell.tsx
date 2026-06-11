@@ -47,7 +47,7 @@ export default function GameShell({ children }: Props) {
           <button style={styles.iconBtn} onClick={handleMuteToggle} title={muted ? '음소거 해제' : '음소거'} aria-label={muted ? '음소거 해제' : '음소거'}>
             {muted ? '🔇' : '🔊'}
           </button>
-          <button style={styles.iconBtn} onClick={handleReset} title="처음부터" aria-label="메뉴">
+          <button style={styles.iconBtn} onClick={handleReset} title="처음부터" aria-label="처음부터">
             ⚙️
           </button>
         </div>
