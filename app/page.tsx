@@ -6,6 +6,7 @@ import { GameState } from '../lib/gameState';
 import GameShell from '../components/GameShell';
 import Attic from '../components/scenes/Attic';
 import Room1Home from '../components/scenes/Room1Home';
+import Room2Class from '../components/scenes/Room2Class';
 import MemoryScene from '../components/MemoryScene';
 
 function TitleScreen() {
@@ -63,6 +64,10 @@ function InnerApp() {
 
   if (state.room === 'home' && state.phase === 'playing') {
     return <GameShell><Room1Home /></GameShell>;
+  }
+
+  if (state.room === 'class' && state.phase === 'playing') {
+    return <GameShell><Room2Class /></GameShell>;
   }
 
   return (
