@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../lib/GameContext';
 import { playSfx, playBgm } from '../../lib/audio';
 import { fx } from '../../lib/effects';
@@ -31,12 +31,31 @@ export default function Attic() {
   const [returnShown, setReturnShown] = useState(false);
   const [disabledMsg, setDisabledMsg] = useState(false);
 
+  const transitioningRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const inPrologue = phase === 'prologue' && !boxOpen;
 
   // Mount: play attic BGM
   useEffect(() => {
     if (room === 'attic') playBgm('attic');
   }, [room]);
+
+  // Cleanup pending transition timer on unmount
+  useEffect(() => () => {
+    if (timerRef.current !== null) clearTimeout(timerRef.current);
+  }, []);
+
+  // RESET → phase back to 'prologue': restore local narration/box state
+  useEffect(() => {
+    if (phase === 'prologue') {
+      setPrologueLine(0);
+      setBoxOpen(false);
+      setReturnShown(false);
+      setDisabledMsg(false);
+      transitioningRef.current = false;
+    }
+  }, [phase]);
 
   // When returning (phase=playing, room=attic, box already open)
   useEffect(() => {
@@ -62,25 +81,28 @@ export default function Attic() {
   }
 
   function handleObjectClick(objRoom: RoomId) {
+    if (transitioningRef.current) return;
     if (!isEnabled(objRoom)) {
       setDisabledMsg(true);
       return;
     }
+    transitioningRef.current = true;
     playSfx('click');
     fx.roomTransition();
     playSfx('door');
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       dispatch({ type: 'ENTER_ROOM', room: objRoom });
       playBgm(objRoom);
+      transitioningRef.current = false;
     }, 600);
   }
 
   const narrationText = inPrologue
     ? PROLOGUE_LINES[prologueLine]
-    : phase === 'playing' && room === 'attic' && !returnShown && memoryShards.length > 0
-    ? '또 하나의 기억이 상자 안에서 빛나고 있었다.'
     : disabledMsg
     ? '아직은 손이 가지 않는다…'
+    : phase === 'playing' && room === 'attic' && !returnShown && memoryShards.length > 0
+    ? '또 하나의 기억이 상자 안에서 빛나고 있었다.'
     : null;
 
   function handleNarrationDone() {
