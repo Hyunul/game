@@ -6,6 +6,7 @@ import { GameState } from '../lib/gameState';
 import GameShell from '../components/GameShell';
 import Attic from '../components/scenes/Attic';
 import Room1Home from '../components/scenes/Room1Home';
+import MemoryScene from '../components/MemoryScene';
 
 function TitleScreen() {
   const { dispatch } = useGame();
@@ -50,6 +51,10 @@ function InnerApp() {
 
   if (state.phase === 'title') {
     return <TitleScreen />;
+  }
+
+  if (state.phase === 'memory') {
+    return <MemoryScene />;
   }
 
   if (state.room === 'attic' && (state.phase === 'prologue' || state.phase === 'playing')) {
