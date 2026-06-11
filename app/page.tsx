@@ -1,66 +1,135 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+import { useEffect, useState } from 'react';
+import { GameProvider, useGame } from '../lib/GameContext';
+import { loadGame, clearSave } from '../lib/save';
+import { GameState } from '../lib/gameState';
+import GameShell from '../components/GameShell';
 
-export default function Home() {
+function TitleScreen() {
+  const { dispatch } = useGame();
+  const [savedGame, setSavedGame] = useState<GameState | null>(null);
+
+  useEffect(() => {
+    setSavedGame(loadGame());
+  }, []);
+
+  function handleNewGame() {
+    clearSave();
+    dispatch({ type: 'START' });
+  }
+
+  function handleResume() {
+    if (!savedGame) return;
+    dispatch({ type: 'START', resume: savedGame });
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={titleStyles.page}>
+      <div style={titleStyles.card}>
+        <h1 style={titleStyles.title}>기억의 상자</h1>
+        <p style={titleStyles.subtitle}>어른이 된 당신에게, 그 시절의 기억을</p>
+        <div style={titleStyles.buttons}>
+          <button style={titleStyles.btn} onClick={handleNewGame}>
+            처음부터
+          </button>
+          {savedGame && (
+            <button style={{ ...titleStyles.btn, ...titleStyles.btnSecondary }} onClick={handleResume}>
+              이어하기
+            </button>
+          )}
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
+
+function InnerApp() {
+  const { state } = useGame();
+
+  if (state.phase === 'title') {
+    return <TitleScreen />;
+  }
+
+  return (
+    <GameShell>
+      <div style={placeholderStyles.box}>
+        <p style={placeholderStyles.text}>
+          (장면 준비 중 — Room: {state.room}, Phase: {state.phase})
+        </p>
+      </div>
+    </GameShell>
+  );
+}
+
+export default function Home() {
+  return (
+    <GameProvider>
+      <InnerApp />
+    </GameProvider>
+  );
+}
+
+const titleStyles: Record<string, React.CSSProperties> = {
+  page: {
+    minHeight: '100vh',
+    backgroundColor: '#1a1410',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  card: {
+    textAlign: 'center',
+    color: '#e8d3a8',
+    padding: '40px 32px',
+  },
+  title: {
+    fontSize: 'clamp(2.4rem, 6vw, 4rem)',
+    fontFamily: '"Georgia", "Batang", serif',
+    fontWeight: 700,
+    letterSpacing: '0.1em',
+    marginBottom: '16px',
+  },
+  subtitle: {
+    fontSize: '1rem',
+    opacity: 0.7,
+    marginBottom: '48px',
+    fontStyle: 'italic',
+  },
+  buttons: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '14px',
+    alignItems: 'center',
+  },
+  btn: {
+    padding: '14px 48px',
+    fontSize: '1rem',
+    fontWeight: 600,
+    backgroundColor: '#7a4f1e',
+    color: '#e8d3a8',
+    border: '1px solid rgba(232,211,168,0.4)',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    minWidth: '200px',
+    letterSpacing: '0.05em',
+  },
+  btnSecondary: {
+    backgroundColor: 'transparent',
+    border: '1px solid rgba(232,211,168,0.4)',
+  },
+};
+
+const placeholderStyles: Record<string, React.CSSProperties> = {
+  box: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'rgba(232,211,168,0.5)',
+    fontSize: '0.9rem',
+    fontFamily: 'monospace',
+  },
+};
