@@ -9,6 +9,7 @@ import Room1Home from '../components/scenes/Room1Home';
 import Room2Class from '../components/scenes/Room2Class';
 import MemoryScene from '../components/MemoryScene';
 import Room3Store from '../components/scenes/Room3Store';
+import Epilogue from '../components/Epilogue';
 
 function TitleScreen() {
   const { dispatch } = useGame();
@@ -57,6 +58,10 @@ function InnerApp() {
 
   if (state.phase === 'memory') {
     return <MemoryScene />;
+  }
+
+  if (state.phase === 'epilogue') {
+    return <Epilogue />;
   }
 
   if (state.room === 'attic' && (state.phase === 'prologue' || state.phase === 'playing')) {
