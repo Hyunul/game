@@ -4,6 +4,7 @@ import { GameProvider, useGame } from '../lib/GameContext';
 import { loadGame, clearSave } from '../lib/save';
 import { GameState } from '../lib/gameState';
 import GameShell from '../components/GameShell';
+import Attic from '../components/scenes/Attic';
 
 function TitleScreen() {
   const { dispatch } = useGame();
@@ -48,6 +49,10 @@ function InnerApp() {
 
   if (state.phase === 'title') {
     return <TitleScreen />;
+  }
+
+  if (state.room === 'attic' && (state.phase === 'prologue' || state.phase === 'playing')) {
+    return <GameShell><Attic /></GameShell>;
   }
 
   return (
