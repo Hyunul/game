@@ -23,7 +23,7 @@ export default function Inventory() {
         <div style={styles.desc}>{selectedItem.desc}</div>
       )}
       <div style={styles.bar}>
-        {Array.from({ length: SLOT_COUNT }, (_, i) => {
+        {Array.from({ length: Math.max(SLOT_COUNT, state.inventory.length) }, (_, i) => {
           const itemId = state.inventory[i] as ItemId | undefined;
           const item = itemId ? ITEMS[itemId] : null;
           const isSelected = itemId && state.selectedItem === itemId;
@@ -77,6 +77,9 @@ const styles: Record<string, React.CSSProperties> = {
   bar: {
     display: 'flex',
     gap: '8px',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    maxWidth: '600px',
   },
   slot: {
     width: '52px',
