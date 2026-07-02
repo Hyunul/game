@@ -22,6 +22,14 @@ const REQUIRES: Record<RoomId, RoomId | null> = {
   home: null, class: 'home', store: 'class', attic: null,
 };
 
+// 에피소드 허브 명패 정보 (Episode 2는 준비 중 — 궤짝 클릭 시 소개 카드)
+const EPISODE2 = {
+  title: '두 번째 이야기',
+  genre: '추리 방탈출',
+  playtime: '약 1시간',
+  desc: '오래된 사건의 진실을 쫓는 미스터리. 낡은 궤짝 속 단서들이 그날 밤의 이야기를 조용히 들려준다.',
+};
+
 export default function Attic() {
   const { state, dispatch } = useGame();
   const { phase, room, memoryShards } = state;
@@ -30,6 +38,7 @@ export default function Attic() {
   const [boxOpen, setBoxOpen] = useState(false);
   const [returnShown, setReturnShown] = useState(false);
   const [disabledMsg, setDisabledMsg] = useState(false);
+  const [episodeCardOpen, setEpisodeCardOpen] = useState(false);
 
   const transitioningRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -169,10 +178,20 @@ export default function Attic() {
         <circle cx="69" cy="262" r="4" fill="#5a3e26" />
         <circle cx="81" cy="262" r="4" fill="#5a3e26" />
 
-        {/* Right: old chest */}
-        <rect x="660" y="240" width="110" height="80" rx="5" fill="#2a1c0f" stroke="#3d2b1a" strokeWidth="2" />
-        <rect x="660" y="240" width="110" height="20" rx="5" fill="#3d2b1a" />
-        <rect x="708" y="273" width="14" height="10" rx="2" fill="#5a3e26" />
+        {/* Right: old chest — Episode 2 입구 (준비 중, 클릭 시 소개 카드) */}
+        <g
+          className="hotspot"
+          style={{ cursor: 'pointer' }}
+          onClick={() => { playSfx('click'); setEpisodeCardOpen(true); }}
+          role="button"
+          aria-label="낡은 궤짝"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && setEpisodeCardOpen(true)}
+        >
+          <rect x="660" y="240" width="110" height="80" rx="5" fill="#2a1c0f" stroke="#3d2b1a" strokeWidth="2" />
+          <rect x="660" y="240" width="110" height="20" rx="5" fill="#3d2b1a" />
+          <rect x="708" y="273" width="14" height="10" rx="2" fill="#5a3e26" />
+        </g>
 
         {/* Center old box (상자) */}
         <g transform="translate(340, 230)">
@@ -190,6 +209,20 @@ export default function Attic() {
           {/* Box label wear lines */}
           <line x1="10" y1="45" x2="110" y2="45" stroke="#3d2214" strokeWidth="1" opacity="0.4" />
           <line x1="10" y1="60" x2="110" y2="60" stroke="#3d2214" strokeWidth="1" opacity="0.4" />
+        </g>
+
+        {/* 명패: 본편 (가운데 상자 아래) */}
+        <g aria-hidden="true">
+          <rect x="332" y="332" width="136" height="34" rx="4" fill="#2a1c0f" stroke="#8a5a33" strokeWidth="1" opacity="0.9" />
+          <text x="400" y="345" textAnchor="middle" fontSize="10" fill="#e8d3a8" style={{ fontWeight: 600 }}>기억의 상자</text>
+          <text x="400" y="359" textAnchor="middle" fontSize="8" fill="#c9b896">감성 방탈출 · 20~30분</text>
+        </g>
+
+        {/* 명패: Episode 2 (궤짝 아래) */}
+        <g aria-hidden="true">
+          <rect x="650" y="332" width="130" height="34" rx="4" fill="#2a1c0f" stroke="#5a4a35" strokeWidth="1" opacity="0.9" />
+          <text x="715" y="345" textAnchor="middle" fontSize="10" fill="#c9b896" style={{ fontWeight: 600 }}>{EPISODE2.title} (준비 중)</text>
+          <text x="715" y="359" textAnchor="middle" fontSize="8" fill="#a09070">{EPISODE2.genre} · {EPISODE2.playtime}</text>
         </g>
 
         {/* Objects inside/around box when open */}
@@ -233,6 +266,77 @@ export default function Attic() {
       </svg>
 
       <Narration text={narrationText} onDone={handleNarrationDone} />
+
+      {/* Episode 2 소개 카드 */}
+      {episodeCardOpen && (
+        <div style={cardStyles.overlay} onClick={() => setEpisodeCardOpen(false)}>
+          <div style={cardStyles.card} onClick={(e) => e.stopPropagation()}>
+            <h3 style={cardStyles.title}>{EPISODE2.title}</h3>
+            <p style={cardStyles.meta}>
+              {EPISODE2.genre} · 예상 플레이타임 {EPISODE2.playtime}
+            </p>
+            <p style={cardStyles.desc}>{EPISODE2.desc}</p>
+            <p style={cardStyles.soon}>아직 잠들어 있는 기억입니다 — Coming Soon</p>
+            <button style={cardStyles.close} onClick={() => setEpisodeCardOpen(false)}>
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+const cardStyles: Record<string, React.CSSProperties> = {
+  overlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: 'rgba(10,7,4,0.7)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 80,
+  },
+  card: {
+    backgroundColor: '#2e1f10',
+    border: '1px solid #8a5a33',
+    borderRadius: '10px',
+    padding: '22px 26px',
+    maxWidth: '340px',
+    margin: '0 16px',
+    textAlign: 'center',
+    color: '#e8d3a8',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.6)',
+  },
+  title: {
+    margin: '0 0 6px',
+    fontSize: '1.15rem',
+    color: '#ffd24a',
+  },
+  meta: {
+    margin: '0 0 12px',
+    fontSize: '0.85rem',
+    color: '#c9b896',
+  },
+  desc: {
+    margin: '0 0 14px',
+    fontSize: '0.85rem',
+    lineHeight: 1.6,
+  },
+  soon: {
+    margin: '0 0 16px',
+    fontSize: '0.8rem',
+    fontStyle: 'italic',
+    color: '#a09070',
+  },
+  close: {
+    minHeight: '44px',
+    padding: '8px 28px',
+    backgroundColor: '#5a3620',
+    color: '#e8d3a8',
+    border: '1px solid #8a5a33',
+    borderRadius: '8px',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+  },
+};
