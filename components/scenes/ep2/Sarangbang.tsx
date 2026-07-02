@@ -9,6 +9,7 @@ import Keypad from '../../Keypad';
 import TapLabel from '../../TapLabel';
 import { useTwoTap } from '../../../lib/useTwoTap';
 import { eraTint, handleWatchUse } from './era';
+import RoomNav from '../../RoomNav';
 
 export default function Sarangbang() {
   const { state, dispatch, episode } = useGame();
@@ -284,45 +285,23 @@ export default function Sarangbang() {
           {radioSolved && isPast && <circle cx="605" cy="230" r="4" fill="#ffd24a" opacity="0.8" />}
         </g>
 
-        {/* ── 문: 안방으로 ── */}
-        <g
-          className="hotspot"
-          style={{ cursor: 'pointer' }}
-          onClick={(e) => { e.stopPropagation(); guard('door-anbang', () => goRoom('anbang')); }}
-          role="button"
-          aria-label="안방으로"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && goRoom('anbang')}
-        >
+        {/* 문 (장식 — 이동은 하단 RoomNav 버튼) */}
+        <g aria-hidden="true">
           <rect x="730" y="120" width="60" height="180" rx="2" fill={isPast ? '#7a5030' : '#5a4632'} stroke="#3a2810" strokeWidth="2" />
-          {/* 문살 */}
           <line x1="740" y1="135" x2="780" y2="135" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
           <line x1="740" y1="205" x2="780" y2="205" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
           <line x1="740" y1="275" x2="780" y2="275" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
           <circle cx="738" cy="212" r="3" fill="#c8a050" />
-          {/* 명패 */}
-          <rect x="726" y="96" width="68" height="18" rx="3" fill="#3a2810" opacity="0.85" />
-          <text x="760" y="109" textAnchor="middle" fontSize="9" fill="#e8d3a8">안방으로</text>
-        </g>
-
-        {/* ── 문: 마당으로 ── */}
-        <g
-          className="hotspot"
-          style={{ cursor: 'pointer' }}
-          onClick={(e) => { e.stopPropagation(); guard('door-heotgan', () => goRoom('heotgan')); }}
-          role="button"
-          aria-label="마당으로"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && goRoom('heotgan')}
-        >
-          <rect x="20" y="240" width="55" height="60" rx="2" fill={isPast ? '#6a5030' : '#4a3c2c'} stroke="#3a2810" strokeWidth="2" />
-          <line x1="28" y1="252" x2="67" y2="252" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
-          <line x1="28" y1="285" x2="67" y2="285" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
-          {/* 명패 */}
-          <rect x="15" y="218" width="65" height="18" rx="3" fill="#3a2810" opacity="0.85" />
-          <text x="47" y="231" textAnchor="middle" fontSize="9" fill="#e8d3a8">마당으로</text>
         </g>
       </svg>
+
+      <RoomNav
+        targets={[
+          { room: 'heotgan', label: '마당', side: 'left' },
+          { room: 'anbang', label: '안방', side: 'right' },
+        ]}
+        onGo={(room) => goRoom(room as 'anbang' | 'heotgan')}
+      />
 
       {/* Era 색조 오버레이 */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundColor: eraTint(era) }} />

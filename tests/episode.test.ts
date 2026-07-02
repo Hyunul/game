@@ -29,3 +29,46 @@ describe('episode-generalized reducer', () => {
     expect(s.room).toBe('ep2-attic');
   });
 });
+
+describe('consumes — 다 쓴 단서 정리', () => {
+  const CONSUME_CONFIG: EpisodeConfig = {
+    id: 'ep2', saveKey: 'test-consume',
+    puzzles: [
+      { id: 'q-single', room: 'sarangbang', requires: [], answer: 'a', consumes: ['clue'], hints: ['h', 'h'] },
+      { id: 'q-shared-1', room: 'sarangbang', requires: [], answer: 'b', consumes: ['oil'], hints: ['h', 'h'] },
+      { id: 'q-shared-2', room: 'sarangbang', requires: [], answer: 'c', requiresItem: 'oil', consumes: ['oil'], hints: ['h', 'h'] },
+      { id: 'q-final', room: 'reservoir', requires: [], answer: 'z', hints: ['h', 'h'] },
+    ],
+    items: {}, finalPuzzles: { reservoir: 'q-final' }, epilogueAt: 1, hubRoom: 'ep2-attic',
+  };
+  const cReduce = createGameReducer(CONSUME_CONFIG);
+  const base: GameState = { ...initialState, room: 'sarangbang' as AnyRoomId, phase: 'playing',
+    inventory: ['clue', 'oil'] };
+
+  it('단일 소비자: 해결 시 아이템 제거', () => {
+    const s = cReduce(base, { type: 'ATTEMPT', puzzleId: 'q-single', answer: 'a' });
+    expect(s.inventory).not.toContain('clue');
+    expect(s.inventory).toContain('oil');
+  });
+
+  it('공유 소비자: 마지막 사용처까지 유지 후 제거', () => {
+    let s = cReduce(base, { type: 'ATTEMPT', puzzleId: 'q-shared-1', answer: 'b' });
+    expect(s.inventory).toContain('oil'); // q-shared-2가 아직 필요
+    s = cReduce(s, { type: 'ATTEMPT', puzzleId: 'q-shared-2', answer: 'c' });
+    expect(s.inventory).not.toContain('oil');
+  });
+
+  it('ep2 실데이터: 기름병은 시계 뚜껑과 랜턴 둘 다 해결돼야 사라진다', async () => {
+    const { EP2_CONFIG } = await import('@/lib/puzzles-ep2');
+    const r = createGameReducer(EP2_CONFIG);
+    let s: GameState = { ...initialState, room: 'heotgan' as AnyRoomId, phase: 'playing', era: 'past',
+      solved: ['ep2-calendar', 'ep2-drawer', 'ep2-radio', 'ep2-column', 'ep2-closet', 'ep2-sewingbox', 'ep2-shed-door'],
+      inventory: ['pocket-watch', 'oil-bottle', 'matches'] };
+    s = r(s, { type: 'ATTEMPT', puzzleId: 'ep2-watch-lid', answer: '' });
+    expect(s.inventory).toContain('oil-bottle'); // 랜턴이 아직 필요
+    s = r(s, { type: 'ATTEMPT', puzzleId: 'ep2-lantern', answer: '' });
+    expect(s.inventory).not.toContain('oil-bottle');
+    expect(s.inventory).not.toContain('matches');
+    expect(s.inventory).toContain('pocket-watch'); // 시계는 도구 — 유지
+  });
+});

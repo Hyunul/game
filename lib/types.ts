@@ -24,4 +24,7 @@ export interface Puzzle {
   hints: [string, string];
   /** 지정 시 해당 시점에서만 canAttempt 통과 */
   era?: Era;
+  /** 이 퍼즐 해결 시 용도를 다해 인벤토리에서 제거할 아이템.
+      같은 아이템을 아직 필요로 하는 미해결 퍼즐이 있으면 그때까지 유지된다. */
+  consumes?: string[];
 }

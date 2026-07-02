@@ -9,6 +9,7 @@ import Keypad from '../../Keypad';
 import TapLabel from '../../TapLabel';
 import { useTwoTap } from '../../../lib/useTwoTap';
 import { eraTint, handleWatchUse } from './era';
+import RoomNav from '../../RoomNav';
 
 const SEWING_TARGET = ['R', 'Y', 'B', 'Y'];
 const SEWING_COLORS: Record<string, string> = { R: '#c83c3c', Y: '#e0b830', B: '#3868c0' };
@@ -400,36 +401,15 @@ export default function Anbang() {
 
         {/* ── 방석(현재, 벽장 열린 뒤 별도로 마루 위엔 없음 — 벽장 안에 렌더) ── */}
 
-        {/* ── 문: 사랑방으로 ── */}
-        <g
-          className="hotspot"
-          style={{ cursor: 'pointer' }}
-          onClick={(e) => { e.stopPropagation(); guard('door-sarangbang', () => goRoom('sarangbang')); }}
-          role="button"
-          aria-label="사랑방으로"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && goRoom('sarangbang')}
-        >
-          <rect x="20" y="240" width="55" height="60" rx="2" fill={isPast ? '#6a5030' : '#4a3c2c'} stroke="#3a2810" strokeWidth="2" />
-          <rect x="12" y="218" width="70" height="18" rx="3" fill="#3a2810" opacity="0.85" />
-          <text x="47" y="231" textAnchor="middle" fontSize="9" fill="#e8d3a8">사랑방으로</text>
-        </g>
-
-        {/* ── 문: 마당으로(헛간) ── */}
-        <g
-          className="hotspot"
-          style={{ cursor: 'pointer' }}
-          onClick={(e) => { e.stopPropagation(); guard('door-heotgan', () => goRoom('heotgan')); }}
-          role="button"
-          aria-label="마당으로"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && goRoom('heotgan')}
-        >
-          <rect x="730" y="330" width="60" height="60" rx="2" fill={isPast ? '#7a5030' : '#5a4632'} stroke="#3a2810" strokeWidth="2" />
-          <rect x="726" y="308" width="68" height="18" rx="3" fill="#3a2810" opacity="0.85" />
-          <text x="760" y="321" textAnchor="middle" fontSize="9" fill="#e8d3a8">마당으로</text>
-        </g>
       </svg>
+
+      <RoomNav
+        targets={[
+          { room: 'sarangbang', label: '사랑방', side: 'left' },
+          { room: 'heotgan', label: '마당', side: 'right' },
+        ]}
+        onGo={(room) => goRoom(room as 'sarangbang' | 'heotgan')}
+      />
 
       {/* Era 색조 오버레이 */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundColor: eraTint(era) }} />

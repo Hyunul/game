@@ -8,6 +8,7 @@ import Narration from '../../Narration';
 import TapLabel from '../../TapLabel';
 import { useTwoTap } from '../../../lib/useTwoTap';
 import { eraTint, handleWatchUse } from './era';
+import RoomNav from '../../RoomNav';
 
 const EVIDENCE_IDS = ['ev-letter', 'ev-note', 'ev-gear', 'ev-watch', 'ev-diary'];
 
@@ -374,23 +375,17 @@ export default function Heotgan() {
           </g>
         )}
 
-        {/* ── 문: 안방으로 ── */}
-        {!nightEvent && (
-          <g
-            className="hotspot"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => { e.stopPropagation(); guard('door-anbang', () => goRoom('anbang')); }}
-            role="button"
-            aria-label="안방으로"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && goRoom('anbang')}
-          >
-            <rect x="20" y="240" width="55" height="60" rx="2" fill={isPast ? '#6a5030' : '#4a3c2c'} stroke="#3a2810" strokeWidth="2" />
-            <rect x="15" y="218" width="65" height="18" rx="3" fill="#3a2810" opacity="0.85" />
-            <text x="47" y="231" textAnchor="middle" fontSize="9" fill="#e8d3a8">안방으로</text>
-          </g>
-        )}
       </svg>
+
+      {!nightEvent && (
+        <RoomNav
+          targets={[
+            { room: 'anbang', label: '안방', side: 'left' },
+            { room: 'sarangbang', label: '사랑방', side: 'right' },
+          ]}
+          onGo={(room) => goRoom(room as 'sarangbang' | 'anbang')}
+        />
+      )}
 
       {/* Era 색조 오버레이 */}
       {!nightEvent && (

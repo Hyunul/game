@@ -59,6 +59,22 @@ function applySolve(config: EpisodeConfig, s: GameState, puzzleId: string): Game
     selectedItem: null,
     lastResult: 'correct',
   };
+  // 다 쓴 단서 정리: 이 퍼즐이 소모하는 아이템 중, 아직 그 아이템을
+  // 필요로 하는(consumes/requiresItem) 미해결 퍼즐이 없는 것만 제거
+  if (p.consumes?.length) {
+    const stillNeeded = (item: string) =>
+      config.puzzles.some(
+        (q) =>
+          !next.solved.includes(q.id) &&
+          (q.consumes?.includes(item) || q.requiresItem === item),
+      );
+    next = {
+      ...next,
+      inventory: next.inventory.filter(
+        (it) => !p.consumes!.includes(it) || stillNeeded(it),
+      ),
+    };
+  }
   // 최종 퍼즐 → 기억 조각 + 허브 복귀(연출은 phase: 'memory'로)
   if (config.finalPuzzles[p.room] === puzzleId) {
     const shards = [...next.memoryShards, p.room];

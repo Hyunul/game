@@ -82,6 +82,8 @@ export default function GameShell({ children, onExitToHub }: Props) {
       <div style={styles.sceneWrapper}>
         <div style={styles.scene}>
           {children}
+          {/* 조명 + 비네트: 평면적인 장면에 깊이를 더하는 공통 레이어 */}
+          <div style={styles.sceneLight} aria-hidden="true" />
         </div>
       </div>
 
@@ -170,5 +172,14 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid rgba(232,211,168,0.12)',
     boxShadow: '0 12px 40px rgba(0,0,0,0.45)',
     overflow: 'hidden',
+  },
+  sceneLight: {
+    position: 'absolute',
+    inset: 0,
+    pointerEvents: 'none',
+    zIndex: 10,
+    background:
+      'radial-gradient(ellipse 90% 70% at 50% 22%, rgba(255,236,200,0.10), transparent 60%), ' +
+      'radial-gradient(ellipse 140% 110% at 50% 50%, transparent 58%, rgba(10,6,2,0.34) 100%)',
   },
 };
