@@ -8,7 +8,7 @@ import Narration from '../../Narration';
 import Keypad from '../../Keypad';
 import TapLabel from '../../TapLabel';
 import { useTwoTap } from '../../../lib/useTwoTap';
-import { handleWatchUse } from './era';
+import { eraTint, handleWatchUse } from './era';
 
 const SEWING_TARGET = ['R', 'Y', 'B', 'Y'];
 const SEWING_COLORS: Record<string, string> = { R: '#c83c3c', Y: '#e0b830', B: '#3868c0' };
@@ -27,7 +27,12 @@ export default function Anbang() {
   const [sewingSequence, setSewingSequence] = useState<string[]>([]);
   const [shake, setShake] = useState(false);
   const navGuard = useRef(false);
+  const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevLastResult = useRef<typeof lastResult>(null);
+
+  useEffect(() => () => {
+    if (navTimer.current !== null) clearTimeout(navTimer.current);
+  }, []);
 
   function canAttempt(puzzleId: string) {
     return canAttemptWith(episode, state, puzzleId);
@@ -186,7 +191,7 @@ export default function Anbang() {
     navGuard.current = true;
     fx.roomTransition();
     playSfx('door');
-    setTimeout(() => {
+    navTimer.current = setTimeout(() => {
       dispatch({ type: 'ENTER_ROOM', room });
       navGuard.current = false;
     }, 600);
@@ -401,6 +406,9 @@ export default function Anbang() {
           <text x="760" y="322" textAnchor="middle" fontSize="9" fill="#e8d3a8" opacity="0.8">마당으로</text>
         </g>
       </svg>
+
+      {/* Era 색조 오버레이 */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundColor: eraTint(era) }} />
 
       <Keypad
         open={!!keypadConfig}
