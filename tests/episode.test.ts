@@ -62,7 +62,7 @@ describe('consumes — 다 쓴 단서 정리', () => {
     const { EP2_CONFIG } = await import('@/lib/puzzles-ep2');
     const r = createGameReducer(EP2_CONFIG);
     let s: GameState = { ...initialState, room: 'heotgan' as AnyRoomId, phase: 'playing', era: 'past',
-      solved: ['ep2-calendar', 'ep2-drawer', 'ep2-radio', 'ep2-column', 'ep2-closet', 'ep2-sewingbox', 'ep2-shed-door'],
+      solved: ['ep2-calendar', 'ep2-drawer', 'ep2-radio', 'ep2-bookchest', 'ep2-column', 'ep2-closet', 'ep2-sewingbox', 'ep2-shed-door'],
       inventory: ['pocket-watch', 'oil-bottle', 'matches'] };
     s = r(s, { type: 'ATTEMPT', puzzleId: 'ep2-watch-lid', answer: '' });
     expect(s.inventory).toContain('oil-bottle'); // 랜턴이 아직 필요
@@ -70,5 +70,34 @@ describe('consumes — 다 쓴 단서 정리', () => {
     expect(s.inventory).not.toContain('oil-bottle');
     expect(s.inventory).not.toContain('matches');
     expect(s.inventory).toContain('pocket-watch'); // 시계는 도구 — 유지
+  });
+});
+
+describe('rewardItems / requiresItems — 복수 보상·복수 요구 아이템', () => {
+  const MULTI_CONFIG: EpisodeConfig = {
+    id: 'ep2', saveKey: 'test-multi',
+    puzzles: [
+      { id: 'm-multi-reward', room: 'sarangbang', requires: [], answer: 'go',
+        rewardItem: 'primary', rewardItems: ['bonus-a', 'bonus-b'], hints: ['h', 'h'] },
+      { id: 'm-needs-both', room: 'sarangbang', requires: ['m-multi-reward'],
+        requiresItems: ['bonus-a', 'bonus-b'], answer: 'ok', hints: ['h', 'h'] },
+    ],
+    items: {}, finalPuzzles: {}, epilogueAt: 1, hubRoom: 'ep2-attic',
+  };
+  const mReduce = createGameReducer(MULTI_CONFIG);
+  const base: GameState = { ...initialState, room: 'sarangbang' as AnyRoomId, phase: 'playing' };
+
+  it('rewardItems는 rewardItem과 함께 모두 지급된다', () => {
+    const s = mReduce(base, { type: 'ATTEMPT', puzzleId: 'm-multi-reward', answer: 'go' });
+    expect(s.inventory).toEqual(expect.arrayContaining(['primary', 'bonus-a', 'bonus-b']));
+  });
+
+  it('requiresItems는 모든 아이템을 보유해야 시도 가능하다', () => {
+    let s = mReduce(base, { type: 'ATTEMPT', puzzleId: 'm-multi-reward', answer: 'go' });
+    const missingOne: GameState = { ...s, inventory: s.inventory.filter((i) => i !== 'bonus-b') };
+    expect(canAttemptWith(MULTI_CONFIG, missingOne, 'm-needs-both')).toBe(false);
+    expect(canAttemptWith(MULTI_CONFIG, s, 'm-needs-both')).toBe(true);
+    s = mReduce(s, { type: 'ATTEMPT', puzzleId: 'm-needs-both', answer: 'ok' });
+    expect(s.solved).toContain('m-needs-both');
   });
 });

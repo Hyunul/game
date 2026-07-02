@@ -10,7 +10,7 @@ import { useTwoTap } from '../../../lib/useTwoTap';
 import { eraTint, handleWatchUse } from './era';
 import RoomNav from '../../RoomNav';
 
-const EVIDENCE_IDS = ['ev-letter', 'ev-note', 'ev-gear', 'ev-watch', 'ev-diary'];
+const EVIDENCE_IDS = ['doc-letter', 'doc-note', 'photo-4', 'watch-open', 'doc-diary'];
 
 export default function Heotgan() {
   const { state, dispatch, episode } = useGame();

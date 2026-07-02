@@ -11,8 +11,8 @@ interface Line {
 }
 
 const LINES: Line[] = [
-  { text: '궤짝 깊은 곳에서, 세 가지가 나왔다.', pickup: 'family-photo' },
-  { text: '빛바랜 신문… \'15일 밤 저수지에서 청년 익사\'. 사진 속 큰아버지의 이름이 있었다.', pickup: 'news-clip' },
+  { text: '궤짝 깊은 곳에서, 것들이 나왔다.' },
+  { text: '빛바랜 신문… \'15일 밤 저수지에서 청년 익사\'. 사진 속 큰아버지의 이름이 있었다.', pickup: 'doc-news' },
   { text: '그리고 11시 40분에 멈춘 회중시계. 뒷면에 물때가 낀.', pickup: 'pocket-watch' },
   { text: '…태엽을 감아본다.' },
 ];

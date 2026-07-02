@@ -8,7 +8,16 @@ export type ItemId =
   | 'pencilcase' | 'sheet-music' | 'chalk' | 'diary'
   | 'capsule' | 'coin-100' | 'coin-gacha';
 
-export interface Item { id: string; name: string; icon: string; desc: string; }
+export interface Item {
+  id: string;
+  name: string;
+  icon: string;
+  desc: string;
+  /** 문서 아이템: 문서 뷰어로 전문을 열람할 수 있다 */
+  doc?: boolean;
+  /** 문서 전문 페이지 (doc: true일 때). 페이지 넘김 가능. */
+  docPages?: string[];
+}
 
 export interface Puzzle {
   id: string;
@@ -17,10 +26,14 @@ export interface Puzzle {
   requires: string[];
   /** 사용해야 하는 인벤토리 아이템 (없으면 undefined) */
   requiresItem?: string;
+  /** 사용해야 하는 인벤토리 아이템들 (모두 보유해야 함) */
+  requiresItems?: string[];
   /** 입력형 퍼즐의 정답 (클릭형이면 undefined) */
   answer?: string;
   /** 풀면 얻는 아이템 */
   rewardItem?: string;
+  /** 풀면 얻는 아이템들 (rewardItem과 함께 사용 가능) */
+  rewardItems?: string[];
   hints: [string, string];
   /** 지정 시 해당 시점에서만 canAttempt 통과 */
   era?: Era;

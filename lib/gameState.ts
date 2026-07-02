@@ -39,6 +39,7 @@ export function canAttemptWith(config: EpisodeConfig, s: GameState, puzzleId: st
   if (s.solved.includes(puzzleId)) return false;
   if (!p.requires.every((r) => s.solved.includes(r))) return false;
   if (p.requiresItem && !s.inventory.includes(p.requiresItem)) return false;
+  if (p.requiresItems && !p.requiresItems.every((it) => s.inventory.includes(it))) return false;
   if (p.era && p.era !== s.era) return false;
   return true;
 }
@@ -51,11 +52,14 @@ function getPuzzleFrom(config: EpisodeConfig, id: string) {
 
 function applySolve(config: EpisodeConfig, s: GameState, puzzleId: string): GameState {
   const p = getPuzzleFrom(config, puzzleId);
+  const rewards = [...(p.rewardItem ? [p.rewardItem] : []), ...(p.rewardItems ?? [])];
   let next: GameState = {
     ...s,
     solved: [...s.solved, puzzleId],
-    inventory: p.rewardItem && !s.inventory.includes(p.rewardItem)
-      ? [...s.inventory, p.rewardItem] : s.inventory,
+    inventory: [
+      ...s.inventory,
+      ...rewards.filter((it) => !s.inventory.includes(it)),
+    ],
     selectedItem: null,
     lastResult: 'correct',
   };
@@ -66,7 +70,7 @@ function applySolve(config: EpisodeConfig, s: GameState, puzzleId: string): Game
       config.puzzles.some(
         (q) =>
           !next.solved.includes(q.id) &&
-          (q.consumes?.includes(item) || q.requiresItem === item),
+          (q.consumes?.includes(item) || q.requiresItem === item || q.requiresItems?.includes(item)),
       );
     next = {
       ...next,
