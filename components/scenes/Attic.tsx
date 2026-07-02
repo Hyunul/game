@@ -24,6 +24,13 @@ const REQUIRES: Record<RoomId, RoomId | null> = {
 };
 
 // 에피소드 허브 명패 정보
+const EPISODE1 = {
+  title: '「기억의 상자」',
+  genre: '감성 방탈출',
+  playtime: '20~30분',
+  desc: '어른이 된 당신에게, 그 시절의 기억을. 낡은 상자 속 물건들이 어릴 적 세 공간으로 데려다준다.',
+};
+
 const EPISODE2 = {
   title: '「궤짝 속 여름」',
   genre: '추리 방탈출',
@@ -46,6 +53,8 @@ export default function Attic({ onStartEp2 }: Props) {
   const [returnShown, setReturnShown] = useState(false);
   const [disabledMsg, setDisabledMsg] = useState(false);
   const [episodeCardOpen, setEpisodeCardOpen] = useState(false);
+  const [ep1CardOpen, setEp1CardOpen] = useState(false);
+  const [ep1Started, setEp1Started] = useState(false);
   const [ep2SaveExists, setEp2SaveExists] = useState(false);
   const [ep2Completed, setEp2Completed] = useState(false);
 
@@ -77,6 +86,8 @@ export default function Attic({ onStartEp2 }: Props) {
       setBoxOpen(false);
       setReturnShown(false);
       setDisabledMsg(false);
+      setEp1Started(false);
+      setEp1CardOpen(false);
       transitioningRef.current = false;
     }
   }, [phase]);
@@ -121,7 +132,8 @@ export default function Attic({ onStartEp2 }: Props) {
     }, 600);
   }
 
-  const narrationText = inPrologue
+  // ep1 프롤로그 내레이션은 소개 카드에서 '상자를 연다'를 누른 뒤에 시작
+  const narrationText = inPrologue && ep1Started
     ? PROLOGUE_LINES[prologueLine]
     : disabledMsg
     ? '아직은 손이 가지 않는다…'
@@ -208,8 +220,17 @@ export default function Attic({ onStartEp2 }: Props) {
           <rect x="708" y="273" width="14" height="10" rx="2" fill="#5a3e26" />
         </g>
 
-        {/* Center old box (상자) */}
-        <g transform="translate(340, 230)">
+        {/* Center old box (상자) — 프롤로그 시작 전엔 클릭하면 소개 카드 */}
+        <g
+          transform="translate(340, 230)"
+          className={inPrologue && !ep1Started ? 'hotspot' : undefined}
+          style={inPrologue && !ep1Started ? { cursor: 'pointer' } : undefined}
+          onClick={inPrologue && !ep1Started ? () => { playSfx('click'); setEp1CardOpen(true); } : undefined}
+          role={inPrologue && !ep1Started ? 'button' : undefined}
+          aria-label={inPrologue && !ep1Started ? '낡은 상자' : undefined}
+          tabIndex={inPrologue && !ep1Started ? 0 : undefined}
+          onKeyDown={inPrologue && !ep1Started ? (e) => e.key === 'Enter' && setEp1CardOpen(true) : undefined}
+        >
           {/* Box body */}
           <rect x="0" y="20" width="120" height="70" rx="4" fill="#5a3620" stroke="#8a5a33" strokeWidth="2" />
           {/* Lid — open or closed */}
@@ -229,8 +250,8 @@ export default function Attic({ onStartEp2 }: Props) {
         {/* 명패: 본편 (가운데 상자 아래) */}
         <g aria-hidden="true">
           <rect x="332" y="332" width="136" height="34" rx="4" fill="#2a1c0f" stroke="#8a5a33" strokeWidth="1" opacity="0.9" />
-          <text x="400" y="345" textAnchor="middle" fontSize="10" fill="#e8d3a8" style={{ fontWeight: 600 }}>기억의 상자</text>
-          <text x="400" y="359" textAnchor="middle" fontSize="8" fill="#c9b896">감성 방탈출 · 20~30분</text>
+          <text x="400" y="345" textAnchor="middle" fontSize="10" fill="#e8d3a8" style={{ fontWeight: 600 }}>{EPISODE1.title}</text>
+          <text x="400" y="359" textAnchor="middle" fontSize="8" fill="#c9b896">{EPISODE1.genre} · {EPISODE1.playtime}</text>
         </g>
 
         {/* 명패: Episode 2 (궤짝 아래) */}
@@ -287,6 +308,34 @@ export default function Attic({ onStartEp2 }: Props) {
       </svg>
 
       <Narration text={narrationText} onDone={handleNarrationDone} />
+
+      {/* Episode 1 소개 카드 */}
+      {ep1CardOpen && (
+        <div style={cardStyles.overlay} onClick={() => setEp1CardOpen(false)}>
+          <div style={cardStyles.card} onClick={(e) => e.stopPropagation()}>
+            <h3 style={cardStyles.title}>{EPISODE1.title}</h3>
+            <p style={cardStyles.meta}>
+              {EPISODE1.genre} · 예상 플레이타임 {EPISODE1.playtime}
+            </p>
+            <p style={cardStyles.desc}>{EPISODE1.desc}</p>
+            <div style={cardStyles.buttons}>
+              <button
+                style={cardStyles.startBtn}
+                onClick={() => {
+                  playSfx('click');
+                  setEp1CardOpen(false);
+                  setEp1Started(true);
+                }}
+              >
+                상자를 연다
+              </button>
+            </div>
+            <button style={cardStyles.close} onClick={() => setEp1CardOpen(false)}>
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Episode 2 소개 카드 */}
       {episodeCardOpen && (
