@@ -1,6 +1,6 @@
 import { Puzzle, Item, ItemId, RoomId } from './types';
 
-export const ITEMS: Record<ItemId, Item> = {
+export const ITEMS: Record<string, Item> & Record<ItemId, Item> = {
   photo: { id: 'photo', name: '빛바랜 가족사진', icon: '📷', desc: '뒷면에 "채널 7"이라 적혀 있다.' },
   'memo-anniversary': { id: 'memo-anniversary', name: '기념일 메모', icon: '📝', desc: '5월 8일에 동그라미. "0508"' },
   backscratcher: { id: 'backscratcher', name: '효자손', icon: '🪵', desc: '할머니의 효자손. 손이 닿지 않는 곳에 쓰자.' },
