@@ -91,26 +91,27 @@ export default function Room2Class() {
     if (!inventory.includes('sheet-music')) return; // no sheet music — just play sound
     if (solved.includes('class-organ')) return;     // already solved
 
-    setOrganSequence((prev) => {
-      const next = [...prev, note];
-      const len = next.length;
-      const targetSlice = TARGET_SEQUENCE.slice(0, len);
+    // setState 업데이터 안에서 dispatch하면 렌더 중 상태 갱신 오류가 나므로
+    // 시퀀스 판정은 이벤트 핸들러에서 직접 수행한다.
+    const next = [...organSequence, note];
+    const targetSlice = TARGET_SEQUENCE.slice(0, next.length);
 
-      if (next.join(',') !== targetSlice.join(',')) {
-        // Wrong note — reset
-        playSfx('wrong');
-        return [];
-      }
+    if (next.join(',') !== targetSlice.join(',')) {
+      // Wrong note — reset
+      playSfx('wrong');
+      setOrganSequence([]);
+      return;
+    }
 
-      if (len === TARGET_SEQUENCE.length) {
-        // Full sequence matched
-        dispatch({ type: 'ATTEMPT', puzzleId: 'class-organ', answer: 'C-E-G-E-C' });
-        setTimeout(() => say('풍금 뚜껑 안쪽에서 분필이 굴러 나왔다.'), 50);
-        return [];
-      }
+    if (next.length === TARGET_SEQUENCE.length) {
+      // Full sequence matched
+      setOrganSequence([]);
+      dispatch({ type: 'ATTEMPT', puzzleId: 'class-organ', answer: 'C-E-G-E-C' });
+      setTimeout(() => say('풍금 뚜껑 안쪽에서 분필이 굴러 나왔다.'), 50);
+      return;
+    }
 
-      return next;
-    });
+    setOrganSequence(next);
   }
 
   // ── 풍금 body ─────────────────────────────────────────────────────────────────

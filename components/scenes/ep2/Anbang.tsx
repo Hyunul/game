@@ -114,26 +114,27 @@ export default function Anbang() {
       return;
     }
     playSfx('click');
-    setSewingSequence((prev) => {
-      const next = [...prev, color];
-      const len = next.length;
-      const targetSlice = SEWING_TARGET.slice(0, len);
+    // setState 업데이터 안에서 dispatch하면 렌더 중 상태 갱신 오류가 나므로
+    // 시퀀스 판정은 이벤트 핸들러에서 직접 수행한다.
+    const next = [...sewingSequence, color];
+    const targetSlice = SEWING_TARGET.slice(0, next.length);
 
-      if (next.join(',') !== targetSlice.join(',')) {
-        playSfx('wrong');
-        return [];
-      }
+    if (next.join(',') !== targetSlice.join(',')) {
+      playSfx('wrong');
+      setSewingSequence([]);
+      return;
+    }
 
-      if (len === SEWING_TARGET.length) {
-        dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-sewingbox', answer: 'R-Y-B-Y' });
-        setTimeout(() => {
-          say('찰칵 — 반짇고리 안에 놋쇠 열쇠가 들어 있다. 어딘가 낯익은 반짇고리다…');
-        }, 50);
-        return [];
-      }
+    if (next.length === SEWING_TARGET.length) {
+      setSewingSequence([]);
+      dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-sewingbox', answer: 'R-Y-B-Y' });
+      setTimeout(() => {
+        say('찰칵 — 반짇고리 안에 놋쇠 열쇠가 들어 있다. 어딘가 낯익은 반짇고리다…');
+      }, 50);
+      return;
+    }
 
-      return next;
-    });
+    setSewingSequence(next);
   }
 
   // ── 마루 널빤지 ──
