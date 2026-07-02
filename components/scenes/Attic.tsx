@@ -57,6 +57,7 @@ export default function Attic({ onStartEp2 }: Props) {
   const [ep1Started, setEp1Started] = useState(false);
   const [ep2SaveExists, setEp2SaveExists] = useState(false);
   const [ep2Completed, setEp2Completed] = useState(false);
+  const [hoverEp, setHoverEp] = useState<'ep1' | 'ep2' | null>(null);
 
   useEffect(() => {
     const save = loadGame(EP2_SAVE_KEY);
@@ -179,12 +180,38 @@ export default function Attic({ onStartEp2 }: Props) {
         <line x1="400" y1="26" x2="400" y2="70" stroke="#5a3e26" strokeWidth="2" />
         <line x1="378" y1="48" x2="422" y2="48" stroke="#5a3e26" strokeWidth="2" />
 
-        {/* Light beam from window */}
-        <polygon points="385,68 415,68 500,200 300,200" fill="url(#lightBeam)" opacity="0.18" />
+        {/* Light beam from window — 호버한 에피소드 쪽으로 빛이 옮겨간다 */}
+        <polygon
+          points="385,68 415,68 500,200 300,200"
+          fill="url(#lightBeam)"
+          opacity={hoverEp === null ? 0.18 : 0.06}
+          style={{ transition: 'opacity .3s ease' }}
+        />
+        <polygon
+          points="385,68 415,68 495,255 305,255"
+          fill="url(#lightBeamLong)"
+          opacity={hoverEp === 'ep1' ? 0.26 : 0}
+          style={{ transition: 'opacity .3s ease' }}
+        />
+        <polygon
+          points="385,68 415,68 800,255 645,255"
+          fill="url(#lightBeamLong)"
+          opacity={hoverEp === 'ep2' ? 0.26 : 0}
+          style={{ transition: 'opacity .3s ease' }}
+        />
+        {/* 호버 대상 아래 은은한 빛 웅덩이 */}
+        <ellipse cx="400" cy="300" rx="95" ry="34" fill="#ffd24a"
+          opacity={hoverEp === 'ep1' ? 0.1 : 0} style={{ transition: 'opacity .3s ease' }} />
+        <ellipse cx="715" cy="292" rx="85" ry="32" fill="#ffd24a"
+          opacity={hoverEp === 'ep2' ? 0.1 : 0} style={{ transition: 'opacity .3s ease' }} />
         <defs>
           <linearGradient id="lightBeam" x1="400" y1="68" x2="400" y2="200" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#ffd24a" stopOpacity="0.9" />
             <stop offset="100%" stopColor="#ffd24a" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="lightBeamLong" x1="400" y1="68" x2="400" y2="265" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#ffd24a" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#ffd24a" stopOpacity="0.05" />
           </linearGradient>
         </defs>
 
@@ -210,6 +237,8 @@ export default function Attic({ onStartEp2 }: Props) {
           className="hotspot"
           style={{ cursor: 'pointer' }}
           onClick={() => { playSfx('click'); setEpisodeCardOpen(true); }}
+          onMouseEnter={() => setHoverEp('ep2')}
+          onMouseLeave={() => setHoverEp(null)}
           role="button"
           aria-label="낡은 궤짝"
           tabIndex={0}
@@ -226,6 +255,8 @@ export default function Attic({ onStartEp2 }: Props) {
           className={inPrologue && !ep1Started ? 'hotspot' : undefined}
           style={inPrologue && !ep1Started ? { cursor: 'pointer' } : undefined}
           onClick={inPrologue && !ep1Started ? () => { playSfx('click'); setEp1CardOpen(true); } : undefined}
+          onMouseEnter={inPrologue && !ep1Started ? () => setHoverEp('ep1') : undefined}
+          onMouseLeave={inPrologue && !ep1Started ? () => setHoverEp(null) : undefined}
           role={inPrologue && !ep1Started ? 'button' : undefined}
           aria-label={inPrologue && !ep1Started ? '낡은 상자' : undefined}
           tabIndex={inPrologue && !ep1Started ? 0 : undefined}
