@@ -4,6 +4,8 @@ import { useGame } from '../../../lib/GameContext';
 import { canAttemptWith } from '../../../lib/gameState';
 import { playSfx, playBgm } from '../../../lib/audio';
 import Narration from '../../Narration';
+import TapLabel from '../../TapLabel';
+import { useTwoTap } from '../../../lib/useTwoTap';
 
 interface Card {
   num: number;
@@ -25,6 +27,7 @@ const SHUFFLE_ORDER = [3, 1, 5, 2, 4];
 export default function Reservoir() {
   const { state, dispatch, episode } = useGame();
   const { lastResult } = state;
+  const { guard, armedId } = useTwoTap();
 
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [slots, setSlots] = useState<(number | null)[]>([null, null, null, null, null]);
@@ -136,11 +139,11 @@ export default function Reservoir() {
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
-          onClick={handleShoreClick}
+          onClick={(e) => { e.stopPropagation(); guard('shore', handleShoreClick); }}
           role="button"
           aria-label="물가"
           tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && handleShoreClick()}
+          onKeyDown={(e) => e.key === 'Enter' && guard('shore', handleShoreClick)}
         >
           <ellipse cx="400" cy="232" rx="140" ry="14" fill="#000" opacity="0" />
           <text x="400" y="200" textAnchor="middle" fontSize="12" fill="#e8d3a8" opacity="0.7">
@@ -215,6 +218,7 @@ export default function Reservoir() {
       )}
 
       <Narration text={narration} onDone={() => setNarration(null)} />
+      <TapLabel name={armedId === 'shore' ? '물가를 살펴본다' : null} />
     </div>
   );
 }

@@ -20,6 +20,13 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Episode 2 — 궤짝 속 여름
+
+- **제목:** 궤짝 속 여름
+- **장르:** 추리 방탈출 (시점 전환형)
+- **플레이타임:** 약 30~40분
+- **한 줄 소개:** 다락방 궤짝 속 유품을 단서 삼아 1978년 여름과 현재를 오가며, 한 가족이 오래 묻어둔 그날 밤의 진실을 맞춰나가는 이야기.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
