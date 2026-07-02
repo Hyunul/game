@@ -1,7 +1,7 @@
 // lib/audio.ts — Web Audio synthesis engine for 기억의 상자
 // No external audio files; SSR-safe (no-op when window is undefined).
 
-export type Sfx = 'click' | 'pickup' | 'correct' | 'wrong' | 'door' | 'shard';
+export type Sfx = 'click' | 'pickup' | 'correct' | 'wrong' | 'door' | 'shard' | 'tick';
 
 // ── Module state ──────────────────────────────────────────────────────────────
 let ctx: AudioContext | null = null;
@@ -116,6 +116,12 @@ export function playSfx(name: Sfx): void {
       osc('sine', 85, now, 0.15, 0.06, masterGain);
       break;
     }
+
+    case 'tick':
+      // Clock winding: tick then tock
+      osc('square', 1200, now, 0.2, 0.04, masterGain);
+      osc('square', 900, now + 0.12, 0.2, 0.04, masterGain);
+      break;
   }
 }
 
@@ -191,6 +197,39 @@ const MELODIES: Record<string, { freq: number; dur: number }[]> = {
     { freq: 880.0,  dur: 1.5 }, // A5
     { freq: 0,      dur: 0.5 }, // rest
   ],
+  'ep2-past': [
+    // 따뜻한 여름 오후 — bright pentatonic (C D E G A), moderate tempo
+    { freq: 523.25, dur: 1.0 }, // C5
+    { freq: 587.33, dur: 1.0 }, // D5
+    { freq: 659.25, dur: 1.0 }, // E5
+    { freq: 783.99, dur: 1.0 }, // G5
+    { freq: 659.25, dur: 1.0 }, // E5
+    { freq: 880.0,  dur: 1.0 }, // A5
+    { freq: 783.99, dur: 1.5 }, // G5
+    { freq: 587.33, dur: 1.0 }, // D5
+    { freq: 523.25, dur: 2.0 }, // C5
+    { freq: 0,      dur: 1.0 }, // rest
+  ],
+
+  'ep2-present': [
+    // 낮고 느린 단조 아르페지오 (A minor, low octave, slower than attic)
+    { freq: 110.0,  dur: 2.0 }, // A2
+    { freq: 130.81, dur: 2.0 }, // C3
+    { freq: 164.81, dur: 2.0 }, // E3
+    { freq: 130.81, dur: 2.0 }, // C3
+    { freq: 110.0,  dur: 3.0 }, // A2
+    { freq: 0,      dur: 2.0 }, // rest
+  ],
+
+  'ep2-night': [
+    // 낮은 드론 + 드문 벨 톤
+    { freq: 55.0,   dur: 6.0 }, // A1 drone
+    { freq: 1046.5, dur: 1.0 }, // C6 bell
+    { freq: 0,      dur: 3.0 }, // rest
+    { freq: 55.0,   dur: 6.0 }, // A1 drone
+    { freq: 1318.5, dur: 1.0 }, // E6 bell
+    { freq: 0,      dur: 4.0 }, // rest
+  ],
 };
 
 function scheduleBgm(): void {
@@ -208,7 +247,9 @@ function scheduleBgm(): void {
   }
 }
 
-export function playBgm(room: 'attic' | 'home' | 'class' | 'store'): void {
+export function playBgm(
+  room: 'attic' | 'home' | 'class' | 'store' | 'ep2-past' | 'ep2-present' | 'ep2-night',
+): void {
   if (typeof window === 'undefined' || !ctx) return;
   if (bgmRoom === room) return;
   stopBgm();
