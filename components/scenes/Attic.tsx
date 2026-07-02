@@ -244,9 +244,17 @@ export default function Attic({ onStartEp2 }: Props) {
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && setEpisodeCardOpen(true)}
         >
-          <rect x="660" y="240" width="110" height="80" rx="5" fill="#2a1c0f" stroke="#3d2b1a" strokeWidth="2" />
-          <rect x="660" y="240" width="110" height="20" rx="5" fill="#3d2b1a" />
-          <rect x="708" y="273" width="14" height="10" rx="2" fill="#5a3e26" />
+          {/* 호버 시 어둠에서 깨어나듯 나무색이 살아난다 */}
+          <rect x="660" y="240" width="110" height="80" rx="5"
+            fill={hoverEp === 'ep2' ? '#6a4526' : '#2a1c0f'}
+            stroke={hoverEp === 'ep2' ? '#8a5a33' : '#3d2b1a'} strokeWidth="2"
+            style={{ transition: 'fill .3s ease, stroke .3s ease' }} />
+          <rect x="660" y="240" width="110" height="20" rx="5"
+            fill={hoverEp === 'ep2' ? '#7a4f2a' : '#3d2b1a'}
+            style={{ transition: 'fill .3s ease' }} />
+          <rect x="708" y="273" width="14" height="10" rx="2"
+            fill={hoverEp === 'ep2' ? '#ffd24a' : '#5a3e26'}
+            style={{ transition: 'fill .3s ease' }} />
         </g>
 
         {/* Center old box (상자) — 프롤로그 시작 전엔 클릭하면 소개 카드 */}
@@ -262,17 +270,25 @@ export default function Attic({ onStartEp2 }: Props) {
           tabIndex={inPrologue && !ep1Started ? 0 : undefined}
           onKeyDown={inPrologue && !ep1Started ? (e) => e.key === 'Enter' && setEp1CardOpen(true) : undefined}
         >
-          {/* Box body */}
-          <rect x="0" y="20" width="120" height="70" rx="4" fill="#5a3620" stroke="#8a5a33" strokeWidth="2" />
+          {/* Box body — 호버 시 나무색이 살아난다 */}
+          <rect x="0" y="20" width="120" height="70" rx="4"
+            fill={hoverEp === 'ep1' ? '#7d4e2c' : '#5a3620'}
+            stroke={hoverEp === 'ep1' ? '#b07a45' : '#8a5a33'} strokeWidth="2"
+            style={{ transition: 'fill .3s ease, stroke .3s ease' }} />
           {/* Lid — open or closed */}
           {boxOpen ? (
             <rect x="0" y="14" width="120" height="14" rx="3" fill="#7a4f2a" stroke="#8a5a33" strokeWidth="2"
               transform="rotate(-35 60 28)" />
           ) : (
-            <rect x="0" y="10" width="120" height="18" rx="3" fill="#7a4f2a" stroke="#8a5a33" strokeWidth="2" />
+            <rect x="0" y="10" width="120" height="18" rx="3"
+              fill={hoverEp === 'ep1' ? '#9c6636' : '#7a4f2a'}
+              stroke={hoverEp === 'ep1' ? '#b07a45' : '#8a5a33'} strokeWidth="2"
+              style={{ transition: 'fill .3s ease, stroke .3s ease' }} />
           )}
           {/* Latch */}
-          <rect x="53" y="22" width="14" height="8" rx="2" fill="#ffd24a" opacity="0.8" />
+          <rect x="53" y="22" width="14" height="8" rx="2" fill="#ffd24a"
+            opacity={hoverEp === 'ep1' ? 1 : 0.8}
+            style={{ transition: 'opacity .3s ease' }} />
           {/* Box label wear lines */}
           <line x1="10" y1="45" x2="110" y2="45" stroke="#3d2214" strokeWidth="1" opacity="0.4" />
           <line x1="10" y1="60" x2="110" y2="60" stroke="#3d2214" strokeWidth="1" opacity="0.4" />
@@ -280,20 +296,32 @@ export default function Attic({ onStartEp2 }: Props) {
 
         {/* 명패: 본편 (가운데 상자 아래) */}
         <g aria-hidden="true">
-          <rect x="332" y="332" width="136" height="34" rx="4" fill="#2a1c0f" stroke="#8a5a33" strokeWidth="1" opacity="0.9" />
-          <text x="400" y="345" textAnchor="middle" fontSize="10" fill="#e8d3a8" style={{ fontWeight: 600 }}>{EPISODE1.title}</text>
-          <text x="400" y="359" textAnchor="middle" fontSize="8" fill="#c9b896">{EPISODE1.genre} · {EPISODE1.playtime}</text>
+          <rect x="332" y="332" width="136" height="34" rx="4" fill="#2a1c0f"
+            stroke={hoverEp === 'ep1' ? '#ffd24a' : '#8a5a33'} strokeWidth="1" opacity="0.9"
+            style={{ transition: 'stroke .3s ease' }} />
+          <text x="400" y="345" textAnchor="middle" fontSize="10"
+            fill={hoverEp === 'ep1' ? '#ffd24a' : '#e8d3a8'}
+            style={{ fontWeight: 600, transition: 'fill .3s ease' }}>{EPISODE1.title}</text>
+          <text x="400" y="359" textAnchor="middle" fontSize="8"
+            fill={hoverEp === 'ep1' ? '#e8d3a8' : '#c9b896'}
+            style={{ transition: 'fill .3s ease' }}>{EPISODE1.genre} · {EPISODE1.playtime}</text>
         </g>
 
         {/* 명패: Episode 2 (궤짝 아래) */}
         <g aria-hidden="true">
-          <rect x="650" y="332" width="130" height="34" rx="4" fill="#2a1c0f" stroke={ep2Completed ? '#ffd24a' : '#5a4a35'} strokeWidth="1" opacity="0.9" />
+          <rect x="650" y="332" width="130" height="34" rx="4" fill="#2a1c0f"
+            stroke={ep2Completed || hoverEp === 'ep2' ? '#ffd24a' : '#5a4a35'} strokeWidth="1" opacity="0.9"
+            style={{ transition: 'stroke .3s ease' }} />
           {ep2Completed ? (
             <text x="715" y="352" textAnchor="middle" fontSize="10" fill="#ffd24a" style={{ fontWeight: 600 }}>{EPISODE2.title} — 완료</text>
           ) : (
             <>
-              <text x="715" y="345" textAnchor="middle" fontSize="10" fill="#c9b896" style={{ fontWeight: 600 }}>{EPISODE2.title}</text>
-              <text x="715" y="359" textAnchor="middle" fontSize="8" fill="#a09070">{EPISODE2.genre} · {EPISODE2.playtime}</text>
+              <text x="715" y="345" textAnchor="middle" fontSize="10"
+                fill={hoverEp === 'ep2' ? '#ffd24a' : '#c9b896'}
+                style={{ fontWeight: 600, transition: 'fill .3s ease' }}>{EPISODE2.title}</text>
+              <text x="715" y="359" textAnchor="middle" fontSize="8"
+                fill={hoverEp === 'ep2' ? '#e8d3a8' : '#a09070'}
+                style={{ transition: 'fill .3s ease' }}>{EPISODE2.genre} · {EPISODE2.playtime}</text>
             </>
           )}
         </g>
