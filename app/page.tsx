@@ -12,6 +12,7 @@ import MemoryScene from '../components/MemoryScene';
 import Room3Store from '../components/scenes/Room3Store';
 import Epilogue from '../components/Epilogue';
 import Ep2Prologue from '../components/scenes/ep2/Ep2Prologue';
+import Sarangbang from '../components/scenes/ep2/Sarangbang';
 import { eraTint, handleWatchUse } from '../components/scenes/ep2/era';
 import { playBgm } from '../lib/audio';
 
@@ -129,6 +130,14 @@ function Ep2InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume:
         <div style={placeholderStyles.box}>
           <p style={placeholderStyles.text}>(에필로그 준비 중)</p>
         </div>
+      </GameShell>
+    );
+  }
+
+  if (state.room === 'sarangbang' && state.phase === 'playing') {
+    return (
+      <GameShell onExitToHub={onExitToHub}>
+        <Sarangbang />
       </GameShell>
     );
   }
