@@ -59,6 +59,7 @@ describe('ep2 v2 full playthrough', () => {
     s = reducer(s, { type: 'SOLVE', puzzleId: 'ep2-column' });
     expect(s.solved).toContain('ep2-column');
     expect(s.inventory).toContain('photo-2');
+    expect(s.inventory).toContain('doc-scribble'); // 영호 필적 표본
 
     s = reducer(s, { type: 'TOGGLE_ERA' });
     expect(s.era).toBe('present');
@@ -85,7 +86,7 @@ describe('ep2 v2 full playthrough', () => {
     expect(s.solved).toContain('ep2-floorboard');
     expect(s.inventory).toContain('doc-diary');
 
-    // contradiction gated until both doc-diary and doc-report held
+    // contradiction gated until doc-diary + doc-report + doc-rumor all held
     expect(canAttempt(s, 'ep2-contradiction')).toBe(false); // doc-report not yet obtained
 
     // ── 헛간과 마당 (early, to obtain doc-report via toolwall) ──
@@ -108,12 +109,17 @@ describe('ep2 v2 full playthrough', () => {
     expect(s.era).toBe('present');
     expect(canAttempt(s, 'ep2-contradiction')).toBe(true);
 
+    // negative: doc-rumor 없이는 시도 불가
+    const withoutRumor: GameState = { ...s, inventory: s.inventory.filter((i) => i !== 'doc-rumor') };
+    expect(canAttempt(withoutRumor, 'ep2-contradiction')).toBe(false);
+
     // negative: wrong contradiction pairing
     let wrongContradiction = reducer(s, { type: 'ATTEMPT', puzzleId: 'ep2-contradiction', answer: 'D4-2|D1-1' });
     expect(wrongContradiction.solved).not.toContain('ep2-contradiction');
     expect(wrongContradiction.lastResult).toBe('wrong');
 
-    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'ep2-contradiction', answer: 'D5-1|D1-1' });
+    // 정답: 조서 "한 사람·맨손"(D5-1) ↔ 벽보 소문 "둘이서·낚시 짐"(D2-2)
+    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'ep2-contradiction', answer: 'D5-1|D2-2' });
     expect(s.solved).toContain('ep2-contradiction');
     expect(s.inventory).toContain('photo-3');
 
@@ -122,7 +128,9 @@ describe('ep2 v2 full playthrough', () => {
     expect(s.solved).toContain('ep2-toolbox');
     expect(s.inventory).toContain('doc-note');
 
-    // handwriting gated until doc-note + doc-letter held
+    // handwriting gated until 표본 3종(doc-note + doc-letter + doc-scribble) held
+    const withoutScribble: GameState = { ...s, inventory: s.inventory.filter((i) => i !== 'doc-scribble') };
+    expect(canAttempt(withoutScribble, 'ep2-handwriting')).toBe(false);
     expect(canAttempt(s, 'ep2-handwriting')).toBe(true);
     let wrongHandwriting = reducer(s, { type: 'ATTEMPT', puzzleId: 'ep2-handwriting', answer: 'youngsu' });
     expect(wrongHandwriting.solved).not.toContain('ep2-handwriting');

@@ -58,14 +58,32 @@ describe('ep2 puzzles data', () => {
     expect(photo.rewardItem).toBe('photo-full');
   });
 
-  it('ep2-contradiction은 doc-diary와 doc-report를 requiresItems로 요구한다', () => {
+  it('ep2-contradiction은 doc-diary·doc-report·doc-rumor를 requiresItems로 요구한다', () => {
     const contradiction = EP2_PUZZLES.find((p) => p.id === 'ep2-contradiction')!;
-    expect(contradiction.requiresItems).toEqual(expect.arrayContaining(['doc-diary', 'doc-report']));
+    expect(contradiction.requiresItems).toEqual(
+      expect.arrayContaining(['doc-diary', 'doc-report', 'doc-rumor']),
+    );
   });
 
-  it('ep2-handwriting은 doc-note와 doc-letter를 requiresItems로 요구한다', () => {
+  it('모순 쌍(D5-1|D2-2)의 근거 문장이 실제 문서 전문에 존재한다', () => {
+    expect(EP2_ITEMS['doc-report'].docPages![0]).toContain('한 사람');
+    expect(EP2_ITEMS['doc-report'].docPages![0]).toContain('맨손');
+    expect(EP2_ITEMS['doc-rumor'].docPages![1]).toContain('두 형제가 함께');
+    expect(EP2_ITEMS['doc-rumor'].docPages![1]).toContain('낚시 짐');
+  });
+
+  it('ep2-handwriting은 필적 표본 3종(doc-note·doc-letter·doc-scribble)을 requiresItems로 요구한다', () => {
     const handwriting = EP2_PUZZLES.find((p) => p.id === 'ep2-handwriting')!;
-    expect(handwriting.requiresItems).toEqual(expect.arrayContaining(['doc-note', 'doc-letter']));
+    expect(handwriting.requiresItems).toEqual(
+      expect.arrayContaining(['doc-note', 'doc-letter', 'doc-scribble']),
+    );
+  });
+
+  it('영호의 필적 표본(doc-scribble)은 ep2-column 보상으로 지급되며 浩 서명을 담는다', () => {
+    const column = EP2_PUZZLES.find((p) => p.id === 'ep2-column')!;
+    expect(column.rewardItems).toEqual(expect.arrayContaining(['photo-2', 'doc-scribble']));
+    expect(EP2_ITEMS['doc-scribble'].doc).toBe(true);
+    expect(EP2_ITEMS['doc-scribble'].docPages![0]).toContain('浩');
   });
 
   it('EP2_CONFIG는 reservoir 방을 ep2-timeline에 매핑하고 저장 키는 memory-box-save-ep2', () => {

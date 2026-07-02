@@ -2,7 +2,7 @@ import { Puzzle, Item } from './types';
 import { EpisodeConfig } from './episode';
 
 // ── 문서 아이템(doc) 답 규약 메모 ──
-// ep2-contradiction의 answer는 'D5-1|D1-2' 형식: "문서id-문장번호|문서id-문장번호"
+// ep2-contradiction의 answer는 'D5-1|D2-2' 형식: "문서번호-문장(페이지)번호|문서번호-문장(페이지)번호"
 // (모순되는 두 문장의 위치를 순서 없이 짝지어 표기. ContradictionPicker가 정규화해 비교한다.)
 // ep2-handwriting의 answer는 'youngho' | 'youngsu' 중 선택.
 // ep2-photo의 answer는 'assembled' (조립 완료 시 자동 제출).
@@ -51,6 +51,7 @@ export const EP2_ITEMS: Record<string, Item> = {
     doc: true,
     docPages: [
       '"고 윤영수 님의 명복을 빕니다." 정식으로 인쇄된 부고 아래, 다른 손으로 휘갈겨 쓴 글씨가 덧붙어 있다. "동생이 그랬다더라." 서명은 없다. 마을 사람들 사이에서 떠돌던 말이 그대로 벽에 옮겨진 것이다.',
+      '"그날 밤 두 형제가 함께 낚시 짐을 지고 저수지로 가는 걸 봤다"는 말도 떠돈다. 본 사람이 누구인지는 아무도 모른다.',
     ],
   },
   'doc-letter': {
@@ -85,6 +86,14 @@ export const EP2_ITEMS: Record<string, Item> = {
     doc: true,
     docPages: [
       '보름달 뜨면 큰 놈이 문다더라. 도구함 열쇠는 늘 두던 곳에 있다. 아버지껜 비밀로 해줘.',
+    ],
+  },
+  'doc-scribble': {
+    id: 'doc-scribble', name: '기둥의 낙서', icon: '✏️',
+    desc: '기둥 아래쪽에 흘려 쓴 낙서를 옮겨 적었다.',
+    doc: true,
+    docPages: [
+      '기둥 눈금 아래, 흘려 쓴 낙서: "빨리 커서 형만큼 큰 놈 잡을 거다 — 浩". 급하고 비스듬하게 기울어진 글씨체다.',
     ],
   },
   'doc-jokbo': {
@@ -182,7 +191,7 @@ export const EP2_PUZZLES: Puzzle[] = [
 
   // ── 안방과 마루 ──
   { id: 'ep2-column', room: 'anbang', era: 'past', requires: [],
-    rewardItem: 'photo-2',
+    rewardItems: ['photo-2', 'doc-scribble'],
     hints: [
       '기둥에 한자로 새겨진 눈금이 있다. 지금은 누가 누군지 알 수 없다.',
       '榮秀 175 / 榮浩 168 / 順伊 152 — 족보에서 이름의 뜻을 확인하면 실마리가 보일 것이다.',
@@ -215,18 +224,18 @@ export const EP2_PUZZLES: Puzzle[] = [
       '동쪽 세 번째 널빤지를 들추면 양철상자가 있다.',
     ] },
 
-  // 모순 찾기: D4(일기)와 D5(조서) 문장을 대조해 서로 어긋나는 한 쌍을 고른다.
-  // D4 문장 인덱스는 1(8/14)·2(8/15)·3(8/16), D5는 단일 문장이라 1.
-  // 정답: D5의 "한 사람이 맨손으로" 진술이, D4가 암시하는 "영호 혼자 돌아왔다"는
-  // 사실과 마을 소문("형제가 함께 있었다")이 어긋난다는 점을 짚어야 하므로
-  // 여기서는 D5-1(조서: 한 사람·맨손)과 D1-1(신문: 다퉜다는 증언 → 함께 있었다는 통념)을 짝짓는다.
+  // 모순 찾기: 확보한 문서들의 문장을 대조해 서로 어긋나는 한 쌍을 고른다.
+  // 문장 번호는 해당 문서 docPages의 페이지(문장) 순번.
+  // 정답 쌍: D5-1 (조서: "한 사람이, 맨손으로 물가로 달려갔다")
+  //        ↔ D2-2 (벽보 소문: "두 형제가 함께 낚시 짐을 지고 저수지로 갔다")
+  // — 인원수(한 명 vs 둘)와 짐(맨손 vs 낚시 짐)이 정면으로 어긋난다.
   { id: 'ep2-contradiction', room: 'anbang', era: 'present',
-    requires: ['ep2-floorboard'], requiresItems: ['doc-diary', 'doc-report'],
-    answer: 'D5-1|D1-1',
+    requires: ['ep2-floorboard'], requiresItems: ['doc-diary', 'doc-report', 'doc-rumor'],
+    answer: 'D5-1|D2-2',
     rewardItem: 'photo-3',
     hints: [
-      '어머니의 일기와 이장의 조서를 나란히 놓고 읽어보자.',
-      '조서는 "물가로 달려간 것은 한 사람, 맨손"이라 한다 — 마을에 떠도는 "다퉜다"는 소문과 나란히 놓으면 앞뒤가 맞지 않는다.',
+      '문서들이 말하는 그날 밤의 광경이 서로 다르다. 사람 수와 손에 든 것을 눈여겨보자.',
+      '조서는 "한 사람이 맨손으로 달려갔다"고 하고, 벽보의 소문은 "둘이서 낚시 짐을 지고 갔다"고 한다 — 이 두 문장은 동시에 참일 수 없다.',
     ] },
 
   // ── 헛간과 마당 ──
@@ -252,11 +261,11 @@ export const EP2_PUZZLES: Puzzle[] = [
     ] },
 
   { id: 'ep2-handwriting', room: 'heotgan',
-    requires: ['ep2-toolbox'], requiresItems: ['doc-note', 'doc-letter'],
+    requires: ['ep2-toolbox'], requiresItems: ['doc-note', 'doc-letter', 'doc-scribble'],
     answer: 'youngho',
     hints: [
       '쪽지의 글씨체를 형과 아우, 둘 중 누구의 것과 비교해볼 수 있을까.',
-      '형의 편지(D3)는 반듯한 정자체, 기둥 낙서는 흘림체다. 쪽지(D6)의 흘려 쓴 글씨는 영호의 것이다.',
+      '세 글씨를 나란히 놓고 보자 — 편지는 반듯한 정자체(영수), 기둥 낙서(浩=영호)는 흘림체. 쪽지는 어느 쪽과 같은가?',
     ] },
 
   { id: 'ep2-watch-lid', room: 'heotgan',
