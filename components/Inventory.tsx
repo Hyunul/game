@@ -1,12 +1,15 @@
 'use client';
+import { useState } from 'react';
 import { useGame } from '../lib/GameContext';
 import { playSfx } from '../lib/audio';
 import { ItemId } from '../lib/types';
+import DocViewer from './DocViewer';
 
 const SLOT_COUNT = 6;
 
 export default function Inventory() {
   const { state, dispatch, episode } = useGame();
+  const [openDocId, setOpenDocId] = useState<string | null>(null);
 
   function handleSlotClick(itemId: ItemId) {
     playSfx('click');
@@ -14,12 +17,28 @@ export default function Inventory() {
     dispatch({ type: 'SELECT_ITEM', itemId: next });
   }
 
+  function handleReadClick() {
+    if (!selectedItem?.doc) return;
+    playSfx('click');
+    setOpenDocId(selectedItem.id);
+  }
+
   const selectedItem = state.selectedItem ? episode.items[state.selectedItem] : null;
+  const openDocItem = openDocId ? episode.items[openDocId] : null;
 
   return (
     <div style={styles.wrapper}>
+      <DocViewer item={openDocItem ?? null} onClose={() => setOpenDocId(null)} />
       {selectedItem && (
-        <div style={styles.desc}>{selectedItem.desc}</div>
+        <div style={styles.desc}>
+          {selectedItem.doc ? (
+            <button style={styles.readBtn} onClick={handleReadClick}>
+              📖 {selectedItem.desc} (읽기)
+            </button>
+          ) : (
+            selectedItem.desc
+          )}
+        </div>
       )}
       <div style={styles.bar}>
         {Array.from({ length: Math.max(SLOT_COUNT, state.inventory.length) }, (_, i) => {
@@ -72,6 +91,16 @@ const styles: Record<string, React.CSSProperties> = {
     fontStyle: 'italic',
     maxWidth: '600px',
     textAlign: 'center',
+  },
+  readBtn: {
+    background: 'none',
+    border: 'none',
+    color: '#e8d3a8',
+    fontSize: '0.8rem',
+    fontStyle: 'italic',
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    padding: 0,
   },
   bar: {
     display: 'flex',
