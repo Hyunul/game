@@ -1,31 +1,17 @@
-/* 클릭 가능 사물: 호버 글로우 + 확대
-   SVG 요소의 scale은 기본적으로 뷰포트 원점 기준이라 요소가 커서 밖으로
-   이탈해 호버가 고속으로 붙었다 떨어지는 플리커를 일으킨다.
-   transform-box: fill-box + origin center로 제자리 확대를 보장한다. */
-.hotspot {
-  cursor: pointer;
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform .15s ease, filter .15s ease;
-  filter: drop-shadow(0 0 0 rgba(255, 200, 90, 0));
-  -webkit-tap-highlight-color: transparent;
-  outline: none;
-}
-.hotspot:hover { transform: scale(1.03); filter: drop-shadow(0 0 6px rgba(255,200,90,.9)); }
-
-/* 살짝 떠오르는 호버 — SVG transform 속성(기울기 등)을 가진 요소에 사용.
-   CSS transform이 SVG transform 속성을 덮어쓰므로, 기울기는 바깥 그룹에
-   두고 이 클래스는 안쪽 그룹에 적용한다. */
+/* 클릭 가능 사물: 호버 시 이동 없이 하이라이트만 (황금빛 글로우 + 살짝 밝게).
+   요소를 움직이면 커서 이탈로 플리커가 생기고 산만하므로 금지. */
+.hotspot,
 .hotspot-lift {
   cursor: pointer;
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform .15s ease, filter .15s ease;
-  filter: drop-shadow(0 0 0 rgba(255, 200, 90, 0));
+  transition: filter .15s ease;
+  filter: brightness(1) drop-shadow(0 0 0 rgba(255, 200, 90, 0));
   -webkit-tap-highlight-color: transparent;
   outline: none;
 }
-.hotspot-lift:hover { transform: translateY(-3px); filter: drop-shadow(0 0 6px rgba(255,200,90,.9)); }
+.hotspot:hover,
+.hotspot-lift:hover {
+  filter: brightness(1.12) drop-shadow(0 0 6px rgba(255, 200, 90, 0.9));
+}
 /* 정답 펄스 (화면 오버레이) */
 @keyframes pulse-warm { from { opacity: .55; } to { opacity: 0; } }
 .pulse-warm { position: fixed; inset: 0; pointer-events: none; z-index: 50;
