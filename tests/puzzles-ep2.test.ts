@@ -65,7 +65,7 @@ describe('ep2 puzzles data', () => {
     );
   });
 
-  it('모순 쌍(D5-1|D2-2)의 근거 문장이 실제 문서 전문에 존재한다', () => {
+  it('모순 쌍(D2-2|D5-1)의 근거 문장이 실제 문서 전문에 존재한다', () => {
     expect(EP2_ITEMS['doc-report'].docPages![0]).toContain('한 사람');
     expect(EP2_ITEMS['doc-report'].docPages![0]).toContain('맨손');
     expect(EP2_ITEMS['doc-rumor'].docPages![1]).toContain('두 형제가 함께');

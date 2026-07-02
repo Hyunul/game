@@ -2,8 +2,9 @@ import { Puzzle, Item } from './types';
 import { EpisodeConfig } from './episode';
 
 // ── 문서 아이템(doc) 답 규약 메모 ──
-// ep2-contradiction의 answer는 'D5-1|D2-2' 형식: "문서번호-문장(페이지)번호|문서번호-문장(페이지)번호"
-// (모순되는 두 문장의 위치를 순서 없이 짝지어 표기. ContradictionPicker가 정규화해 비교한다.)
+// ep2-contradiction의 answer는 'D2-2|D5-1' 형식: "문서번호-문장(페이지)번호|문서번호-문장(페이지)번호"
+// (모순되는 두 문장의 id를 오름차순 정렬해 짝지어 표기. ContradictionPicker가 선택된 두 id를
+// 알파벳순으로 정렬한 뒤 '|'로 이어 제출하므로, 선택 순서와 무관하게 이 정규화된 형태와 비교된다.)
 // ep2-handwriting의 answer는 'youngho' | 'youngsu' 중 선택.
 // ep2-photo의 answer는 'assembled' (조립 완료 시 자동 제출).
 // ep2-timeline의 answer는 카드 7장의 시간 순서 번호를 '-'로 이은 문자열.
@@ -229,9 +230,10 @@ export const EP2_PUZZLES: Puzzle[] = [
   // 정답 쌍: D5-1 (조서: "한 사람이, 맨손으로 물가로 달려갔다")
   //        ↔ D2-2 (벽보 소문: "두 형제가 함께 낚시 짐을 지고 저수지로 갔다")
   // — 인원수(한 명 vs 둘)와 짐(맨손 vs 낚시 짐)이 정면으로 어긋난다.
+  // answer는 두 id를 오름차순 정렬한 형태('D2-2' < 'D5-1') — ContradictionPicker가 동일하게 정규화해 제출한다.
   { id: 'ep2-contradiction', room: 'anbang', era: 'present',
     requires: ['ep2-floorboard'], requiresItems: ['doc-diary', 'doc-report', 'doc-rumor'],
-    answer: 'D5-1|D2-2',
+    answer: 'D2-2|D5-1',
     rewardItem: 'photo-3',
     hints: [
       '문서들이 말하는 그날 밤의 광경이 서로 다르다. 사람 수와 손에 든 것을 눈여겨보자.',

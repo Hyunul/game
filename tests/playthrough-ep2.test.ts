@@ -118,8 +118,8 @@ describe('ep2 v2 full playthrough', () => {
     expect(wrongContradiction.solved).not.toContain('ep2-contradiction');
     expect(wrongContradiction.lastResult).toBe('wrong');
 
-    // 정답: 조서 "한 사람·맨손"(D5-1) ↔ 벽보 소문 "둘이서·낚시 짐"(D2-2)
-    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'ep2-contradiction', answer: 'D5-1|D2-2' });
+    // 정답: 조서 "한 사람·맨손"(D5-1) ↔ 벽보 소문 "둘이서·낚시 짐"(D2-2) — id 오름차순 정렬
+    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'ep2-contradiction', answer: 'D2-2|D5-1' });
     expect(s.solved).toContain('ep2-contradiction');
     expect(s.inventory).toContain('photo-3');
 

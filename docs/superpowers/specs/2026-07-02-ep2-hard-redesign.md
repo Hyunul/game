@@ -99,7 +99,7 @@
 
 ## 7. 데이터 모델 확장
 
-- Puzzle에 `answer` 외 선택형/조립형은 answer 문자열 규약: contradiction 'D5-1|D2-2'식(문서번호-문장번호 쌍), handwriting 'youngho', photo 'assembled', timeline '1-2-3-6-4-5-7'
+- Puzzle에 `answer` 외 선택형/조립형은 answer 문자열 규약: contradiction 'D2-2|D5-1'식(문서번호-문장번호 쌍, id 오름차순 정렬), handwriting 'youngho', photo 'assembled', timeline '1-2-3-6-4-5-7'
 - 문서 아이템은 `doc: true` + `docPages: string[]` (episode items 확장)
 - 진행 게이트: night-gate는 requires [ep2-photo, ep2-handwriting, ep2-contradiction, ep2-lantern]
 
