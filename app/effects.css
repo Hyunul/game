@@ -12,6 +12,20 @@
   outline: none;
 }
 .hotspot:hover { transform: scale(1.03); filter: drop-shadow(0 0 6px rgba(255,200,90,.9)); }
+
+/* 살짝 떠오르는 호버 — SVG transform 속성(기울기 등)을 가진 요소에 사용.
+   CSS transform이 SVG transform 속성을 덮어쓰므로, 기울기는 바깥 그룹에
+   두고 이 클래스는 안쪽 그룹에 적용한다. */
+.hotspot-lift {
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform .15s ease, filter .15s ease;
+  filter: drop-shadow(0 0 0 rgba(255, 200, 90, 0));
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+.hotspot-lift:hover { transform: translateY(-3px); filter: drop-shadow(0 0 6px rgba(255,200,90,.9)); }
 /* 정답 펄스 (화면 오버레이) */
 @keyframes pulse-warm { from { opacity: .55; } to { opacity: 0; } }
 .pulse-warm { position: fixed; inset: 0; pointer-events: none; z-index: 50;

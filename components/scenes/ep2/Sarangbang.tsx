@@ -254,19 +254,22 @@ export default function Sarangbang() {
         </g>
 
         {/* ── 가훈 액자 ── */}
-        <g
-          className="hotspot"
-          style={{ cursor: 'pointer' }}
-          onClick={(e) => { e.stopPropagation(); guard('frame', handleFrame); }}
-          role="button"
-          aria-label="가훈 액자"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && handleFrame()}
-          transform={!isPast && !frameSolved ? 'rotate(-8 470 90)' : undefined}
-        >
-          <rect x="430" y="60" width="80" height="60" rx="2" fill="#5a3810" stroke="#3a2408" strokeWidth="2" />
-          <rect x="438" y="68" width="64" height="44" rx="1" fill="#f0e4c8" />
-          <text x="470" y="96" textAnchor="middle" fontSize="14" fill="#3a2810" fontWeight="700">兄友弟恭</text>
+        {/* 기울기는 바깥 그룹(SVG transform), 호버 리프트는 안쪽 그룹(CSS) —
+            CSS transform이 SVG transform 속성을 덮어써 기울기가 풀리는 것 방지 */}
+        <g transform={!isPast && !frameSolved ? 'rotate(-8 470 90)' : undefined}>
+          <g
+            className="hotspot-lift"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => { e.stopPropagation(); guard('frame', handleFrame); }}
+            role="button"
+            aria-label="가훈 액자"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && handleFrame()}
+          >
+            <rect x="430" y="60" width="80" height="60" rx="2" fill="#5a3810" stroke="#3a2408" strokeWidth="2" />
+            <rect x="438" y="68" width="64" height="44" rx="1" fill="#f0e4c8" />
+            <text x="470" y="96" textAnchor="middle" fontSize="14" fill="#3a2810" fontWeight="700">兄友弟恭</text>
+          </g>
         </g>
 
         {/* ── 라디오 ── */}

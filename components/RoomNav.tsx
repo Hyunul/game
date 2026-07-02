@@ -36,7 +36,7 @@ export default function RoomNav({ targets, onGo }: Props) {
 const styles: Record<string, React.CSSProperties> = {
   btn: {
     position: 'absolute',
-    bottom: '12px',
+    top: '12px',
     zIndex: 20,
     minHeight: '40px',
     padding: '8px 14px',
