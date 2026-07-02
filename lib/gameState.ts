@@ -90,7 +90,7 @@ export function createGameReducer(config: EpisodeConfig) {
       }
       case 'MEMORY_DONE': return { ...s, phase: 'playing', room: config.hubRoom };
       case 'TOGGLE_ERA': return { ...s, era: s.era === 'past' ? 'present' : 'past', lastResult: null };
-      case 'RESET': return { ...initialState, phase: 'prologue' };
+      case 'RESET': return { ...initialState, room: config.hubRoom, phase: 'prologue' };
       default: return s;
     }
   };
