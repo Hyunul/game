@@ -22,6 +22,11 @@ export default function Sarangbang() {
   } | null>(null);
   const [shake, setShake] = useState(false);
   const navGuard = useRef(false);
+  const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (navTimer.current !== null) clearTimeout(navTimer.current);
+  }, []);
 
   const prevLastResult = useRef<typeof lastResult>(null);
 
@@ -141,7 +146,7 @@ export default function Sarangbang() {
     navGuard.current = true;
     fx.roomTransition();
     playSfx('door');
-    setTimeout(() => {
+    navTimer.current = setTimeout(() => {
       dispatch({ type: 'ENTER_ROOM', room });
       navGuard.current = false;
     }, 600);
@@ -289,6 +294,9 @@ export default function Sarangbang() {
           <text x="47" y="232" textAnchor="middle" fontSize="9" fill="#e8d3a8" opacity="0.8">마당으로</text>
         </g>
       </svg>
+
+      {/* Era 색조 오버레이 */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundColor: eraTint(era) }} />
 
       {/* ── 달력 확대 오버레이 ── */}
       {calendarOpen && isPast && (
