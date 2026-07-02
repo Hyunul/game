@@ -11,6 +11,9 @@ import Room2Class from '../components/scenes/Room2Class';
 import MemoryScene from '../components/MemoryScene';
 import Room3Store from '../components/scenes/Room3Store';
 import Epilogue from '../components/Epilogue';
+import Ep2Prologue from '../components/scenes/ep2/Ep2Prologue';
+import { eraTint, handleWatchUse } from '../components/scenes/ep2/era';
+import { playBgm } from '../lib/audio';
 
 function TitleScreen() {
   const { dispatch } = useGame();
@@ -116,6 +119,10 @@ function Ep2InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume:
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  if (state.phase === 'prologue') {
+    return <Ep2Prologue />;
+  }
+
   if (state.phase === 'epilogue') {
     return (
       <GameShell onExitToHub={onExitToHub}>
@@ -128,12 +135,39 @@ function Ep2InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume:
 
   return (
     <GameShell onExitToHub={onExitToHub}>
+      <Ep2PlayingPlaceholder />
+    </GameShell>
+  );
+}
+
+function Ep2PlayingPlaceholder() {
+  const { state, dispatch } = useGame();
+
+  useEffect(() => {
+    playBgm(state.era === 'past' ? 'ep2-past' : 'ep2-present');
+  }, [state.era]);
+
+  function handleClick() {
+    handleWatchUse(state, dispatch);
+  }
+
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }} onClick={handleClick}>
       <div style={placeholderStyles.box}>
         <p style={placeholderStyles.text}>
           (EP2 장면 준비 중 — {state.room} / {state.era})
         </p>
       </div>
-    </GameShell>
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: eraTint(state.era),
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
   );
 }
 
