@@ -30,3 +30,15 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* 장면 SVG 텍스트가 드래그/더블클릭으로 선택되어 파랗게 하이라이트되는 것 방지 */
+svg text {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 모바일 탭 시 회색 하이라이트 박스 제거 */
+button,
+[role='button'] {
+  -webkit-tap-highlight-color: transparent;
+}

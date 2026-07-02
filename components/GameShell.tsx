@@ -154,10 +154,10 @@ const styles: Record<string, React.CSSProperties> = {
   sceneWrapper: {
     flex: 1,
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'center',
     overflowX: 'auto',
-    padding: '16px 0 80px',
+    padding: '16px 12px 96px',
   },
   scene: {
     width: '100%',
@@ -166,5 +166,9 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'relative',
     backgroundColor: '#100c08',
     flexShrink: 0,
+    borderRadius: '12px',
+    border: '1px solid rgba(232,211,168,0.12)',
+    boxShadow: '0 12px 40px rgba(0,0,0,0.45)',
+    overflow: 'hidden',
   },
 };

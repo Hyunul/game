@@ -223,6 +223,27 @@ export default function Anbang() {
 
         {/* 방 floor */}
         <rect x="0" y="280" width="450" height="120" fill={isPast ? '#b89058' : '#6e675e'} />
+        {/* 장판 결 */}
+        <line x1="0" y1="320" x2="450" y2="318" stroke={isPast ? '#a37c48' : '#5e574f'} strokeWidth="1" opacity="0.6" />
+        <line x1="0" y1="360" x2="450" y2="356" stroke={isPast ? '#a37c48' : '#5e574f'} strokeWidth="1" opacity="0.5" />
+
+        {/* 벽 몰딩 */}
+        <line x1="0" y1="30" x2="800" y2="30" stroke={isPast ? '#c8a878' : '#7d7468'} strokeWidth="3" opacity="0.6" />
+
+        {/* 창문 (오른쪽 위, 장식) */}
+        <g aria-hidden="true">
+          <rect x="560" y="55" width="110" height="85" rx="2" fill={isPast ? '#f7ecd0' : '#7d7468'} stroke="#7a6040" strokeWidth="2" />
+          <line x1="615" y1="55" x2="615" y2="140" stroke="#7a6040" strokeWidth="2" />
+          <line x1="560" y1="97" x2="670" y2="97" stroke="#7a6040" strokeWidth="2" />
+          {isPast && <rect x="562" y="57" width="106" height="81" fill="#ffe9a8" opacity="0.35" />}
+        </g>
+
+        {/* 이불장 위 이불 (장식) */}
+        <g aria-hidden="true">
+          <rect x="452" y="196" width="130" height="84" rx="3" fill={isPast ? '#8b5e3c' : '#5e4a38'} stroke="#3a2810" strokeWidth="1.5" />
+          <rect x="460" y="176" width="114" height="14" rx="6" fill={isPast ? '#c87878' : '#7d5f5a'} />
+          <rect x="464" y="162" width="106" height="14" rx="6" fill={isPast ? '#7898c8' : '#5f6a7d'} />
+        </g>
 
         {/* Present-only dust/cobweb decoration */}
         {!isPast && (
@@ -301,7 +322,7 @@ export default function Anbang() {
           {isPast && !sewingboxSolved && (
             <>
               <rect x="290" y="170" width="60" height="30" rx="4" fill="#c85858" stroke="#7a3030" strokeWidth="1.5" />
-              <text x="320" y="163" textAnchor="middle" fontSize="7" fill="#4a2810">단추 네 개</text>
+              <text x="320" y="163" textAnchor="middle" fontSize="7" fill="#4a2810">반짇고리</text>
             </>
           )}
           {isPast && sewingboxSolved && (
@@ -389,7 +410,8 @@ export default function Anbang() {
           onKeyDown={(e) => e.key === 'Enter' && goRoom('sarangbang')}
         >
           <rect x="20" y="240" width="55" height="60" rx="2" fill={isPast ? '#6a5030' : '#4a3c2c'} stroke="#3a2810" strokeWidth="2" />
-          <text x="47" y="232" textAnchor="middle" fontSize="9" fill="#e8d3a8" opacity="0.8">사랑방으로</text>
+          <rect x="12" y="218" width="70" height="18" rx="3" fill="#3a2810" opacity="0.85" />
+          <text x="47" y="231" textAnchor="middle" fontSize="9" fill="#e8d3a8">사랑방으로</text>
         </g>
 
         {/* ── 문: 마당으로(헛간) ── */}
@@ -403,7 +425,8 @@ export default function Anbang() {
           onKeyDown={(e) => e.key === 'Enter' && goRoom('heotgan')}
         >
           <rect x="730" y="330" width="60" height="60" rx="2" fill={isPast ? '#7a5030' : '#5a4632'} stroke="#3a2810" strokeWidth="2" />
-          <text x="760" y="322" textAnchor="middle" fontSize="9" fill="#e8d3a8" opacity="0.8">마당으로</text>
+          <rect x="726" y="308" width="68" height="18" rx="3" fill="#3a2810" opacity="0.85" />
+          <text x="760" y="321" textAnchor="middle" fontSize="9" fill="#e8d3a8">마당으로</text>
         </g>
       </svg>
 

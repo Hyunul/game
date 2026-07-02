@@ -176,6 +176,24 @@ export default function Sarangbang() {
         {/* Floor */}
         <rect x="0" y="320" width="800" height="80" fill={isPast ? '#b89058' : '#6e675e'} />
         <line x1="0" y1="320" x2="800" y2="320" stroke={isPast ? '#8a6838' : '#4a453f'} strokeWidth="2" />
+        {/* 장판 결 */}
+        <line x1="0" y1="352" x2="800" y2="350" stroke={isPast ? '#a37c48' : '#5e574f'} strokeWidth="1" opacity="0.6" />
+        <line x1="0" y1="382" x2="800" y2="378" stroke={isPast ? '#a37c48' : '#5e574f'} strokeWidth="1" opacity="0.5" />
+
+        {/* 창문 (위쪽 벽, 장식) */}
+        <g aria-hidden="true">
+          <rect x="600" y="40" width="90" height="70" rx="2" fill={isPast ? '#f7ecd0' : '#7d7468'} stroke="#7a6040" strokeWidth="2" />
+          <line x1="645" y1="40" x2="645" y2="110" stroke="#7a6040" strokeWidth="2" />
+          <line x1="600" y1="75" x2="690" y2="75" stroke="#7a6040" strokeWidth="2" />
+          {isPast && <rect x="602" y="42" width="86" height="66" fill="#ffe9a8" opacity="0.35" />}
+        </g>
+
+        {/* 벽 몰딩 */}
+        <line x1="0" y1="30" x2="800" y2="30" stroke={isPast ? '#c8a878' : '#7d7468'} strokeWidth="3" opacity="0.6" />
+
+        {/* 방석 (바닥 장식) */}
+        <ellipse cx="450" cy="345" rx="42" ry="12" fill={isPast ? '#b06060' : '#6e5450'} opacity={isPast ? 0.9 : 0.5} />
+        <ellipse cx="450" cy="342" rx="42" ry="12" fill={isPast ? '#c87878' : '#7d5f5a'} opacity={isPast ? 0.9 : 0.5} />
 
         {/* Present-only dust/cobweb decoration */}
         {!isPast && (
@@ -277,7 +295,14 @@ export default function Sarangbang() {
           onKeyDown={(e) => e.key === 'Enter' && goRoom('anbang')}
         >
           <rect x="730" y="120" width="60" height="180" rx="2" fill={isPast ? '#7a5030' : '#5a4632'} stroke="#3a2810" strokeWidth="2" />
-          <text x="760" y="110" textAnchor="middle" fontSize="9" fill="#e8d3a8" opacity="0.8">안방으로</text>
+          {/* 문살 */}
+          <line x1="740" y1="135" x2="780" y2="135" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
+          <line x1="740" y1="205" x2="780" y2="205" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
+          <line x1="740" y1="275" x2="780" y2="275" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
+          <circle cx="738" cy="212" r="3" fill="#c8a050" />
+          {/* 명패 */}
+          <rect x="726" y="96" width="68" height="18" rx="3" fill="#3a2810" opacity="0.85" />
+          <text x="760" y="109" textAnchor="middle" fontSize="9" fill="#e8d3a8">안방으로</text>
         </g>
 
         {/* ── 문: 마당으로 ── */}
@@ -291,7 +316,11 @@ export default function Sarangbang() {
           onKeyDown={(e) => e.key === 'Enter' && goRoom('heotgan')}
         >
           <rect x="20" y="240" width="55" height="60" rx="2" fill={isPast ? '#6a5030' : '#4a3c2c'} stroke="#3a2810" strokeWidth="2" />
-          <text x="47" y="232" textAnchor="middle" fontSize="9" fill="#e8d3a8" opacity="0.8">마당으로</text>
+          <line x1="28" y1="252" x2="67" y2="252" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
+          <line x1="28" y1="285" x2="67" y2="285" stroke="#3a2810" strokeWidth="1" opacity="0.5" />
+          {/* 명패 */}
+          <rect x="15" y="218" width="65" height="18" rx="3" fill="#3a2810" opacity="0.85" />
+          <text x="47" y="231" textAnchor="middle" fontSize="9" fill="#e8d3a8">마당으로</text>
         </g>
       </svg>
 

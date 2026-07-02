@@ -213,8 +213,57 @@ export default function Heotgan() {
           </>
         )}
 
+        {/* 해/구름 (과거 낮, 밤 이벤트 전) */}
+        {isPast && !nightEvent && (
+          <g aria-hidden="true">
+            <circle cx="110" cy="65" r="30" fill="#ffd24a" opacity="0.85" />
+            <ellipse cx="300" cy="60" rx="46" ry="14" fill="#ffffff" opacity="0.75" />
+            <ellipse cx="335" cy="52" rx="30" ry="11" fill="#ffffff" opacity="0.7" />
+            <ellipse cx="620" cy="95" rx="38" ry="12" fill="#ffffff" opacity="0.6" />
+          </g>
+        )}
+
         {/* Yard ground */}
         <rect x="0" y="300" width="800" height="100" fill={nightEvent ? '#1c2438' : isPast ? '#8ba85c' : '#6e675e'} />
+        {/* 마당 디테일: 흙길, 풀 포기 */}
+        <ellipse cx="400" cy="360" rx="220" ry="26" fill={nightEvent ? '#252c42' : isPast ? '#b0925c' : '#7a705f'} opacity="0.7" />
+        {!nightEvent && [90, 180, 640, 730].map((x, i) => (
+          <path key={`grass-${i}`} d={`M ${x} 316 q 3 -12 6 0 q 3 -10 6 0 q 3 -12 6 0`} fill="none"
+            stroke={isPast ? '#6f8c44' : '#5a544c'} strokeWidth="2" strokeLinecap="round" />
+        ))}
+
+        {/* 담장 (뒤편, 장식) */}
+        <g aria-hidden="true">
+          <rect x="0" y="230" width="330" height="70" fill={nightEvent ? '#2a2438' : isPast ? '#c8b088' : '#7d7468'} stroke="#7a6040" strokeWidth="1.5" />
+          <line x1="0" y1="252" x2="330" y2="252" stroke="#7a6040" strokeWidth="1" opacity="0.5" />
+          <line x1="0" y1="276" x2="330" y2="276" stroke="#7a6040" strokeWidth="1" opacity="0.5" />
+          {[55, 130, 205, 280].map((x) => (
+            <line key={`fpost-${x}`} x1={x} y1="230" x2={x} y2="300" stroke="#7a6040" strokeWidth="1.5" opacity="0.5" />
+          ))}
+          {/* 기와 */}
+          <rect x="-6" y="220" width="342" height="12" rx="4" fill={nightEvent ? '#1a1626' : '#5a4632'} />
+        </g>
+
+        {/* 나무 (장식) */}
+        <g aria-hidden="true">
+          <rect x="368" y="200" width="16" height="100" rx="4" fill={nightEvent ? '#241c30' : '#6a4a2a'} />
+          <ellipse cx="376" cy="170" rx="52" ry="44" fill={nightEvent ? '#1c2438' : isPast ? '#7aa050' : '#6a6458'} />
+          <ellipse cx="345" cy="195" rx="30" ry="24" fill={nightEvent ? '#202a44' : isPast ? '#86ac5c' : '#726c60'} />
+        </g>
+
+        {/* ── 헛간 건물 (문 주변 몸체 + 지붕) ── */}
+        <g aria-hidden="true">
+          <rect x="460" y="130" width="330" height="170" fill={nightEvent ? '#241e34' : isPast ? '#9a7648' : '#5e5448'} stroke="#3a2810" strokeWidth="2" />
+          {/* 벽 판자 결 */}
+          {[492, 660, 724].map((x) => (
+            <line key={`shedplank-${x}`} x1={x} y1="132" x2={x} y2="298" stroke="#3a2810" strokeWidth="1" opacity="0.35" />
+          ))}
+          {/* 지붕 */}
+          <polygon points="445,132 805,132 775,88 475,88" fill={nightEvent ? '#181426' : '#5a4632'} stroke="#3a2810" strokeWidth="2" />
+          {/* 작은 창 */}
+          <rect x="690" y="170" width="56" height="44" rx="2" fill={nightEvent ? '#101426' : isPast ? '#5a4632' : '#3f382f'} stroke="#3a2810" strokeWidth="1.5" />
+          <line x1="718" y1="170" x2="718" y2="214" stroke="#3a2810" strokeWidth="1.5" />
+        </g>
 
         {/* ── 헛간 문 ── */}
         <g
@@ -253,17 +302,24 @@ export default function Heotgan() {
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && handleToolwall()}
               >
-                <rect x="510" y="150" width="100" height="60" fill="#3a2c1c" opacity="0.6" />
-                {/* 흰 윤곽선 5개 (낫, 삽, 낚싯대x2, 양동이) */}
-                <text x="520" y="163" fontSize="7" fill="#e8e0c8" opacity="0.7">낫</text>
-                <text x="540" y="163" fontSize="7" fill="#e8e0c8" opacity="0.7">삽</text>
-                <text x="560" y="163" fontSize="7" fill="#e8e0c8" opacity="0.7">낚싯대</text>
-                <text x="585" y="163" fontSize="7" fill="#e8e0c8" opacity="0.7">낚싯대</text>
-                <text x="520" y="200" fontSize="7" fill="#e8e0c8" opacity="0.7">양동이</text>
-                {/* 실제 걸린 도구 3개만 (낫, 삽, 낚싯대1) — 낚싯대2/양동이 자리 빔 */}
-                <circle cx="524" cy="170" r="5" fill="#8a8a70" />
-                <circle cx="544" cy="170" r="5" fill="#8a8a70" />
-                <line x1="562" y1="168" x2="562" y2="185" stroke="#8a6838" strokeWidth="2" />
+                <rect x="504" y="146" width="112" height="100" fill="#3a2c1c" opacity="0.75" />
+                {/* 흰 윤곽선 5개 — 걸려 있어야 할 도구 자리 */}
+                {/* 낫 윤곽 */}
+                <path d="M 516 158 q 10 -8 16 2 M 524 160 l 0 26" fill="none" stroke="#e8e0c8" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.8" />
+                {/* 삽 윤곽 */}
+                <path d="M 546 156 l 0 22 M 541 178 h 10 l -2 12 h -6 z" fill="none" stroke="#e8e0c8" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.8" />
+                {/* 낚싯대 윤곽 x2 */}
+                <line x1="566" y1="152" x2="572" y2="238" stroke="#e8e0c8" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.8" />
+                <line x1="584" y1="152" x2="590" y2="238" stroke="#e8e0c8" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.8" />
+                {/* 양동이 윤곽 */}
+                <path d="M 598 216 h 16 l -3 18 h -10 z M 598 216 q 8 -8 16 0" fill="none" stroke="#e8e0c8" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.8" />
+                {/* 실제 걸린 도구 3개 (낫, 삽, 낚싯대1) — 낚싯대2·양동이 자리만 빔 */}
+                <path d="M 516 158 q 10 -8 16 2" fill="none" stroke="#9a9a80" strokeWidth="3" strokeLinecap="round" />
+                <line x1="524" y1="160" x2="524" y2="186" stroke="#8a6838" strokeWidth="3" strokeLinecap="round" />
+                <line x1="546" y1="156" x2="546" y2="178" stroke="#8a6838" strokeWidth="3" strokeLinecap="round" />
+                <path d="M 541 178 h 10 l -2 12 h -6 z" fill="#9a9a80" stroke="#6a6a50" strokeWidth="1" />
+                <line x1="566" y1="152" x2="572" y2="238" stroke="#8a6838" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="572" y1="238" x2="576" y2="228" stroke="#c8c8b0" strokeWidth="0.8" />
               </g>
             )}
 
@@ -330,7 +386,8 @@ export default function Heotgan() {
             onKeyDown={(e) => e.key === 'Enter' && goRoom('anbang')}
           >
             <rect x="20" y="240" width="55" height="60" rx="2" fill={isPast ? '#6a5030' : '#4a3c2c'} stroke="#3a2810" strokeWidth="2" />
-            <text x="47" y="232" textAnchor="middle" fontSize="9" fill="#e8d3a8" opacity="0.8">안방으로</text>
+            <rect x="15" y="218" width="65" height="18" rx="3" fill="#3a2810" opacity="0.85" />
+            <text x="47" y="231" textAnchor="middle" fontSize="9" fill="#e8d3a8">안방으로</text>
           </g>
         )}
       </svg>

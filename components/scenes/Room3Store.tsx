@@ -164,16 +164,16 @@ export default function Room3Store() {
         aria-label="학교 앞 문방구 장면"
       >
         {/* ── Background ── */}
-        <rect width="800" height="400" fill="#3b1f0a" />
-        {/* Floor */}
-        <rect x="0" y="300" width="800" height="100" fill="#5c2e0a" />
-        <line x1="0" y1="300" x2="800" y2="300" stroke="#7a4010" strokeWidth="2" />
+        <rect width="800" height="400" fill="#6a3b16" />
         {/* Wall planks */}
         {Array.from({ length: 6 }).map((_, i) => (
-          <rect key={`plank-${i}`} x="0" y={i * 55} width="800" height="54" fill={i % 2 === 0 ? '#3b1f0a' : '#441f08'} />
+          <rect key={`plank-${i}`} x="0" y={i * 55} width="800" height="54" fill={i % 2 === 0 ? '#6a3b16' : '#73401a'} />
         ))}
+        {/* Floor */}
+        <rect x="0" y="300" width="800" height="100" fill="#8a5628" />
+        <line x1="0" y1="300" x2="800" y2="300" stroke="#a06a30" strokeWidth="2" />
         {/* Ceiling shelf strip */}
-        <rect x="0" y="0" width="800" height="14" fill="#2a1008" />
+        <rect x="0" y="0" width="800" height="14" fill="#4a2810" />
 
         {/* ── 진열대 (snack shelf) + 쪽지 ── */}
         <g
@@ -207,6 +207,19 @@ export default function Room3Store() {
           <text x="114" y="138" textAnchor="middle" fontSize="7" fill="#fff">250</text>
           <rect x="152" y="118" width="24" height="28" rx="3" fill="#e91e8c" />
           <text x="164" y="138" textAnchor="middle" fontSize="7" fill="#fff">30</text>
+
+          {/* Row 3: 장식 소품 — 딱지 묶음과 구슬 (판매용 아님) */}
+          <rect x="52" y="182" width="30" height="26" rx="2" fill="#5a9ad0" stroke="#3a6a98" strokeWidth="1" />
+          <rect x="56" y="178" width="30" height="26" rx="2" fill="#d05a5a" stroke="#983a3a" strokeWidth="1" />
+          <text x="71" y="196" textAnchor="middle" fontSize="7" fill="#fff">딱지</text>
+          {[
+            { cx: 120, cy: 204, fill: '#7ec8e3' }, { cx: 133, cy: 200, fill: '#f5b461' },
+            { cx: 146, cy: 205, fill: '#9fd89f' }, { cx: 128, cy: 210, fill: '#e08fc0' },
+          ].map((m, i) => (
+            <circle key={`marble-${i}`} cx={m.cx} cy={m.cy} r="6" fill={m.fill} stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
+          ))}
+          <rect x="200" y="178" width="70" height="30" rx="3" fill="#c8b06a" stroke="#a08840" strokeWidth="1" />
+          <text x="235" y="197" textAnchor="middle" fontSize="8" fill="#5a4210">종합선물</text>
 
           {/* Snack labels row 1 */}
           <text x="63"  y="58" textAnchor="middle" fontSize="7" fill="#f9c74f">아폴로</text>
@@ -316,7 +329,9 @@ export default function Room3Store() {
           {/* Base */}
           <rect x="590" y="210" width="130" height="90" rx="6" fill="#2a1a50" stroke="#6040a0" strokeWidth="2" />
           {/* Globe */}
-          <circle cx="655" cy="175" r="60" fill="#d0f0ff" fillOpacity="0.15" stroke="#6040a0" strokeWidth="2" />
+          <circle cx="655" cy="175" r="60" fill="#d0f0ff" fillOpacity="0.28" stroke="#8060c0" strokeWidth="2.5" />
+          {/* Glass highlight */}
+          <path d="M 615 145 A 52 52 0 0 1 655 123" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="4" strokeLinecap="round" />
           {/* Capsules inside globe */}
           {[
             { cx: 640, cy: 165, fill: finalSolved ? '#ffd700' : '#ff6b6b' },
@@ -344,10 +359,6 @@ export default function Room3Store() {
           <text x="655" y="295" textAnchor="middle" fontSize="9" fill="#a080e0">뽑기 기계</text>
         </g>
 
-        {/* ── Scene label ── */}
-        <text x="400" y="390" textAnchor="middle" fontSize="9" fill="#7a4010" opacity="0.5">
-          학교 앞 문방구
-        </text>
       </svg>
 
       {/* ── Snack shelf overlay ── */}

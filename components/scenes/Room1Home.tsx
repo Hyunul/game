@@ -393,7 +393,6 @@ export default function Room1Home() {
             <line x1="215" y1="310" x2="215" y2="340" stroke="#c8a060" strokeWidth="4" strokeLinecap="round" />
             {/* Hand tip */}
             <ellipse cx="200" cy="288" rx="6" ry="4" fill="#c8a060" transform="rotate(-20 200 288)" />
-            <text x="208" y="280" fontSize="9" fill="#886040" opacity="0.8">효자손</text>
           </g>
         )}
 
