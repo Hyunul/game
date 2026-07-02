@@ -13,6 +13,7 @@ import Room3Store from '../components/scenes/Room3Store';
 import Epilogue from '../components/Epilogue';
 import Ep2Prologue from '../components/scenes/ep2/Ep2Prologue';
 import Sarangbang from '../components/scenes/ep2/Sarangbang';
+import Anbang from '../components/scenes/ep2/Anbang';
 import { eraTint, handleWatchUse } from '../components/scenes/ep2/era';
 import { playBgm } from '../lib/audio';
 
@@ -138,6 +139,14 @@ function Ep2InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume:
     return (
       <GameShell onExitToHub={onExitToHub}>
         <Sarangbang />
+      </GameShell>
+    );
+  }
+
+  if (state.room === 'anbang' && state.phase === 'playing') {
+    return (
+      <GameShell onExitToHub={onExitToHub}>
+        <Anbang />
       </GameShell>
     );
   }
