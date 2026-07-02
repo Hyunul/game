@@ -47,9 +47,12 @@ export default function Attic({ onStartEp2 }: Props) {
   const [disabledMsg, setDisabledMsg] = useState(false);
   const [episodeCardOpen, setEpisodeCardOpen] = useState(false);
   const [ep2SaveExists, setEp2SaveExists] = useState(false);
+  const [ep2Completed, setEp2Completed] = useState(false);
 
   useEffect(() => {
-    setEp2SaveExists(loadGame(EP2_SAVE_KEY) !== null);
+    const save = loadGame(EP2_SAVE_KEY);
+    setEp2SaveExists(save !== null);
+    setEp2Completed(save?.phase === 'epilogue');
   }, [episodeCardOpen]);
 
   const transitioningRef = useRef(false);
@@ -232,9 +235,15 @@ export default function Attic({ onStartEp2 }: Props) {
 
         {/* 명패: Episode 2 (궤짝 아래) */}
         <g aria-hidden="true">
-          <rect x="650" y="332" width="130" height="34" rx="4" fill="#2a1c0f" stroke="#5a4a35" strokeWidth="1" opacity="0.9" />
-          <text x="715" y="345" textAnchor="middle" fontSize="10" fill="#c9b896" style={{ fontWeight: 600 }}>{EPISODE2.title}</text>
-          <text x="715" y="359" textAnchor="middle" fontSize="8" fill="#a09070">{EPISODE2.genre} · {EPISODE2.playtime}</text>
+          <rect x="650" y="332" width="130" height="34" rx="4" fill="#2a1c0f" stroke={ep2Completed ? '#ffd24a' : '#5a4a35'} strokeWidth="1" opacity="0.9" />
+          {ep2Completed ? (
+            <text x="715" y="352" textAnchor="middle" fontSize="10" fill="#ffd24a" style={{ fontWeight: 600 }}>{EPISODE2.title} — 완료</text>
+          ) : (
+            <>
+              <text x="715" y="345" textAnchor="middle" fontSize="10" fill="#c9b896" style={{ fontWeight: 600 }}>{EPISODE2.title}</text>
+              <text x="715" y="359" textAnchor="middle" fontSize="8" fill="#a09070">{EPISODE2.genre} · {EPISODE2.playtime}</text>
+            </>
+          )}
         </g>
 
         {/* Objects inside/around box when open */}
@@ -307,7 +316,7 @@ export default function Attic({ onStartEp2 }: Props) {
                     onStartEp2?.(true);
                   }}
                 >
-                  이어하기
+                  {ep2Completed ? '다시 보기' : '이어하기'}
                 </button>
               )}
             </div>

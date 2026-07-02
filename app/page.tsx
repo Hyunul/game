@@ -15,6 +15,8 @@ import Ep2Prologue from '../components/scenes/ep2/Ep2Prologue';
 import Sarangbang from '../components/scenes/ep2/Sarangbang';
 import Anbang from '../components/scenes/ep2/Anbang';
 import Heotgan from '../components/scenes/ep2/Heotgan';
+import Reservoir from '../components/scenes/ep2/Reservoir';
+import Ep2Epilogue from '../components/scenes/ep2/Ep2Epilogue';
 import { eraTint, handleWatchUse } from '../components/scenes/ep2/era';
 import { playBgm } from '../lib/audio';
 
@@ -127,13 +129,7 @@ function Ep2InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume:
   }
 
   if (state.phase === 'epilogue') {
-    return (
-      <GameShell onExitToHub={onExitToHub}>
-        <div style={placeholderStyles.box}>
-          <p style={placeholderStyles.text}>(에필로그 준비 중)</p>
-        </div>
-      </GameShell>
-    );
+    return <Ep2Epilogue onExitToHub={onExitToHub} />;
   }
 
   if (state.room === 'sarangbang' && state.phase === 'playing') {
@@ -156,6 +152,14 @@ function Ep2InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume:
     return (
       <GameShell onExitToHub={onExitToHub}>
         <Heotgan />
+      </GameShell>
+    );
+  }
+
+  if (state.room === 'reservoir' && state.phase === 'playing') {
+    return (
+      <GameShell onExitToHub={onExitToHub}>
+        <Reservoir />
       </GameShell>
     );
   }
