@@ -70,6 +70,7 @@ export default function Heotgan() {
 
   // ── 헛간 문 ──
   function handleShedDoor() {
+    if (nightEvent) return;
     if (handleWatchUse(state, dispatch)) return;
     if (solved.includes('ep2-shed-door')) {
       say(era === 'past' ? '열린 헛간 문. 안이 보인다.' : '반쯤 무너진 헛간 문.');
@@ -90,6 +91,7 @@ export default function Heotgan() {
 
   // ── 도구 걸이 ──
   function handleToolwall() {
+    if (nightEvent) return;
     if (handleWatchUse(state, dispatch)) return;
     if (solved.includes('ep2-toolwall')) {
       say('빈 자리 두 곳 — 그날 밤 가져간 것들.');
@@ -106,6 +108,7 @@ export default function Heotgan() {
 
   // ── 도구함 ──
   function handleToolbox() {
+    if (nightEvent) return;
     if (handleWatchUse(state, dispatch)) return;
     if (solved.includes('ep2-toolbox')) {
       say('빈 도구함이다.');
@@ -122,6 +125,7 @@ export default function Heotgan() {
 
   // ── 작업대(회중시계 뚜껑) ──
   function handleWorkbench() {
+    if (nightEvent) return;
     if (handleWatchUse(state, dispatch)) return;
     if (solved.includes('ep2-watch-lid')) {
       say('시계는 이미 제 이야기를 들려주었다.');
@@ -138,6 +142,7 @@ export default function Heotgan() {
 
   // ── 랜턴 ──
   function handleLantern() {
+    if (nightEvent) return;
     if (handleWatchUse(state, dispatch)) return;
     if (solved.includes('ep2-lantern')) {
       say('따뜻하게 타오르는 랜턴.');
