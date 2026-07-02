@@ -71,7 +71,7 @@ function applySolve(config: EpisodeConfig, s: GameState, puzzleId: string): Game
 export function createGameReducer(config: EpisodeConfig) {
   return function reducer(s: GameState, a: Action): GameState {
     switch (a.type) {
-      case 'START': return a.resume ?? { ...initialState, phase: 'prologue' };
+      case 'START': return a.resume ?? { ...initialState, room: config.hubRoom, phase: 'prologue' };
       case 'ENTER_ROOM': return { ...s, room: a.room, phase: 'playing', lastResult: null };
       case 'PICKUP':
         return s.inventory.includes(a.itemId) ? s : { ...s, inventory: [...s.inventory, a.itemId] };
