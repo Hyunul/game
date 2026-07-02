@@ -1,0 +1,61 @@
+import { Puzzle, Item } from './types';
+import { EpisodeConfig } from './episode';
+
+export const EP2_ITEMS: Record<string, Item> = {
+  'family-photo':  { id: 'family-photo', name: '흑백 가족사진', icon: '🖼️', desc: '큰집 마당. 네 식구가 웃고 있다. 뒷면: "무진년 여름"' },
+  'news-clip':     { id: 'news-clip', name: '신문 스크랩', icon: '📰', desc: '1978.8.16. "15일 밤 저수지에서 청년 익사… 타살 의혹". 뒷면은 라디오 편성표: 저녁종합뉴스 711kHz' },
+  'pocket-watch':  { id: 'pocket-watch', name: '멈춘 회중시계', icon: '⌚', desc: '11시 40분에 멈춰 있다. 태엽을 감으면… (사용: 시점 전환)' },
+  'empty-envelope':{ id: 'empty-envelope', name: '빈 편지봉투', icon: '✉️', desc: '"아버지께". 본문이 없다 — 어딘가에 숨겨져 있을 것이다.' },
+  'matches':       { id: 'matches', name: '성냥갑', icon: '🔥', desc: '다방 성냥. 아직 쓸 수 있다.' },
+  'oil-bottle':    { id: 'oil-bottle', name: '호롱 기름병', icon: '🛢️', desc: '등잔용 기름. 굳은 경첩에도 쓸 수 있겠다.' },
+  'brass-key':     { id: 'brass-key', name: '놋쇠 열쇠', icon: '🗝️', desc: '반짇고리에 있던 열쇠. 헛간 자물쇠 크기다.' },
+  'ev-letter':     { id: 'ev-letter', name: '형의 편지', icon: '📜', desc: '진실 조각 ① — "동생을 탓하지 마세요. 그 아이 잘못이 아닙니다."' },
+  'ev-note':       { id: 'ev-note', name: '동생의 쪽지', icon: '📄', desc: '진실 조각 ② — "8월 15일 보름, 밤낚시. 형한테는 비밀."' },
+  'ev-gear':       { id: 'ev-gear', name: '장비의 정황', icon: '🎣', desc: '진실 조각 ③ — 낚싯대 1개와 양동이만 비어 있다. 간 사람은 한 명.' },
+  'ev-watch':      { id: 'ev-watch', name: '시계의 증언', icon: '🕰️', desc: '진실 조각 ④ — 물때, 11:40, 새김 "아우와 함께 — 아버지가".' },
+  'ev-diary':      { id: 'ev-diary', name: '어머니의 일기', icon: '📖', desc: '진실 조각 ⑤ — "16일 새벽. 막내가 젖어 돌아왔다. 아무에게도 말하지 않았다."' },
+};
+
+export const EP2_PUZZLES: Puzzle[] = [
+  { id: 'ep2-calendar',   room: 'sarangbang', era: 'past',    requires: [],
+    hints: ['벽에 걸린 것을 살펴보자.', '달력 8월 15일에 동그라미 — 아버지의 경고 메모.'] },
+  { id: 'ep2-drawer',     room: 'sarangbang', era: 'present', requires: ['ep2-calendar'], answer: '0815', rewardItem: 'empty-envelope',
+    hints: ['서랍 위 손글씨 "잊지 말자" — 무엇을?', '신문 기사와 달력이 가리키는 날짜, 0815.'] },
+  { id: 'ep2-frame',      room: 'sarangbang', era: 'present', requires: ['ep2-drawer'], rewardItem: 'ev-letter',
+    hints: ['과거와 현재, 액자의 모습이 다르다.', '기울어진 가훈 액자를 들춰보자.'] },
+  { id: 'ep2-radio',      room: 'sarangbang', era: 'past',    requires: [], answer: '711', rewardItem: 'matches',
+    hints: ['라디오 주파수를 어디서 알 수 있을까.', '신문 스크랩 뒷면 — 편성표에 711kHz.'] },
+  { id: 'ep2-column',     room: 'anbang',     era: 'past',    requires: [],
+    hints: ['기둥에 아이들의 흔적이 있다.', '키재기 눈금: 큰애 175, 막내 168.'] },
+  { id: 'ep2-closet',     room: 'anbang',     era: 'present', requires: ['ep2-column'], answer: '175', rewardItem: 'oil-bottle',
+    hints: ['자물쇠의 태그: "네가 자란 만큼".', '과거 기둥의 형의 키 — 175.'] },
+  { id: 'ep2-sewingbox',  room: 'anbang',     era: 'past',    requires: ['ep2-closet'], answer: 'R-Y-B-Y', rewardItem: 'brass-key',
+    hints: ['단추 잠금 — 어머니의 물건에 순서가 새겨져 있다.', '벽장 방석의 자수 꽃 색: 빨강-노랑-파랑-노랑.'] },
+  { id: 'ep2-floor-creak',room: 'anbang',     era: 'past',    requires: [],
+    hints: ['마루를 걸어보자.', '동쪽 세 번째 널만 삐걱이고, 틈새가 반짝인다.'] },
+  { id: 'ep2-floorboard', room: 'anbang',     era: 'present', requires: ['ep2-floor-creak'], rewardItem: 'ev-diary',
+    hints: ['과거에 삐걱이던 그 자리.', '낡아 헐거워진 널빤지를 들추자.'] },
+  { id: 'ep2-shed-door',  room: 'heotgan',    era: 'past',    requires: [], requiresItem: 'brass-key',
+    hints: ['헛간이 잠겨 있다.', '시골집 열쇠는 어머니의 반짇고리에.'] },
+  { id: 'ep2-toolwall',   room: 'heotgan',    era: 'past',    requires: ['ep2-shed-door'], rewardItem: 'ev-gear',
+    hints: ['벽의 흰 윤곽선과 걸린 도구를 비교해보자.', '낚싯대 하나와 양동이만 없다 — 간 사람은 한 명.'] },
+  { id: 'ep2-toolbox',    room: 'heotgan',    era: 'present', requires: [], rewardItem: 'ev-note',
+    hints: ['녹슨 도구함 — 자물쇠가 부서져 있다.', '안에 삭은 쪽지가 남아 있다.'] },
+  { id: 'ep2-watch-lid',  room: 'heotgan',    requires: ['ep2-closet'], requiresItem: 'oil-bottle', rewardItem: 'ev-watch',
+    hints: ['회중시계 뚜껑이 굳어 열리지 않는다.', '경첩에 기름을 쳐보자.'] },
+  { id: 'ep2-lantern',    room: 'heotgan',    era: 'past',    requires: ['ep2-radio', 'ep2-shed-door'], requiresItem: 'oil-bottle',
+    hints: ['밤길에는 불이 필요하다.', '랜턴에 기름을 채우고 성냥으로 켜자.'] },
+  { id: 'ep2-timeline',   room: 'reservoir',  era: 'past',    requires: ['ep2-frame', 'ep2-toolbox', 'ep2-toolwall', 'ep2-watch-lid', 'ep2-floorboard', 'ep2-lantern'],
+    answer: '1-2-3-4-5',
+    hints: ['다섯 조각을 시간 순서대로.', '다툼 → 몰래 출발 → 형이 뒤따름 → 11:40 구조 → 새벽 귀가.'] },
+];
+
+export const EP2_CONFIG: EpisodeConfig = {
+  id: 'ep2',
+  saveKey: 'memory-box-save-ep2',
+  puzzles: EP2_PUZZLES,
+  items: EP2_ITEMS,
+  finalPuzzles: { reservoir: 'ep2-timeline' },
+  epilogueAt: 1,
+  hubRoom: 'ep2-attic',
+};
