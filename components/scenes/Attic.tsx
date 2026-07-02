@@ -5,7 +5,6 @@ import { playSfx, playBgm } from '../../lib/audio';
 import { fx } from '../../lib/effects';
 import Narration from '../Narration';
 import { RoomId } from '../../lib/types';
-import { loadGame, clearSave } from '../../lib/save';
 
 const PROLOGUE_LINES = [
   '이삿짐을 정리하다, 다락에서 낡은 상자를 발견했다.',
@@ -23,28 +22,7 @@ const REQUIRES: Record<RoomId, RoomId | null> = {
   home: null, class: 'home', store: 'class', attic: null,
 };
 
-// 에피소드 허브 명패 정보
-const EPISODE1 = {
-  title: '「기억의 상자」',
-  genre: '감성 방탈출',
-  playtime: '20~30분',
-  desc: '어른이 된 당신에게, 그 시절의 기억을. 낡은 상자 속 물건들이 어릴 적 세 공간으로 데려다준다.',
-};
-
-const EPISODE2 = {
-  title: '「궤짝 속 여름」',
-  genre: '추리 방탈출',
-  playtime: '약 1시간',
-  desc: '오래된 사건의 진실을 쫓는 미스터리. 낡은 궤짝 속 단서들이 그날 밤의 이야기를 조용히 들려준다.',
-};
-
-const EP2_SAVE_KEY = 'memory-box-save-ep2';
-
-interface Props {
-  onStartEp2?: (resume: boolean) => void;
-}
-
-export default function Attic({ onStartEp2 }: Props) {
+export default function Attic() {
   const { state, dispatch } = useGame();
   const { phase, room, memoryShards } = state;
 
@@ -52,18 +30,6 @@ export default function Attic({ onStartEp2 }: Props) {
   const [boxOpen, setBoxOpen] = useState(false);
   const [returnShown, setReturnShown] = useState(false);
   const [disabledMsg, setDisabledMsg] = useState(false);
-  const [episodeCardOpen, setEpisodeCardOpen] = useState(false);
-  const [ep1CardOpen, setEp1CardOpen] = useState(false);
-  const [ep1Started, setEp1Started] = useState(false);
-  const [ep2SaveExists, setEp2SaveExists] = useState(false);
-  const [ep2Completed, setEp2Completed] = useState(false);
-  const [hoverEp, setHoverEp] = useState<'ep1' | 'ep2' | null>(null);
-
-  useEffect(() => {
-    const save = loadGame(EP2_SAVE_KEY);
-    setEp2SaveExists(save !== null);
-    setEp2Completed(save?.phase === 'epilogue');
-  }, [episodeCardOpen]);
 
   const transitioningRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -87,8 +53,6 @@ export default function Attic({ onStartEp2 }: Props) {
       setBoxOpen(false);
       setReturnShown(false);
       setDisabledMsg(false);
-      setEp1Started(false);
-      setEp1CardOpen(false);
       transitioningRef.current = false;
     }
   }, [phase]);
@@ -133,8 +97,7 @@ export default function Attic({ onStartEp2 }: Props) {
     }, 600);
   }
 
-  // ep1 프롤로그 내레이션은 소개 카드에서 '상자를 연다'를 누른 뒤에 시작
-  const narrationText = inPrologue && ep1Started
+  const narrationText = inPrologue
     ? PROLOGUE_LINES[prologueLine]
     : disabledMsg
     ? '아직은 손이 가지 않는다…'
@@ -180,38 +143,12 @@ export default function Attic({ onStartEp2 }: Props) {
         <line x1="400" y1="26" x2="400" y2="70" stroke="#5a3e26" strokeWidth="2" />
         <line x1="378" y1="48" x2="422" y2="48" stroke="#5a3e26" strokeWidth="2" />
 
-        {/* Light beam from window — 호버한 에피소드 쪽으로 빛이 옮겨간다 */}
-        <polygon
-          points="385,68 415,68 500,200 300,200"
-          fill="url(#lightBeam)"
-          opacity={hoverEp === null ? 0.18 : 0.06}
-          style={{ transition: 'opacity .3s ease' }}
-        />
-        <polygon
-          points="385,68 415,68 495,255 305,255"
-          fill="url(#lightBeamLong)"
-          opacity={hoverEp === 'ep1' ? 0.26 : 0}
-          style={{ transition: 'opacity .3s ease' }}
-        />
-        <polygon
-          points="385,68 415,68 800,255 645,255"
-          fill="url(#lightBeamLong)"
-          opacity={hoverEp === 'ep2' ? 0.26 : 0}
-          style={{ transition: 'opacity .3s ease' }}
-        />
-        {/* 호버 대상 아래 은은한 빛 웅덩이 */}
-        <ellipse cx="400" cy="300" rx="95" ry="34" fill="#ffd24a"
-          opacity={hoverEp === 'ep1' ? 0.1 : 0} style={{ transition: 'opacity .3s ease' }} />
-        <ellipse cx="715" cy="292" rx="85" ry="32" fill="#ffd24a"
-          opacity={hoverEp === 'ep2' ? 0.1 : 0} style={{ transition: 'opacity .3s ease' }} />
+        {/* Light beam from window */}
+        <polygon points="385,68 415,68 500,200 300,200" fill="url(#lightBeam)" opacity="0.18" />
         <defs>
           <linearGradient id="lightBeam" x1="400" y1="68" x2="400" y2="200" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#ffd24a" stopOpacity="0.9" />
             <stop offset="100%" stopColor="#ffd24a" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="lightBeamLong" x1="400" y1="68" x2="400" y2="265" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#ffd24a" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#ffd24a" stopOpacity="0.05" />
           </linearGradient>
         </defs>
 
@@ -232,98 +169,29 @@ export default function Attic({ onStartEp2 }: Props) {
         <circle cx="69" cy="262" r="4" fill="#5a3e26" />
         <circle cx="81" cy="262" r="4" fill="#5a3e26" />
 
-        {/* Right: old chest — Episode 2 입구 (준비 중, 클릭 시 소개 카드) */}
-        <g
-          className="hotspot"
-          style={{ cursor: 'pointer' }}
-          onClick={() => { playSfx('click'); setEpisodeCardOpen(true); }}
-          onMouseEnter={() => setHoverEp('ep2')}
-          onMouseLeave={() => setHoverEp(null)}
-          role="button"
-          aria-label="낡은 궤짝"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && setEpisodeCardOpen(true)}
-        >
-          {/* 호버 시 어둠에서 깨어나듯 나무색이 살아난다 */}
-          <rect x="660" y="240" width="110" height="80" rx="5"
-            fill={hoverEp === 'ep2' ? '#6a4526' : '#2a1c0f'}
-            stroke={hoverEp === 'ep2' ? '#8a5a33' : '#3d2b1a'} strokeWidth="2"
-            style={{ transition: 'fill .3s ease, stroke .3s ease' }} />
-          <rect x="660" y="240" width="110" height="20" rx="5"
-            fill={hoverEp === 'ep2' ? '#7a4f2a' : '#3d2b1a'}
-            style={{ transition: 'fill .3s ease' }} />
-          <rect x="708" y="273" width="14" height="10" rx="2"
-            fill={hoverEp === 'ep2' ? '#ffd24a' : '#5a3e26'}
-            style={{ transition: 'fill .3s ease' }} />
+        {/* Right: old chest (장식 — 에피소드 선택은 허브 화면에서) */}
+        <g aria-hidden="true">
+          <rect x="660" y="240" width="110" height="80" rx="5" fill="#2a1c0f" stroke="#3d2b1a" strokeWidth="2" />
+          <rect x="660" y="240" width="110" height="20" rx="5" fill="#3d2b1a" />
+          <rect x="708" y="273" width="14" height="10" rx="2" fill="#5a3e26" />
         </g>
 
-        {/* Center old box (상자) — 프롤로그 시작 전엔 클릭하면 소개 카드 */}
-        <g
-          transform="translate(340, 230)"
-          className={inPrologue && !ep1Started ? 'hotspot' : undefined}
-          style={inPrologue && !ep1Started ? { cursor: 'pointer' } : undefined}
-          onClick={inPrologue && !ep1Started ? () => { playSfx('click'); setEp1CardOpen(true); } : undefined}
-          onMouseEnter={inPrologue && !ep1Started ? () => setHoverEp('ep1') : undefined}
-          onMouseLeave={inPrologue && !ep1Started ? () => setHoverEp(null) : undefined}
-          role={inPrologue && !ep1Started ? 'button' : undefined}
-          aria-label={inPrologue && !ep1Started ? '낡은 상자' : undefined}
-          tabIndex={inPrologue && !ep1Started ? 0 : undefined}
-          onKeyDown={inPrologue && !ep1Started ? (e) => e.key === 'Enter' && setEp1CardOpen(true) : undefined}
-        >
-          {/* Box body — 호버 시 나무색이 살아난다 */}
-          <rect x="0" y="20" width="120" height="70" rx="4"
-            fill={hoverEp === 'ep1' ? '#7d4e2c' : '#5a3620'}
-            stroke={hoverEp === 'ep1' ? '#b07a45' : '#8a5a33'} strokeWidth="2"
-            style={{ transition: 'fill .3s ease, stroke .3s ease' }} />
+        {/* Center old box (상자) */}
+        <g transform="translate(340, 230)">
+          {/* Box body */}
+          <rect x="0" y="20" width="120" height="70" rx="4" fill="#5a3620" stroke="#8a5a33" strokeWidth="2" />
           {/* Lid — open or closed */}
           {boxOpen ? (
             <rect x="0" y="14" width="120" height="14" rx="3" fill="#7a4f2a" stroke="#8a5a33" strokeWidth="2"
               transform="rotate(-35 60 28)" />
           ) : (
-            <rect x="0" y="10" width="120" height="18" rx="3"
-              fill={hoverEp === 'ep1' ? '#9c6636' : '#7a4f2a'}
-              stroke={hoverEp === 'ep1' ? '#b07a45' : '#8a5a33'} strokeWidth="2"
-              style={{ transition: 'fill .3s ease, stroke .3s ease' }} />
+            <rect x="0" y="10" width="120" height="18" rx="3" fill="#7a4f2a" stroke="#8a5a33" strokeWidth="2" />
           )}
           {/* Latch */}
-          <rect x="53" y="22" width="14" height="8" rx="2" fill="#ffd24a"
-            opacity={hoverEp === 'ep1' ? 1 : 0.8}
-            style={{ transition: 'opacity .3s ease' }} />
+          <rect x="53" y="22" width="14" height="8" rx="2" fill="#ffd24a" opacity="0.8" />
           {/* Box label wear lines */}
           <line x1="10" y1="45" x2="110" y2="45" stroke="#3d2214" strokeWidth="1" opacity="0.4" />
           <line x1="10" y1="60" x2="110" y2="60" stroke="#3d2214" strokeWidth="1" opacity="0.4" />
-        </g>
-
-        {/* 명패: 본편 (가운데 상자 아래) */}
-        <g aria-hidden="true">
-          <rect x="332" y="332" width="136" height="34" rx="4" fill="#2a1c0f"
-            stroke={hoverEp === 'ep1' ? '#ffd24a' : '#8a5a33'} strokeWidth="1" opacity="0.9"
-            style={{ transition: 'stroke .3s ease' }} />
-          <text x="400" y="345" textAnchor="middle" fontSize="10"
-            fill={hoverEp === 'ep1' ? '#ffd24a' : '#e8d3a8'}
-            style={{ fontWeight: 600, transition: 'fill .3s ease' }}>{EPISODE1.title}</text>
-          <text x="400" y="359" textAnchor="middle" fontSize="8"
-            fill={hoverEp === 'ep1' ? '#e8d3a8' : '#c9b896'}
-            style={{ transition: 'fill .3s ease' }}>{EPISODE1.genre} · {EPISODE1.playtime}</text>
-        </g>
-
-        {/* 명패: Episode 2 (궤짝 아래) */}
-        <g aria-hidden="true">
-          <rect x="650" y="332" width="130" height="34" rx="4" fill="#2a1c0f"
-            stroke={ep2Completed || hoverEp === 'ep2' ? '#ffd24a' : '#5a4a35'} strokeWidth="1" opacity="0.9"
-            style={{ transition: 'stroke .3s ease' }} />
-          {ep2Completed ? (
-            <text x="715" y="352" textAnchor="middle" fontSize="10" fill="#ffd24a" style={{ fontWeight: 600 }}>{EPISODE2.title} — 완료</text>
-          ) : (
-            <>
-              <text x="715" y="345" textAnchor="middle" fontSize="10"
-                fill={hoverEp === 'ep2' ? '#ffd24a' : '#c9b896'}
-                style={{ fontWeight: 600, transition: 'fill .3s ease' }}>{EPISODE2.title}</text>
-              <text x="715" y="359" textAnchor="middle" fontSize="8"
-                fill={hoverEp === 'ep2' ? '#e8d3a8' : '#a09070'}
-                style={{ transition: 'fill .3s ease' }}>{EPISODE2.genre} · {EPISODE2.playtime}</text>
-            </>
-          )}
         </g>
 
         {/* Objects inside/around box when open */}
@@ -367,149 +235,6 @@ export default function Attic({ onStartEp2 }: Props) {
       </svg>
 
       <Narration text={narrationText} onDone={handleNarrationDone} />
-
-      {/* Episode 1 소개 카드 */}
-      {ep1CardOpen && (
-        <div style={cardStyles.overlay} onClick={() => setEp1CardOpen(false)}>
-          <div style={cardStyles.card} onClick={(e) => e.stopPropagation()}>
-            <h3 style={cardStyles.title}>{EPISODE1.title}</h3>
-            <p style={cardStyles.meta}>
-              {EPISODE1.genre} · 예상 플레이타임 {EPISODE1.playtime}
-            </p>
-            <p style={cardStyles.desc}>{EPISODE1.desc}</p>
-            <div style={cardStyles.buttons}>
-              <button
-                style={cardStyles.startBtn}
-                onClick={() => {
-                  playSfx('click');
-                  setEp1CardOpen(false);
-                  setEp1Started(true);
-                }}
-              >
-                상자를 연다
-              </button>
-            </div>
-            <button style={cardStyles.close} onClick={() => setEp1CardOpen(false)}>
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Episode 2 소개 카드 */}
-      {episodeCardOpen && (
-        <div style={cardStyles.overlay} onClick={() => setEpisodeCardOpen(false)}>
-          <div style={cardStyles.card} onClick={(e) => e.stopPropagation()}>
-            <h3 style={cardStyles.title}>{EPISODE2.title}</h3>
-            <p style={cardStyles.meta}>
-              {EPISODE2.genre} · 예상 플레이타임 {EPISODE2.playtime}
-            </p>
-            <p style={cardStyles.desc}>{EPISODE2.desc}</p>
-            <div style={cardStyles.buttons}>
-              <button
-                style={cardStyles.startBtn}
-                onClick={() => {
-                  playSfx('click');
-                  clearSave(EP2_SAVE_KEY);
-                  onStartEp2?.(false);
-                }}
-              >
-                처음부터 시작
-              </button>
-              {ep2SaveExists && (
-                <button
-                  style={cardStyles.resumeBtn}
-                  onClick={() => {
-                    playSfx('click');
-                    onStartEp2?.(true);
-                  }}
-                >
-                  {ep2Completed ? '다시 보기' : '이어하기'}
-                </button>
-              )}
-            </div>
-            <button style={cardStyles.close} onClick={() => setEpisodeCardOpen(false)}>
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
-
-const cardStyles: Record<string, React.CSSProperties> = {
-  overlay: {
-    position: 'absolute',
-    inset: 0,
-    backgroundColor: 'rgba(10,7,4,0.7)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 80,
-  },
-  card: {
-    backgroundColor: '#2e1f10',
-    border: '1px solid #8a5a33',
-    borderRadius: '10px',
-    padding: '22px 26px',
-    maxWidth: '340px',
-    margin: '0 16px',
-    textAlign: 'center',
-    color: '#e8d3a8',
-    boxShadow: '0 8px 30px rgba(0,0,0,0.6)',
-  },
-  title: {
-    margin: '0 0 6px',
-    fontSize: '1.15rem',
-    color: '#ffd24a',
-  },
-  meta: {
-    margin: '0 0 12px',
-    fontSize: '0.85rem',
-    color: '#c9b896',
-  },
-  desc: {
-    margin: '0 0 14px',
-    fontSize: '0.85rem',
-    lineHeight: 1.6,
-  },
-  buttons: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-    marginBottom: '14px',
-  },
-  startBtn: {
-    minHeight: '44px',
-    padding: '10px 20px',
-    backgroundColor: '#7a4f1e',
-    color: '#e8d3a8',
-    border: '1px solid rgba(232,211,168,0.4)',
-    borderRadius: '8px',
-    fontSize: '0.9rem',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-  resumeBtn: {
-    minHeight: '44px',
-    padding: '10px 20px',
-    backgroundColor: 'transparent',
-    color: '#e8d3a8',
-    border: '1px solid rgba(232,211,168,0.4)',
-    borderRadius: '8px',
-    fontSize: '0.9rem',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-  close: {
-    minHeight: '44px',
-    padding: '8px 28px',
-    backgroundColor: '#5a3620',
-    color: '#e8d3a8',
-    border: '1px solid #8a5a33',
-    borderRadius: '8px',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-  },
-};

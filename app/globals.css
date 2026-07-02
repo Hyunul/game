@@ -42,3 +42,24 @@ button,
 [role='button'] {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* 에피소드 선택 카드 — 호버 시 이동 없이 금테 + 밝기 하이라이트 */
+.ep-card {
+  transition: border-color 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease;
+}
+.ep-card:hover {
+  border-color: rgba(255, 210, 74, 0.6) !important;
+  filter: brightness(1.07);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 210, 74, 0.12);
+}
+.ep-primary-btn,
+.ep-ghost-btn {
+  transition: filter 0.15s ease, border-color 0.15s ease;
+}
+.ep-primary-btn:hover {
+  filter: brightness(1.15);
+}
+.ep-ghost-btn:hover {
+  border-color: rgba(255, 210, 74, 0.5) !important;
+  filter: brightness(1.15);
+}

@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { GameProvider, useGame } from '../lib/GameContext';
-import { loadGame, clearSave } from '../lib/save';
-import { GameState } from '../lib/gameState';
+import { loadGame } from '../lib/save';
 import { EP2_CONFIG } from '../lib/puzzles-ep2';
+import Hub, { EpisodeKey } from '../components/Hub';
 import GameShell from '../components/GameShell';
 import Attic from '../components/scenes/Attic';
 import Room1Home from '../components/scenes/Room1Home';
@@ -20,49 +20,24 @@ import Ep2Epilogue from '../components/scenes/ep2/Ep2Epilogue';
 import { eraTint, handleWatchUse } from '../components/scenes/ep2/era';
 import { playBgm } from '../lib/audio';
 
-function TitleScreen() {
-  const { dispatch } = useGame();
-  const [savedGame, setSavedGame] = useState<GameState | null>(null);
+function Ep1InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume: boolean }) {
+  const { state, dispatch } = useGame();
+  const startedRef = useRef(false);
 
   useEffect(() => {
-    setSavedGame(loadGame());
+    if (startedRef.current) return;
+    startedRef.current = true;
+    if (resume) {
+      const saved = loadGame();
+      dispatch({ type: 'START', resume: saved ?? undefined });
+    } else {
+      dispatch({ type: 'START' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function handleNewGame() {
-    clearSave();
-    dispatch({ type: 'START' });
-  }
-
-  function handleResume() {
-    if (!savedGame) return;
-    dispatch({ type: 'START', resume: savedGame });
-  }
-
-  return (
-    <div style={titleStyles.page}>
-      <div style={titleStyles.card}>
-        <h1 style={titleStyles.title}>기억의 상자</h1>
-        <p style={titleStyles.subtitle}>어른이 된 당신에게, 그 시절의 기억을</p>
-        <div style={titleStyles.buttons}>
-          <button style={titleStyles.btn} onClick={handleNewGame}>
-            처음부터
-          </button>
-          {savedGame && (
-            <button style={{ ...titleStyles.btn, ...titleStyles.btnSecondary }} onClick={handleResume}>
-              이어하기
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Ep1InnerApp({ onStartEp2 }: { onStartEp2: (resume: boolean) => void }) {
-  const { state } = useGame();
-
   if (state.phase === 'title') {
-    return <TitleScreen />;
+    return null; // START 디스패치 직전 한 프레임
   }
 
   if (state.phase === 'memory') {
@@ -74,23 +49,23 @@ function Ep1InnerApp({ onStartEp2 }: { onStartEp2: (resume: boolean) => void }) 
   }
 
   if (state.room === 'attic' && (state.phase === 'prologue' || state.phase === 'playing')) {
-    return <GameShell><Attic onStartEp2={onStartEp2} /></GameShell>;
+    return <GameShell onExitToHub={onExitToHub}><Attic /></GameShell>;
   }
 
   if (state.room === 'home' && state.phase === 'playing') {
-    return <GameShell><Room1Home /></GameShell>;
+    return <GameShell onExitToHub={onExitToHub}><Room1Home /></GameShell>;
   }
 
   if (state.room === 'class' && state.phase === 'playing') {
-    return <GameShell><Room2Class /></GameShell>;
+    return <GameShell onExitToHub={onExitToHub}><Room2Class /></GameShell>;
   }
 
   if (state.room === 'store' && state.phase === 'playing') {
-    return <GameShell><Room3Store /></GameShell>;
+    return <GameShell onExitToHub={onExitToHub}><Room3Store /></GameShell>;
   }
 
   return (
-    <GameShell>
+    <GameShell onExitToHub={onExitToHub}>
       <div style={placeholderStyles.box}>
         <p style={placeholderStyles.text}>
           (장면 준비 중 — Room: {state.room}, Phase: {state.phase})
@@ -100,10 +75,10 @@ function Ep1InnerApp({ onStartEp2 }: { onStartEp2: (resume: boolean) => void }) 
   );
 }
 
-function Ep1App({ onStartEp2 }: { onStartEp2: (resume: boolean) => void }) {
+function Ep1App({ onExitToHub, resume }: { onExitToHub: () => void; resume: boolean }) {
   return (
     <GameProvider>
-      <Ep1InnerApp onStartEp2={onStartEp2} />
+      <Ep1InnerApp onExitToHub={onExitToHub} resume={resume} />
     </GameProvider>
   );
 }
@@ -211,74 +186,28 @@ function Ep2App({ onExitToHub, resume }: { onExitToHub: () => void; resume: bool
 }
 
 export default function Home() {
-  const [activeEpisode, setActiveEpisode] = useState<'ep1' | 'ep2'>('ep1');
-  const [ep2Resume, setEp2Resume] = useState(false);
+  const [screen, setScreen] = useState<'hub' | EpisodeKey>('hub');
+  const [resume, setResume] = useState(false);
 
-  function handleStartEp2(resume: boolean) {
-    setEp2Resume(resume);
-    setActiveEpisode('ep2');
+  function handleSelect(ep: EpisodeKey, res: boolean) {
+    setResume(res);
+    setScreen(ep);
   }
 
   function handleExitToHub() {
-    setActiveEpisode('ep1');
+    setScreen('hub');
   }
 
-  if (activeEpisode === 'ep2') {
-    return <Ep2App onExitToHub={handleExitToHub} resume={ep2Resume} />;
+  if (screen === 'ep1') {
+    return <Ep1App onExitToHub={handleExitToHub} resume={resume} />;
   }
 
-  return <Ep1App onStartEp2={handleStartEp2} />;
+  if (screen === 'ep2') {
+    return <Ep2App onExitToHub={handleExitToHub} resume={resume} />;
+  }
+
+  return <Hub onSelect={handleSelect} />;
 }
-
-const titleStyles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    backgroundColor: '#1a1410',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  card: {
-    textAlign: 'center',
-    color: '#e8d3a8',
-    padding: '40px 32px',
-  },
-  title: {
-    fontSize: 'clamp(2.4rem, 6vw, 4rem)',
-    fontFamily: '"Georgia", "Batang", serif',
-    fontWeight: 700,
-    letterSpacing: '0.1em',
-    marginBottom: '16px',
-  },
-  subtitle: {
-    fontSize: '1rem',
-    opacity: 0.7,
-    marginBottom: '48px',
-    fontStyle: 'italic',
-  },
-  buttons: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '14px',
-    alignItems: 'center',
-  },
-  btn: {
-    padding: '14px 48px',
-    fontSize: '1rem',
-    fontWeight: 600,
-    backgroundColor: '#7a4f1e',
-    color: '#e8d3a8',
-    border: '1px solid rgba(232,211,168,0.4)',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    minWidth: '200px',
-    letterSpacing: '0.05em',
-  },
-  btnSecondary: {
-    backgroundColor: 'transparent',
-    border: '1px solid rgba(232,211,168,0.4)',
-  },
-};
 
 const placeholderStyles: Record<string, React.CSSProperties> = {
   box: {

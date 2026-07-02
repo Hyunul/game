@@ -37,13 +37,13 @@ export default function GameShell({ children, onExitToHub }: Props) {
 
   function handleReset() {
     if (confirm('처음부터 시작할까요?')) {
-      clearSave();
+      clearSave(episode.saveKey);
       dispatch({ type: 'RESET' });
     }
   }
 
-  function handleEp2Menu() {
-    if (confirm('다락방 허브로 나갈까요? (진행은 저장됩니다)')) {
+  function handleExitMenu() {
+    if (confirm('에피소드 선택 화면으로 나갈까요? (진행은 저장됩니다)')) {
       onExitToHub?.();
     }
   }
@@ -69,9 +69,9 @@ export default function GameShell({ children, onExitToHub }: Props) {
           </button>
           <button
             style={styles.iconBtn}
-            onClick={isEp2 ? handleEp2Menu : handleReset}
-            title={isEp2 ? '허브로 나가기' : '처음부터'}
-            aria-label={isEp2 ? '허브로 나가기' : '처음부터'}
+            onClick={onExitToHub ? handleExitMenu : handleReset}
+            title={onExitToHub ? '에피소드 선택으로' : '처음부터'}
+            aria-label={onExitToHub ? '에피소드 선택으로' : '처음부터'}
           >
             ⚙️
           </button>

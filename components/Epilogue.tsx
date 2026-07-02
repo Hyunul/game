@@ -42,6 +42,7 @@ export default function Epilogue() {
 
   function handleRestart() {
     clearSave();
+    try { localStorage.setItem('memory-box-ep1-cleared', '1'); } catch { /* noop */ }
     stopBgm();
     window.location.reload();
   }
