@@ -171,8 +171,8 @@ export const EP2_CONFIG: EpisodeConfig = { id: 'ep2', saveKey: 'memory-box-save-
 
 **Files:** Modify `lib/audio.ts`
 
-- [ ] **Step 1:** `playBgm`에 'ep2-past'(따뜻한 여름 오후 풍 5음계), 'ep2-present'(낮고 느린 단조 아르페지오), 'ep2-night'(낮은 드론 + 드문 벨 톤) 3곡 추가. `playSfx`에 'tick'(시계 태엽: 짧은 틱톡 2회) 추가 — 시점 전환용.
-- [ ] **Step 2:** 빌드/테스트 통과 → Commit `feat: ep2 BGM 3곡과 태엽 효과음`
+- [x] **Step 1:** `playBgm`에 'ep2-past'(따뜻한 여름 오후 풍 5음계), 'ep2-present'(낮고 느린 단조 아르페지오), 'ep2-night'(낮은 드론 + 드문 벨 톤) 3곡 추가. `playSfx`에 'tick'(시계 태엽: 짧은 틱톡 2회) 추가 — 시점 전환용.
+- [x] **Step 2:** 빌드/테스트 통과 → Commit `feat: ep2 BGM 3곡과 태엽 효과음`
 
 ---
 
