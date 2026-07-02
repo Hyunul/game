@@ -11,16 +11,23 @@ const ROOM_NAMES: Record<string, string> = {
   home: '옛날 우리 집',
   class: '초등학교 교실',
   store: '학교 앞 문방구',
+  sarangbang: '사랑방',
+  anbang: '안방과 마루',
+  heotgan: '헛간과 마당',
+  reservoir: '저수지 가는 길',
+  'ep2-attic': '다락방',
 };
 
 interface Props {
   children: ReactNode;
+  onExitToHub?: () => void;
 }
 
-export default function GameShell({ children }: Props) {
-  const { state, dispatch } = useGame();
+export default function GameShell({ children, onExitToHub }: Props) {
+  const { state, dispatch, episode } = useGame();
   const [hintOpen, setHintOpen] = useState(false);
   const [muted, setMutedState] = useState(() => isMuted());
+  const isEp2 = episode.id === 'ep2';
 
   function handleMuteToggle() {
     const next = !muted;
@@ -35,11 +42,24 @@ export default function GameShell({ children }: Props) {
     }
   }
 
+  function handleEp2Menu() {
+    if (confirm('다락방 허브로 나갈까요? (진행은 저장됩니다)')) {
+      onExitToHub?.();
+    }
+  }
+
   return (
     <div style={styles.page}>
       {/* Top bar */}
       <div style={styles.topBar}>
-        <span style={styles.roomName}>{ROOM_NAMES[state.room] ?? state.room}</span>
+        <div style={styles.roomInfo}>
+          <span style={styles.roomName}>{ROOM_NAMES[state.room] ?? state.room}</span>
+          {isEp2 && (
+            <span style={styles.eraBadge}>
+              {state.era === 'past' ? '1978년 여름' : '현재'}
+            </span>
+          )}
+        </div>
         <div style={styles.topControls}>
           <button style={styles.iconBtn} onClick={() => setHintOpen(true)} title="힌트" aria-label="힌트">
             💡
@@ -47,7 +67,12 @@ export default function GameShell({ children }: Props) {
           <button style={styles.iconBtn} onClick={handleMuteToggle} title={muted ? '음소거 해제' : '음소거'} aria-label={muted ? '음소거 해제' : '음소거'}>
             {muted ? '🔇' : '🔊'}
           </button>
-          <button style={styles.iconBtn} onClick={handleReset} title="처음부터" aria-label="처음부터">
+          <button
+            style={styles.iconBtn}
+            onClick={isEp2 ? handleEp2Menu : handleReset}
+            title={isEp2 ? '허브로 나가기' : '처음부터'}
+            aria-label={isEp2 ? '허브로 나가기' : '처음부터'}
+          >
             ⚙️
           </button>
         </div>
@@ -88,11 +113,25 @@ const styles: Record<string, React.CSSProperties> = {
     top: 0,
     zIndex: 30,
   },
+  roomInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
   roomName: {
     fontSize: '1rem',
     fontWeight: 600,
     color: '#e8d3a8',
     letterSpacing: '0.04em',
+  },
+  eraBadge: {
+    fontSize: '0.7rem',
+    fontWeight: 600,
+    padding: '2px 8px',
+    borderRadius: '999px',
+    backgroundColor: 'rgba(255,210,74,0.15)',
+    border: '1px solid rgba(255,210,74,0.4)',
+    color: '#ffd24a',
   },
   topControls: {
     display: 'flex',

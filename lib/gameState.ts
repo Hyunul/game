@@ -1,5 +1,5 @@
 import { AnyRoomId, RoomId, Era } from './types';
-import { PUZZLES, FINAL_PUZZLE } from './puzzles';
+import { PUZZLES, FINAL_PUZZLE, ITEMS } from './puzzles';
 import { EpisodeConfig } from './episode';
 
 export type Phase = 'title' | 'prologue' | 'playing' | 'memory' | 'epilogue';
@@ -100,7 +100,7 @@ export const EP1_CONFIG: EpisodeConfig = {
   id: 'ep1',
   saveKey: 'memory-box-save',
   puzzles: PUZZLES,
-  items: {},
+  items: ITEMS,
   finalPuzzles: FINAL_PUZZLE,
   epilogueAt: 3,
   hubRoom: 'attic' as RoomId,

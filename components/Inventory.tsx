@@ -1,13 +1,12 @@
 'use client';
 import { useGame } from '../lib/GameContext';
-import { ITEMS } from '../lib/puzzles';
 import { playSfx } from '../lib/audio';
 import { ItemId } from '../lib/types';
 
 const SLOT_COUNT = 6;
 
 export default function Inventory() {
-  const { state, dispatch } = useGame();
+  const { state, dispatch, episode } = useGame();
 
   function handleSlotClick(itemId: ItemId) {
     playSfx('click');
@@ -15,7 +14,7 @@ export default function Inventory() {
     dispatch({ type: 'SELECT_ITEM', itemId: next });
   }
 
-  const selectedItem = state.selectedItem ? ITEMS[state.selectedItem] : null;
+  const selectedItem = state.selectedItem ? episode.items[state.selectedItem] : null;
 
   return (
     <div style={styles.wrapper}>
@@ -25,7 +24,7 @@ export default function Inventory() {
       <div style={styles.bar}>
         {Array.from({ length: Math.max(SLOT_COUNT, state.inventory.length) }, (_, i) => {
           const itemId = state.inventory[i] as ItemId | undefined;
-          const item = itemId ? ITEMS[itemId] : null;
+          const item = itemId ? episode.items[itemId] : null;
           const isSelected = itemId && state.selectedItem === itemId;
           return (
             <button

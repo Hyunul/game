@@ -1,8 +1,9 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GameProvider, useGame } from '../lib/GameContext';
 import { loadGame, clearSave } from '../lib/save';
 import { GameState } from '../lib/gameState';
+import { EP2_CONFIG } from '../lib/puzzles-ep2';
 import GameShell from '../components/GameShell';
 import Attic from '../components/scenes/Attic';
 import Room1Home from '../components/scenes/Room1Home';
@@ -49,7 +50,7 @@ function TitleScreen() {
   );
 }
 
-function InnerApp() {
+function Ep1InnerApp({ onStartEp2 }: { onStartEp2: (resume: boolean) => void }) {
   const { state } = useGame();
 
   if (state.phase === 'title') {
@@ -65,7 +66,7 @@ function InnerApp() {
   }
 
   if (state.room === 'attic' && (state.phase === 'prologue' || state.phase === 'playing')) {
-    return <GameShell><Attic /></GameShell>;
+    return <GameShell><Attic onStartEp2={onStartEp2} /></GameShell>;
   }
 
   if (state.room === 'home' && state.phase === 'playing') {
@@ -91,12 +92,77 @@ function InnerApp() {
   );
 }
 
-export default function Home() {
+function Ep1App({ onStartEp2 }: { onStartEp2: (resume: boolean) => void }) {
   return (
     <GameProvider>
-      <InnerApp />
+      <Ep1InnerApp onStartEp2={onStartEp2} />
     </GameProvider>
   );
+}
+
+function Ep2InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume: boolean }) {
+  const { state, dispatch } = useGame();
+  const startedRef = useRef(false);
+
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    if (resume) {
+      const saved = loadGame(EP2_CONFIG.saveKey);
+      dispatch({ type: 'START', resume: saved ?? undefined });
+    } else {
+      dispatch({ type: 'START' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (state.phase === 'epilogue') {
+    return (
+      <GameShell onExitToHub={onExitToHub}>
+        <div style={placeholderStyles.box}>
+          <p style={placeholderStyles.text}>(에필로그 준비 중)</p>
+        </div>
+      </GameShell>
+    );
+  }
+
+  return (
+    <GameShell onExitToHub={onExitToHub}>
+      <div style={placeholderStyles.box}>
+        <p style={placeholderStyles.text}>
+          (EP2 장면 준비 중 — {state.room} / {state.era})
+        </p>
+      </div>
+    </GameShell>
+  );
+}
+
+function Ep2App({ onExitToHub, resume }: { onExitToHub: () => void; resume: boolean }) {
+  return (
+    <GameProvider episode={EP2_CONFIG}>
+      <Ep2InnerApp onExitToHub={onExitToHub} resume={resume} />
+    </GameProvider>
+  );
+}
+
+export default function Home() {
+  const [activeEpisode, setActiveEpisode] = useState<'ep1' | 'ep2'>('ep1');
+  const [ep2Resume, setEp2Resume] = useState(false);
+
+  function handleStartEp2(resume: boolean) {
+    setEp2Resume(resume);
+    setActiveEpisode('ep2');
+  }
+
+  function handleExitToHub() {
+    setActiveEpisode('ep1');
+  }
+
+  if (activeEpisode === 'ep2') {
+    return <Ep2App onExitToHub={handleExitToHub} resume={ep2Resume} />;
+  }
+
+  return <Ep1App onStartEp2={handleStartEp2} />;
 }
 
 const titleStyles: Record<string, React.CSSProperties> = {

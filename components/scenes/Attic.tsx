@@ -5,6 +5,7 @@ import { playSfx, playBgm } from '../../lib/audio';
 import { fx } from '../../lib/effects';
 import Narration from '../Narration';
 import { RoomId } from '../../lib/types';
+import { loadGame, clearSave } from '../../lib/save';
 
 const PROLOGUE_LINES = [
   '이삿짐을 정리하다, 다락에서 낡은 상자를 발견했다.',
@@ -22,15 +23,21 @@ const REQUIRES: Record<RoomId, RoomId | null> = {
   home: null, class: 'home', store: 'class', attic: null,
 };
 
-// 에피소드 허브 명패 정보 (Episode 2는 준비 중 — 궤짝 클릭 시 소개 카드)
+// 에피소드 허브 명패 정보
 const EPISODE2 = {
-  title: '두 번째 이야기',
+  title: '「궤짝 속 여름」',
   genre: '추리 방탈출',
   playtime: '약 1시간',
   desc: '오래된 사건의 진실을 쫓는 미스터리. 낡은 궤짝 속 단서들이 그날 밤의 이야기를 조용히 들려준다.',
 };
 
-export default function Attic() {
+const EP2_SAVE_KEY = 'memory-box-save-ep2';
+
+interface Props {
+  onStartEp2?: (resume: boolean) => void;
+}
+
+export default function Attic({ onStartEp2 }: Props) {
   const { state, dispatch } = useGame();
   const { phase, room, memoryShards } = state;
 
@@ -39,6 +46,11 @@ export default function Attic() {
   const [returnShown, setReturnShown] = useState(false);
   const [disabledMsg, setDisabledMsg] = useState(false);
   const [episodeCardOpen, setEpisodeCardOpen] = useState(false);
+  const [ep2SaveExists, setEp2SaveExists] = useState(false);
+
+  useEffect(() => {
+    setEp2SaveExists(loadGame(EP2_SAVE_KEY) !== null);
+  }, [episodeCardOpen]);
 
   const transitioningRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -221,7 +233,7 @@ export default function Attic() {
         {/* 명패: Episode 2 (궤짝 아래) */}
         <g aria-hidden="true">
           <rect x="650" y="332" width="130" height="34" rx="4" fill="#2a1c0f" stroke="#5a4a35" strokeWidth="1" opacity="0.9" />
-          <text x="715" y="345" textAnchor="middle" fontSize="10" fill="#c9b896" style={{ fontWeight: 600 }}>{EPISODE2.title} (준비 중)</text>
+          <text x="715" y="345" textAnchor="middle" fontSize="10" fill="#c9b896" style={{ fontWeight: 600 }}>{EPISODE2.title}</text>
           <text x="715" y="359" textAnchor="middle" fontSize="8" fill="#a09070">{EPISODE2.genre} · {EPISODE2.playtime}</text>
         </g>
 
@@ -276,7 +288,29 @@ export default function Attic() {
               {EPISODE2.genre} · 예상 플레이타임 {EPISODE2.playtime}
             </p>
             <p style={cardStyles.desc}>{EPISODE2.desc}</p>
-            <p style={cardStyles.soon}>아직 잠들어 있는 기억입니다 — Coming Soon</p>
+            <div style={cardStyles.buttons}>
+              <button
+                style={cardStyles.startBtn}
+                onClick={() => {
+                  playSfx('click');
+                  clearSave(EP2_SAVE_KEY);
+                  onStartEp2?.(false);
+                }}
+              >
+                처음부터 시작
+              </button>
+              {ep2SaveExists && (
+                <button
+                  style={cardStyles.resumeBtn}
+                  onClick={() => {
+                    playSfx('click');
+                    onStartEp2?.(true);
+                  }}
+                >
+                  이어하기
+                </button>
+              )}
+            </div>
             <button style={cardStyles.close} onClick={() => setEpisodeCardOpen(false)}>
               닫기
             </button>
@@ -323,11 +357,33 @@ const cardStyles: Record<string, React.CSSProperties> = {
     fontSize: '0.85rem',
     lineHeight: 1.6,
   },
-  soon: {
-    margin: '0 0 16px',
-    fontSize: '0.8rem',
-    fontStyle: 'italic',
-    color: '#a09070',
+  buttons: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    marginBottom: '14px',
+  },
+  startBtn: {
+    minHeight: '44px',
+    padding: '10px 20px',
+    backgroundColor: '#7a4f1e',
+    color: '#e8d3a8',
+    border: '1px solid rgba(232,211,168,0.4)',
+    borderRadius: '8px',
+    fontSize: '0.9rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+  },
+  resumeBtn: {
+    minHeight: '44px',
+    padding: '10px 20px',
+    backgroundColor: 'transparent',
+    color: '#e8d3a8',
+    border: '1px solid rgba(232,211,168,0.4)',
+    borderRadius: '8px',
+    fontSize: '0.9rem',
+    fontWeight: 600,
+    cursor: 'pointer',
   },
   close: {
     minHeight: '44px',

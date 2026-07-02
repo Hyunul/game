@@ -1,7 +1,6 @@
 'use client';
 import { useGame } from '../lib/GameContext';
-import { PUZZLES } from '../lib/puzzles';
-import { canAttempt } from '../lib/gameState';
+import { canAttemptWith } from '../lib/gameState';
 
 interface Props {
   open: boolean;
@@ -9,12 +8,12 @@ interface Props {
 }
 
 export default function HintModal({ open, onClose }: Props) {
-  const { state, dispatch } = useGame();
+  const { state, dispatch, episode } = useGame();
 
   if (!open) return null;
 
-  const roomPuzzles = PUZZLES.filter((p) => p.room === state.room);
-  const puzzle = roomPuzzles.find((p) => canAttempt(state, p.id)) ?? null;
+  const roomPuzzles = episode.puzzles.filter((p) => p.room === state.room);
+  const puzzle = roomPuzzles.find((p) => canAttemptWith(episode, state, p.id)) ?? null;
 
   const hintsUsed = puzzle ? (state.hintsUsed[puzzle.id] ?? 0) : 0;
   const currentHint = puzzle && hintsUsed > 0 ? puzzle.hints[hintsUsed - 1] : null;
