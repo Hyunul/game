@@ -11,18 +11,21 @@ interface Card {
   num: number;
   icon: string;
   text: string;
+  source: string;
 }
 
 const CARDS: Card[] = [
-  { num: 1, icon: '📜', text: '전날 — 형과 아우가 다투었다' },
-  { num: 2, icon: '📄', text: '15일 밤 — 아우가 몰래 집을 나섰다' },
-  { num: 3, icon: '🎣', text: '형이 알아채고 맨몸으로 뒤따랐다' },
-  { num: 4, icon: '🕰️', text: '밤 11시 40분 — 형이 아우를 물 밖으로 밀어 올렸다' },
-  { num: 5, icon: '📖', text: '16일 새벽 — 아우만 홀로 젖은 채 돌아왔다' },
+  { num: 1, icon: '🎣', text: '8월 14일 — 형이 영호의 낚싯대를 빼앗아 헛간에 잠갔다', source: '어머니의 일기' },
+  { num: 2, icon: '💌', text: '8월 14일 밤 — 형은 부치지 못할 편지를 썼다', source: '형의 편지' },
+  { num: 3, icon: '🌒', text: '8월 15일 초저녁 — 영호가 몰래 집을 나섰다', source: '일기·필적 감정' },
+  { num: 4, icon: '🏃', text: '밤 11시 — 고함. 한 사람이 맨손으로 물가로 달려갔다', source: '이장 조서' },
+  { num: 5, icon: '⌚', text: '밤 11시 40분 — 회중시계가 물속에서 멈췄다', source: '열린 회중시계' },
+  { num: 6, icon: '🪣', text: '그날 밤의 짐 — 낚싯대 하나와 양동이, 1인분뿐', source: '도구 걸이' },
+  { num: 7, icon: '🌅', text: '8월 16일 새벽 — 영호가 젖은 채 홀로 돌아왔다', source: '일기' },
 ];
 
 // 고정 셔플 순서 (스펙: 무작위 순서로 제시, 순서 고정)
-const SHUFFLE_ORDER = [3, 1, 5, 2, 4];
+const SHUFFLE_ORDER = [4, 1, 6, 3, 7, 2, 5];
 
 export default function Reservoir() {
   const { state, dispatch, episode } = useGame();
@@ -30,10 +33,11 @@ export default function Reservoir() {
   const { guard, armedId } = useTwoTap();
 
   const [overlayOpen, setOverlayOpen] = useState(false);
-  const [slots, setSlots] = useState<(number | null)[]>([null, null, null, null, null]);
+  const [slots, setSlots] = useState<(number | null)[]>([null, null, null, null, null, null, null]);
   const [narration, setNarration] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
   const prevLastResult = useRef<typeof lastResult>(null);
+  const lastWasMurderOrder = useRef(false);
 
   useEffect(() => {
     playBgm('ep2-night');
@@ -42,7 +46,11 @@ export default function Reservoir() {
   useEffect(() => {
     if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
       setShake(true);
-      setNarration('무언가 앞뒤가 맞지 않는다…');
+      setNarration(
+        lastWasMurderOrder.current
+          ? '…정말 그럴까? 조서를 다시 보자. 물가로 달려간 사람은 맨손이었다. 그리고 시계는, 그보다 뒤에 멈췄다.'
+          : '무언가 앞뒤가 맞지 않는다…',
+      );
       setTimeout(() => setShake(false), 500);
     }
     prevLastResult.current = lastResult;
@@ -75,8 +83,11 @@ export default function Reservoir() {
   }
 
   function handleSubmit() {
-    if (placed.length !== 5 || !canAttempt('ep2-timeline')) return;
+    if (placed.length !== 7 || !canAttempt('ep2-timeline')) return;
     const answer = slots.join('-');
+    const idx4 = slots.indexOf(4);
+    const idx5 = slots.indexOf(5);
+    lastWasMurderOrder.current = idx4 !== -1 && idx5 !== -1 && idx4 > idx5;
     dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-timeline', answer });
   }
 
@@ -156,7 +167,7 @@ export default function Reservoir() {
         <div style={overlayStyles.overlay}>
           <div className={shake ? 'shake' : undefined} style={overlayStyles.panel}>
             <h3 style={overlayStyles.title}>그날 밤의 타임라인</h3>
-            <p style={overlayStyles.hint}>다섯 조각을 시간 순서대로 배열하세요.</p>
+            <p style={overlayStyles.hint}>일곱 조각을 시간 순서대로 배열하세요.</p>
 
             {/* Slots */}
             <div style={overlayStyles.slotRow}>
@@ -194,7 +205,10 @@ export default function Reservoir() {
                   onKeyDown={(e) => e.key === 'Enter' && placeCard(card.num)}
                 >
                   <span style={overlayStyles.cardIcon}>{card.icon}</span>
-                  <span style={overlayStyles.cardText}>{card.text}</span>
+                  <span style={overlayStyles.cardTextWrap}>
+                    <span style={overlayStyles.cardText}>{card.text}</span>
+                    <span style={overlayStyles.cardSource}>{card.source}</span>
+                  </span>
                 </div>
               ))}
             </div>
@@ -202,8 +216,8 @@ export default function Reservoir() {
             <button
               style={{
                 ...overlayStyles.submitBtn,
-                opacity: placed.length === 5 ? 1 : 0.4,
-                pointerEvents: placed.length === 5 ? 'auto' : 'none',
+                opacity: placed.length === 7 ? 1 : 0.4,
+                pointerEvents: placed.length === 7 ? 'auto' : 'none',
               }}
               onClick={handleSubmit}
             >
@@ -296,7 +310,9 @@ const overlayStyles: Record<string, React.CSSProperties> = {
     fontSize: '0.85rem',
   },
   cardIcon: { fontSize: '1.2rem' },
+  cardTextWrap: { flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' },
   cardText: { flex: 1 },
+  cardSource: { fontSize: '0.68rem', color: 'rgba(232,211,168,0.45)' },
   submitBtn: {
     width: '100%',
     padding: '12px',
