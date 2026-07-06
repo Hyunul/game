@@ -10,7 +10,8 @@ interface Props {
 }
 
 const EP1_SAVE_KEY = 'memory-box-save';
-const EP2_SAVE_KEY = 'memory-box-save-ep2';
+// v2 퍼즐 전면 개편으로 v1 저장과 비호환 — 키를 올려 구저장을 무시한다
+const EP2_SAVE_KEY = 'memory-box-save-ep2-v2';
 const EP1_CLEARED_KEY = 'memory-box-ep1-cleared';
 
 interface CardMeta {

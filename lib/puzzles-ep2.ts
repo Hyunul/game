@@ -298,7 +298,7 @@ export const EP2_PUZZLES: Puzzle[] = [
 
 export const EP2_CONFIG: EpisodeConfig = {
   id: 'ep2',
-  saveKey: 'memory-box-save-ep2',
+  saveKey: 'memory-box-save-ep2-v2',
   puzzles: EP2_PUZZLES,
   items: EP2_ITEMS,
   finalPuzzles: { reservoir: 'ep2-timeline' },

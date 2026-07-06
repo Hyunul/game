@@ -86,9 +86,9 @@ describe('ep2 puzzles data', () => {
     expect(EP2_ITEMS['doc-scribble'].docPages![0]).toContain('浩');
   });
 
-  it('EP2_CONFIG는 reservoir 방을 ep2-timeline에 매핑하고 저장 키는 memory-box-save-ep2', () => {
+  it('EP2_CONFIG는 reservoir 방을 ep2-timeline에 매핑하고 저장 키는 memory-box-save-ep2-v2', () => {
     expect(EP2_CONFIG.finalPuzzles.reservoir).toBe('ep2-timeline');
-    expect(EP2_CONFIG.saveKey).toBe('memory-box-save-ep2');
+    expect(EP2_CONFIG.saveKey).toBe('memory-box-save-ep2-v2');
     expect(EP2_CONFIG.epilogueAt).toBe(1);
     expect(EP2_CONFIG.hubRoom).toBe('ep2-attic');
   });
