@@ -6,27 +6,44 @@ import { playSfx, playBgm } from '../../../lib/audio';
 import { fx } from '../../../lib/effects';
 import Narration from '../../Narration';
 import TapLabel from '../../TapLabel';
+import Keypad from '../../Keypad';
+import HandwritingPicker from '../../puzzles/HandwritingPicker';
 import { useTwoTap } from '../../../lib/useTwoTap';
 import { eraTint, handleWatchUse } from './era';
 import RoomNav from '../../RoomNav';
+import { EP2_ITEMS } from '../../../lib/puzzles-ep2';
 
-const EVIDENCE_IDS = ['doc-letter', 'doc-note', 'photo-4', 'watch-open', 'doc-diary'];
+const NIGHT_GATE_PUZZLES = ['ep2-photo', 'ep2-handwriting', 'ep2-contradiction', 'ep2-lantern'];
+
+const FLASHBACK_LINES = [
+  '1978년 8월 15일 초저녁.',
+  '영호는 담을 넘었다. 낚싯대 하나와 양동이를 챙겨서.',
+  '형의 서랍 속 편지는, 아직 부쳐지지 않았다.',
+];
 
 export default function Heotgan() {
   const { state, dispatch, episode } = useGame();
-  const { solved, lastResult, era, inventory, selectedItem } = state;
+  const { solved, lastResult, era, selectedItem } = state;
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
   const [nightEvent, setNightEvent] = useState(false);
+  const [toolboxKeypadOpen, setToolboxKeypadOpen] = useState(false);
+  const [handwritingOpen, setHandwritingOpen] = useState(false);
+  const [handwritingWrong, setHandwritingWrong] = useState(0);
+  const [flashback, setFlashback] = useState(false);
+  const [flashbackLine, setFlashbackLine] = useState(0);
   const nightTriggered = useRef(false);
   const navGuard = useRef(false);
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flashbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevLastResult = useRef<typeof lastResult>(null);
+  const prevHandwritingSolved = useRef(solved.includes('ep2-handwriting'));
 
   useEffect(() => () => {
     if (navTimer.current !== null) clearTimeout(navTimer.current);
+    if (flashbackTimer.current !== null) clearTimeout(flashbackTimer.current);
   }, []);
 
   function canAttempt(puzzleId: string) {
@@ -47,18 +64,43 @@ export default function Heotgan() {
     prevLastResult.current = lastResult;
   }, [lastResult]);
 
-  // ── 밤 이벤트 조건 감시 ──
+  // ── 밤 이벤트 조건 감시 (R1) ──
   useEffect(() => {
     if (nightTriggered.current) return;
-    const hasAllEvidence = EVIDENCE_IDS.every((id) => inventory.includes(id));
-    const lanternSolved = solved.includes('ep2-lantern');
-    if (hasAllEvidence && lanternSolved && era === 'past') {
+    const allDone = NIGHT_GATE_PUZZLES.every((id) => solved.includes(id));
+    if (allDone && era === 'past') {
       nightTriggered.current = true;
       setNightEvent(true);
       playBgm('ep2-night');
       say('…담장 너머, 낚싯대를 둘러멘 작은 그림자가 밤길을 내려간다.');
     }
-  }, [inventory, solved, era]);
+  }, [solved, era]);
+
+  // ── 회상 씬: ep2-handwriting 최초 해결 시 ──
+  useEffect(() => {
+    const nowSolved = solved.includes('ep2-handwriting');
+    if (nowSolved && !prevHandwritingSolved.current) {
+      setFlashback(true);
+      setFlashbackLine(0);
+    }
+    prevHandwritingSolved.current = nowSolved;
+  }, [solved]);
+
+  useEffect(() => {
+    if (!flashback) return;
+    if (flashbackLine >= FLASHBACK_LINES.length - 1) return;
+    flashbackTimer.current = setTimeout(() => {
+      setFlashbackLine((n) => n + 1);
+    }, 2200);
+    return () => {
+      if (flashbackTimer.current !== null) clearTimeout(flashbackTimer.current);
+    };
+  }, [flashback, flashbackLine]);
+
+  function closeFlashback() {
+    if (flashbackTimer.current !== null) clearTimeout(flashbackTimer.current);
+    setFlashback(false);
+  }
 
   function say(text: string) {
     setNarration(text);
@@ -101,13 +143,13 @@ export default function Heotgan() {
     if (canAttempt('ep2-toolwall')) {
       dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-toolwall', answer: '' });
       fx.correctPulse();
-      say('윤곽선과 견줘 보면… 낚싯대 하나와 양동이만 없다. 떠난 사람은 한 명이다.');
+      say('윤곽선과 견줘 보면… 낚싯대 하나와 양동이만 없다. 그리고 벽 틈 — 조서 사본과 사진 조각이 숨겨져 있었다.');
     } else {
       say('벽에 도구 윤곽선이 그려져 있다.');
     }
   }
 
-  // ── 도구함 ──
+  // ── 도구함 (도형 자물쇠) ──
   function handleToolbox() {
     if (nightEvent) return;
     if (handleWatchUse(state, dispatch)) return;
@@ -116,29 +158,58 @@ export default function Heotgan() {
       return;
     }
     if (canAttempt('ep2-toolbox')) {
-      dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-toolbox', answer: '' });
-      fx.correctPulse();
-      say('부서진 자물쇠 틈, 삭은 쪽지 — "8월 15일 보름, 밤낚시. 형한테는 비밀."');
+      setToolboxKeypadOpen(true);
     } else {
-      say('녹슨 도구함. 자물쇠가 부서져 있다.');
+      say('녹슨 도구함. 뚜껑에 페인트로 그린 도형 세 개가 있다.');
     }
   }
 
-  // ── 작업대(회중시계 뚜껑) ──
+  function handleToolboxSubmit(answer: string) {
+    dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-toolbox', answer });
+    if (answer === '345') {
+      setToolboxKeypadOpen(false);
+      fx.correctPulse();
+      say('부서진 경첩 사이 — 서명 없는 쪽지가 나왔다.');
+    }
+  }
+
+  // ── 필적 감정 (작업대) ──
+  function handleHandwriting() {
+    if (nightEvent) return;
+    if (handleWatchUse(state, dispatch)) return;
+    if (solved.includes('ep2-handwriting')) {
+      say('흘려 쓴 획, 급한 기울기 — 영호의 글씨다. 그날 밤 저수지로 간 것은 영호였다.');
+      return;
+    }
+    if (canAttempt('ep2-handwriting')) {
+      setHandwritingOpen(true);
+    } else {
+      say('작업대 — 글씨를 대조하려면 표본이 더 필요하다. (쪽지·편지·낙서)');
+    }
+  }
+
+  function handleHandwritingSubmit(answer: 'youngsu' | 'youngho') {
+    dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-handwriting', answer });
+    if (answer === 'youngho') {
+      setHandwritingOpen(false);
+      fx.correctPulse();
+      say('흘려 쓴 획, 급한 기울기 — 영호의 글씨다. 그날 밤 저수지로 간 것은 영호였다.');
+    } else {
+      setHandwritingWrong((n) => n + 1);
+    }
+  }
+
+  // ── 작업대(회중시계 뚜껑 + 필적 감정) ──
   function handleWorkbench() {
     if (nightEvent) return;
     if (handleWatchUse(state, dispatch)) return;
-    if (solved.includes('ep2-watch-lid')) {
-      say('시계는 이미 제 이야기를 들려주었다.');
-      return;
-    }
-    if (selectedItem === 'oil-bottle' && canAttempt('ep2-watch-lid')) {
+    if (selectedItem === 'oil-bottle' && !solved.includes('ep2-watch-lid') && canAttempt('ep2-watch-lid')) {
       dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-watch-lid', answer: '' });
       fx.correctPulse();
       say('경첩에 기름을 치자 뚜껑이 열렸다. 물때… 11시 40분… 안쪽에 새겨진 글씨: "아우와 함께 — 아버지가".');
-    } else {
-      say('튼튼한 작업대. 여기라면 시계를 살펴볼 수 있겠다.');
+      return;
     }
+    handleHandwriting();
   }
 
   // ── 랜턴 ──
@@ -371,7 +442,18 @@ export default function Heotgan() {
             onKeyDown={(e) => e.key === 'Enter' && handleToolbox()}
           >
             <rect x="200" y="320" width="70" height="45" rx="2" fill="#5a4432" stroke="#2a1c10" strokeWidth="1.5" />
-            <rect x="230" y="315" width="10" height="8" fill="#8a2020" opacity="0.7" />
+            {!solved.includes('ep2-toolbox') ? (
+              <>
+                {/* 삼각형(3변) */}
+                <polygon points="212,340 220,326 228,340" fill="none" stroke="#c85a3a" strokeWidth="2" />
+                {/* 사각형(4변) */}
+                <rect x="230" y="327" width="12" height="12" fill="none" stroke="#3a7ac8" strokeWidth="2" />
+                {/* 정오각형(5변) */}
+                <polygon points="256,326 262,331 260,338 252,338 250,331" fill="none" stroke="#4a9a5a" strokeWidth="2" />
+              </>
+            ) : (
+              <rect x="230" y="315" width="10" height="8" fill="#8a2020" opacity="0.7" />
+            )}
           </g>
         )}
 
@@ -416,12 +498,92 @@ export default function Heotgan() {
         </button>
       )}
 
+      <Keypad
+        open={toolboxKeypadOpen}
+        title="도구함 자물쇠 — 도형이 말하는 숫자"
+        length={3}
+        onSubmit={handleToolboxSubmit}
+        onClose={() => setToolboxKeypadOpen(false)}
+      />
+
+      <HandwritingPicker
+        open={handwritingOpen}
+        question="이 쪽지는 누구의 글씨인가?"
+        noteText={EP2_ITEMS['doc-note'].docPages![0]}
+        samples={[
+          { id: 'youngsu', label: '형의 편지 (윤영수)', text: '아버지께. 오늘 영호와 크게 다투었습니다…', style: 'neat' },
+          { id: 'youngho', label: '기둥의 낙서 (浩)', text: '빨리 커서 형만큼 큰 놈 잡을 거다 — 浩', style: 'cursive' },
+        ]}
+        wrongSignal={handwritingWrong || undefined}
+        onSubmit={handleHandwritingSubmit}
+        onClose={() => setHandwritingOpen(false)}
+      />
+
+      {/* ── 회상 씬 ── */}
+      {flashback && (
+        <div style={overlayStyles.flashbackOverlay}>
+          <div style={overlayStyles.flashbackText}>
+            {FLASHBACK_LINES.slice(0, flashbackLine + 1).map((line, i) => (
+              <p
+                key={i}
+                style={{
+                  ...overlayStyles.flashbackLine,
+                  opacity: i === flashbackLine ? 1 : 0.55,
+                }}
+              >
+                {line}
+              </p>
+            ))}
+          </div>
+          {flashbackLine >= FLASHBACK_LINES.length - 1 && (
+            <button style={overlayStyles.confirmBtn} onClick={closeFlashback}>
+              계속하기
+            </button>
+          )}
+        </div>
+      )}
+
       <TapLabel name={ARMED_NAMES[armedId ?? ''] ?? null} />
 
       <Narration text={narration} onDone={() => setNarration(null)} />
     </div>
   );
 }
+
+const overlayStyles: Record<string, React.CSSProperties> = {
+  flashbackOverlay: {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(0,0,0,0.92)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '28px',
+    zIndex: 90,
+    padding: '24px',
+  },
+  flashbackText: {
+    maxWidth: '480px',
+    textAlign: 'center',
+  },
+  flashbackLine: {
+    color: '#e8d3a8',
+    fontSize: '1.1rem',
+    lineHeight: 1.8,
+    transition: 'opacity 0.6s ease',
+  },
+  confirmBtn: {
+    padding: '12px 20px',
+    fontSize: '1rem',
+    fontWeight: 600,
+    backgroundColor: '#7a4f1e',
+    color: '#e8d3a8',
+    border: '1px solid rgba(232,211,168,0.4)',
+    borderRadius: '8px',
+    cursor: 'pointer',
+  },
+};
 
 const ARMED_NAMES: Record<string, string> = {
   'shed-door': '헛간 문',
