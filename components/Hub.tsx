@@ -18,6 +18,7 @@ interface CardMeta {
   title: string;
   genre: string;
   playtime: string;
+  difficulty: string;
   desc: string;
 }
 
@@ -27,6 +28,7 @@ const CARDS: CardMeta[] = [
     title: '기억의 상자',
     genre: '감성 방탈출',
     playtime: '20~30분',
+    difficulty: '입문',
     desc: '이삿짐 속에서 발견한 낡은 상자. 그 안의 물건들이 어릴 적 세 공간으로 데려다준다.',
   },
   {
@@ -34,7 +36,8 @@ const CARDS: CardMeta[] = [
     title: '궤짝 속 여름',
     genre: '추리 방탈출',
     playtime: '약 1시간',
-    desc: '1978년 여름, 저수지에서 큰아버지가 세상을 떠났다. 궤짝 속 단서들이 그날 밤의 진실을 들려준다.',
+    difficulty: '고난도',
+    desc: '1978년 여름, 저수지에서 큰아버지가 세상을 떠났다. 편지와 일기, 낡은 문서 속 모순을 하나씩 맞춰가며 그날 밤의 진실에 다가간다.',
   },
 ];
 
@@ -134,6 +137,7 @@ export default function Hub({ onSelect }: Props) {
                 <div style={styles.badges}>
                   <span style={styles.badge}>{c.genre}</span>
                   <span style={styles.badge}>{c.playtime}</span>
+                  <span style={styles.badge}>{c.difficulty}</span>
                 </div>
                 <p style={styles.desc}>{c.desc}</p>
                 <div style={styles.buttons}>

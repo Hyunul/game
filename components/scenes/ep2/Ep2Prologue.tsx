@@ -14,7 +14,7 @@ const LINES: Line[] = [
   { text: '궤짝 깊은 곳에서, 것들이 나왔다.' },
   { text: '빛바랜 신문… \'15일 밤 저수지에서 청년 익사\'. 사진 속 큰아버지의 이름이 있었다.', pickup: 'doc-news' },
   { text: '그리고 11시 40분에 멈춘 회중시계. 뒷면에 물때가 낀.', pickup: 'pocket-watch' },
-  { text: '…태엽을 감아본다.' },
+  { text: '…태엽을 감아본다. (인벤토리에서 문서를 선택하면 전문을 읽을 수 있다)' },
 ];
 
 export default function Ep2Prologue() {

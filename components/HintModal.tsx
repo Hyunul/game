@@ -12,8 +12,19 @@ export default function HintModal({ open, onClose }: Props) {
 
   if (!open) return null;
 
-  const roomPuzzles = episode.puzzles.filter((p) => p.room === state.room);
-  const puzzle = roomPuzzles.find((p) => canAttemptWith(episode, state, p.id)) ?? null;
+  const roomPuzzles = episode.puzzles.filter((p) => p.room === state.room && !state.solved.includes(p.id));
+  let puzzle = roomPuzzles.find((p) => canAttemptWith(episode, state, p.id)) ?? null;
+
+  // ep2: era 조건 때문에 canAttempt가 전부 false여도, requires/requiresItem(s)는
+  // 충족했지만 era만 어긋난 미해결 퍼즐이 있으면 그것을 힌트 대상으로 fallback.
+  if (!puzzle && episode.id === 'ep2') {
+    puzzle = roomPuzzles.find((p) => {
+      if (!p.requires.every((r) => state.solved.includes(r))) return false;
+      if (p.requiresItem && !state.inventory.includes(p.requiresItem)) return false;
+      if (p.requiresItems && !p.requiresItems.every((it) => state.inventory.includes(it))) return false;
+      return true;
+    }) ?? null;
+  }
 
   const hintsUsed = puzzle ? (state.hintsUsed[puzzle.id] ?? 0) : 0;
   const currentHint = puzzle && hintsUsed > 0 ? puzzle.hints[hintsUsed - 1] : null;
