@@ -166,8 +166,8 @@ export default function Heotgan() {
 
   function handleToolboxSubmit(answer: string) {
     dispatch({ type: 'ATTEMPT', puzzleId: 'ep2-toolbox', answer });
+    setToolboxKeypadOpen(false);
     if (answer === '345') {
-      setToolboxKeypadOpen(false);
       fx.correctPulse();
       say('부서진 경첩 사이 — 서명 없는 쪽지가 나왔다.');
     }
