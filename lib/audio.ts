@@ -1,7 +1,9 @@
 // lib/audio.ts — Web Audio synthesis engine for 기억의 상자
 // No external audio files; SSR-safe (no-op when window is undefined).
 
-export type Sfx = 'click' | 'pickup' | 'correct' | 'wrong' | 'door' | 'shard' | 'tick';
+export type Sfx =
+  | 'click' | 'pickup' | 'correct' | 'wrong' | 'door' | 'shard' | 'tick'
+  | 'rewind' | 'splice' | 'knock-long' | 'knock-short' | 'noise-clear';
 
 // ── Module state ──────────────────────────────────────────────────────────────
 let ctx: AudioContext | null = null;
@@ -121,6 +123,46 @@ export function playSfx(name: Sfx): void {
       // Clock winding: tick then tock
       osc('square', 1200, now, 0.2, 0.04, masterGain);
       osc('square', 900, now + 0.12, 0.2, 0.04, masterGain);
+      break;
+
+    case 'rewind': {
+      // 되감기 고속음: 위로 감기는 츄륵 소리
+      const g = ctx.createGain();
+      g.connect(masterGain);
+      g.gain.setValueAtTime(0.18, now);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+      const o = ctx.createOscillator();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(300, now);
+      o.frequency.exponentialRampToValueAtTime(1400, now + 0.22);
+      o.connect(g);
+      o.start(now);
+      o.stop(now + 0.27);
+      break;
+    }
+
+    case 'splice':
+      // 테이프 접합 '틱-탁'
+      osc('square', 1600, now, 0.25, 0.03, masterGain);
+      osc('square', 700, now + 0.09, 0.3, 0.05, masterGain);
+      break;
+
+    case 'knock-long':
+      // 문 두드림 — 장(길게)
+      osc('triangle', 85, now, 0.55, 0.32, masterGain);
+      osc('sine', 78, now, 0.25, 0.2, masterGain);
+      break;
+
+    case 'knock-short':
+      // 문 두드림 — 단(짧게)
+      osc('triangle', 110, now, 0.5, 0.12, masterGain);
+      break;
+
+    case 'noise-clear':
+      // 노이즈가 걷히는 연출: 높은 쉬익이 잦아들며 맑은 톤
+      osc('sawtooth', 2400, now, 0.12, 0.5, masterGain);
+      osc('sine', 1046, now + 0.35, 0.3, 0.8, masterGain);
+      osc('sine', 1318, now + 0.45, 0.22, 0.8, masterGain);
       break;
   }
 }
