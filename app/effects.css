@@ -20,6 +20,8 @@
 /* 오답 도리도리 */
 @keyframes shake-x { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 .shake { animation: shake-x .3s ease-in-out 2; }
+/* .shake와 동일 — 연속 오답 시 클래스를 교대해 애니메이션을 강제 재시작 */
+.shake2 { animation: shake-x .3s ease-in-out 2; }
 /* 사물 바운스 (클릭 시) */
 @keyframes squash { 0%{transform:scale(1)} 35%{transform:scale(1.08,.94)} 70%{transform:scale(.97,1.04)} 100%{transform:scale(1)} }
 .bounce { animation: squash .35s ease-out; transform-box: fill-box; transform-origin: center; }

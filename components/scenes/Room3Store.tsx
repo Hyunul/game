@@ -9,6 +9,7 @@ import Keypad from '../Keypad';
 import Whackamole from '../Whackamole';
 import TapLabel from '../TapLabel';
 import { useTwoTap } from '../../lib/useTwoTap';
+import { useShake } from '../../lib/useShake';
 
 const SNACKS = [
   { id: 'apollo',   name: '아폴로',   price: 100 },
@@ -27,30 +28,18 @@ export default function Room3Store() {
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
-  const [shake, setShake] = useState(false);
+  // 간식 오답처럼 dispatch를 거치지 않는 자체 오답도 shake에 합산
+  const [localWrong, setLocalWrong] = useState(0);
+  const shake = useShake(wrongAttempts + localWrong);
   const [shelfOpen, setShelfOpen] = useState(false);
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const [whackOpen, setWhackOpen] = useState(false);
   const [keypadOpen, setKeypadOpen] = useState(false);
   const [crankAnim, setCrankAnim] = useState(false);
 
-  const prevWrongAttempts = useRef(wrongAttempts);
   const prevSolvedLen = useRef(solved.length);
-  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => () => {
-    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
-  }, []);
 
   useEffect(() => { playBgm('store'); }, []);
-
-  useEffect(() => {
-    if (wrongAttempts > prevWrongAttempts.current) {
-      setShake(true);
-      shakeTimer.current = setTimeout(() => setShake(false), 600);
-    }
-    prevWrongAttempts.current = wrongAttempts;
-  }, [wrongAttempts]);
 
   useEffect(() => {
     if (solved.includes('store-final') && solved.length !== prevSolvedLen.current) {
@@ -87,12 +76,14 @@ export default function Room3Store() {
     if (total !== 300) {
       say('300원어치가 아니야.');
       playSfx('wrong');
+      setLocalWrong((n) => n + 1);
       return;
     }
     const correct = selection.size === 3 && [...CORRECT_SNACKS].every((id) => selection.has(id));
     if (!correct) {
       say('음… 쪽지에 적힌 게 아닌데?');
       playSfx('wrong');
+      setLocalWrong((n) => n + 1);
       return;
     }
     dispatch({ type: 'ATTEMPT', puzzleId: 'store-snacks', answer: '100+150+50' });
@@ -160,7 +151,7 @@ export default function Room3Store() {
   return (
     <div
       style={{ width: '100%', height: '100%', position: 'relative' }}
-      className={shake ? 'shake' : undefined}
+      className={shake}
     >
       <svg
         viewBox="0 0 800 400"

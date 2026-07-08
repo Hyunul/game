@@ -14,9 +14,10 @@ export function useTwoTap() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const guard = useCallback((id: string, fn: () => void) => {
+    // hover 미지원 또는 주 포인터가 굵은(터치) 기기 — 둘 중 하나면 two-tap 안내 활성
     const isTouch =
       typeof window !== 'undefined' &&
-      window.matchMedia('(hover: none)').matches;
+      window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
     if (!isTouch) {
       fn();

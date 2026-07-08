@@ -11,7 +11,7 @@ const LINES: { text: string; dim?: boolean }[] = [
   { text: '— 기억의 상자 —', dim: true },
 ];
 
-export default function Epilogue() {
+export default function Epilogue({ onExitToHub }: { onExitToHub?: () => void }) {
   const [visibleCount, setVisibleCount] = useState(0);
   const [showButton, setShowButton] = useState(false);
   const allVisible = visibleCount >= LINES.length;
@@ -44,7 +44,9 @@ export default function Epilogue() {
     clearSave();
     try { localStorage.setItem('memory-box-ep1-cleared', '1'); } catch { /* noop */ }
     stopBgm();
-    window.location.reload();
+    // ep2와 동일하게 상태 전환으로 허브 복귀 — 전달 안 됐을 때만 리로드 fallback
+    if (onExitToHub) onExitToHub();
+    else window.location.reload();
   }
 
   return (

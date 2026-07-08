@@ -45,7 +45,7 @@ function Ep1InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume:
   }
 
   if (state.phase === 'epilogue') {
-    return <Epilogue />;
+    return <Epilogue onExitToHub={onExitToHub} />;
   }
 
   if (state.room === 'attic' && (state.phase === 'prologue' || state.phase === 'playing')) {

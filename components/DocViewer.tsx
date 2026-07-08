@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { playSfx } from '../lib/audio';
 import { Item } from '../lib/types';
+import { useEscape } from '../lib/useEscape';
 
 interface Props {
   item: Item | null;
@@ -14,6 +15,8 @@ export default function DocViewer({ item, onClose }: Props) {
   useEffect(() => {
     setPage(0);
   }, [item]);
+
+  useEscape(!!(item && item.doc), onClose);
 
   if (!item || !item.doc) return null;
 

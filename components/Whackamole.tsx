@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { playSfx } from '../lib/audio';
+import { useEscape } from '../lib/useEscape';
 
 interface Props {
   open: boolean;
@@ -74,6 +75,8 @@ export default function Whackamole({ open, onClear, onClose }: Props) {
       scheduleMole();
     }
   }
+
+  useEscape(open, onClose);
 
   if (!open) return null;
 

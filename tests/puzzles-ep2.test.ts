@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { EP2_PUZZLES, EP2_ITEMS, EP2_CONFIG } from '@/lib/puzzles-ep2';
+import { NIGHT_GATE_PUZZLES } from '@/components/scenes/ep2/Heotgan';
 
 describe('ep2 puzzles data', () => {
   it('모든 requires가 실제 ep2 퍼즐을 가리킨다', () => {
@@ -14,6 +15,21 @@ describe('ep2 puzzles data', () => {
       if (p.requiresItem) expect(EP2_ITEMS[p.requiresItem]).toBeDefined();
       if (p.requiresItems) for (const it of p.requiresItems) expect(EP2_ITEMS[it]).toBeDefined();
     }
+  });
+
+  it('밤 게이트가 타임라인 requires를 전부 보장한다 — 소프트락 방지', () => {
+    // 게이트 퍼즐 + 그 requires의 이행적 폐쇄가 ep2-timeline의 requires를 덮어야 한다.
+    // 빠진 퍼즐이 있으면 그걸 안 푼 채 밤(헛간·저수지 잠금)에 진입해 클리어 불가.
+    const byId = new Map(EP2_PUZZLES.map((p) => [p.id, p]));
+    const covered = new Set<string>();
+    const visit = (id: string) => {
+      if (covered.has(id)) return;
+      covered.add(id);
+      for (const r of byId.get(id)?.requires ?? []) visit(r);
+    };
+    NIGHT_GATE_PUZZLES.forEach(visit);
+    const timeline = byId.get('ep2-timeline')!;
+    for (const r of timeline.requires) expect(covered, `밤 게이트가 ${r}를 보장하지 않음`).toContain(r);
   });
 
   it('힌트는 항상 2단계', () => {

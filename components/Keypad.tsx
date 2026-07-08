@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { playSfx } from '../lib/audio';
+import { useEscape } from '../lib/useEscape';
 
 interface Props {
   open: boolean;
@@ -16,6 +17,8 @@ export default function Keypad({ open, title, length, onSubmit, onClose }: Props
   useEffect(() => {
     if (open) setEntry('');
   }, [open]);
+
+  useEscape(open, onClose);
 
   if (!open) return null;
 

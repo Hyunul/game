@@ -8,6 +8,7 @@ import Narration from '../Narration';
 import Keypad from '../Keypad';
 import TapLabel from '../TapLabel';
 import { useTwoTap } from '../../lib/useTwoTap';
+import { useShake } from '../../lib/useShake';
 
 export default function Room1Home() {
   const { state, dispatch } = useGame();
@@ -19,28 +20,12 @@ export default function Room1Home() {
   const [keypadConfig, setKeypadConfig] = useState<{
     title: string; length: number; puzzleId: string;
   } | null>(null);
-  const [shake, setShake] = useState(false);
-
-  const prevWrongAttempts = useRef(wrongAttempts);
-  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => () => {
-    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
-  }, []);
+  const shake = useShake(wrongAttempts);
 
   // Play home BGM on mount
   useEffect(() => {
     playBgm('home');
   }, []);
-
-  // Shake on wrong answer
-  useEffect(() => {
-    if (wrongAttempts > prevWrongAttempts.current) {
-      setShake(true);
-      shakeTimer.current = setTimeout(() => setShake(false), 600);
-    }
-    prevWrongAttempts.current = wrongAttempts;
-  }, [wrongAttempts]);
 
   // Trigger shard particles + sfx when home-final is solved
   const prevSolvedLen = useRef(solved.length);
@@ -151,7 +136,7 @@ export default function Room1Home() {
   return (
     <div
       style={{ width: '100%', height: '100%', position: 'relative' }}
-      className={shake ? 'shake' : undefined}
+      className={shake}
     >
       <svg
         viewBox="0 0 800 400"

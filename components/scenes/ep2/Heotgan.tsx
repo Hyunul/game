@@ -9,11 +9,15 @@ import TapLabel from '../../TapLabel';
 import Keypad from '../../Keypad';
 import HandwritingPicker from '../../puzzles/HandwritingPicker';
 import { useTwoTap } from '../../../lib/useTwoTap';
+import { useShake } from '../../../lib/useShake';
 import { eraTint, handleWatchUse } from './era';
 import RoomNav from '../../RoomNav';
 import { EP2_ITEMS } from '../../../lib/puzzles-ep2';
 
-const NIGHT_GATE_PUZZLES = ['ep2-photo', 'ep2-handwriting', 'ep2-contradiction', 'ep2-lantern'];
+// 밤 이벤트 게이트 — ep2-timeline의 requires와 반드시 일치해야 한다.
+// 빠지면 그 퍼즐을 안 푼 채 밤(헛간·저수지 잠금)에 진입해 클리어 불가 소프트락.
+// toolwall은 ep2-photo의 requires로 보장되지만 watch-lid는 여기서만 강제된다.
+export const NIGHT_GATE_PUZZLES = ['ep2-photo', 'ep2-handwriting', 'ep2-contradiction', 'ep2-lantern', 'ep2-watch-lid'];
 
 const FLASHBACK_LINES = [
   '1978년 8월 15일 초저녁.',
@@ -27,7 +31,7 @@ export default function Heotgan() {
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
-  const [shake, setShake] = useState(false);
+  const shake = useShake(wrongAttempts);
   const [nightEvent, setNightEvent] = useState(false);
   const [toolboxKeypadOpen, setToolboxKeypadOpen] = useState(false);
   const [handwritingOpen, setHandwritingOpen] = useState(false);
@@ -38,14 +42,11 @@ export default function Heotgan() {
   const navGuard = useRef(false);
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flashbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const prevWrongAttempts = useRef(wrongAttempts);
   const prevHandwritingSolved = useRef(solved.includes('ep2-handwriting'));
 
   useEffect(() => () => {
     if (navTimer.current !== null) clearTimeout(navTimer.current);
     if (flashbackTimer.current !== null) clearTimeout(flashbackTimer.current);
-    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
   }, []);
 
   function canAttempt(puzzleId: string) {
@@ -57,14 +58,6 @@ export default function Heotgan() {
       playBgm(era === 'past' ? 'ep2-past' : 'ep2-present');
     }
   }, [era, nightEvent]);
-
-  useEffect(() => {
-    if (wrongAttempts > prevWrongAttempts.current) {
-      setShake(true);
-      shakeTimer.current = setTimeout(() => setShake(false), 600);
-    }
-    prevWrongAttempts.current = wrongAttempts;
-  }, [wrongAttempts]);
 
   // ── 밤 이벤트 조건 감시 (R1) ──
   useEffect(() => {
@@ -266,7 +259,7 @@ export default function Heotgan() {
   return (
     <div
       style={{ width: '100%', height: '100%', position: 'relative' }}
-      className={shake ? 'shake' : undefined}
+      className={shake}
     >
       <svg
         viewBox="0 0 800 400"

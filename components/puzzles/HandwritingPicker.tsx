@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { playSfx } from '../../lib/audio';
+import { useEscape } from '../../lib/useEscape';
 
 interface Sample {
   id: string;
@@ -59,6 +60,8 @@ export default function HandwritingPicker({
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wrongSignal]);
+
+  useEscape(open, onClose);
 
   if (!open) return null;
 

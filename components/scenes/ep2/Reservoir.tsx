@@ -5,6 +5,7 @@ import { canAttemptWith } from '../../../lib/gameState';
 import { playSfx, playBgm } from '../../../lib/audio';
 import TapLabel from '../../TapLabel';
 import { useTwoTap } from '../../../lib/useTwoTap';
+import { useShake } from '../../../lib/useShake';
 
 interface Card {
   num: number;
@@ -35,14 +36,9 @@ export default function Reservoir() {
   const [slots, setSlots] = useState<(number | null)[]>([null, null, null, null, null, null, null]);
   // 오답 피드백 — 오버레이(z=70)가 열린 채라 Narration(z=45)은 가려지므로 패널 안에 표시
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [shake, setShake] = useState(false);
+  const shake = useShake(wrongAttempts);
   const prevWrongAttempts = useRef(wrongAttempts);
   const lastWasMurderOrder = useRef(false);
-  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => () => {
-    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
-  }, []);
 
   useEffect(() => {
     playBgm('ep2-night');
@@ -50,13 +46,11 @@ export default function Reservoir() {
 
   useEffect(() => {
     if (wrongAttempts > prevWrongAttempts.current) {
-      setShake(true);
       setFeedback(
         lastWasMurderOrder.current
           ? '…정말 그럴까? 조서를 다시 보자. 물가로 달려간 사람은 맨손이었다. 그리고 시계는, 그보다 뒤에 멈췄다.'
           : '무언가 앞뒤가 맞지 않는다…',
       );
-      shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
     prevWrongAttempts.current = wrongAttempts;
   }, [wrongAttempts]);
@@ -90,7 +84,12 @@ export default function Reservoir() {
   }
 
   function handleSubmit() {
-    if (placed.length !== 7 || !canAttempt('ep2-timeline')) return;
+    if (placed.length !== 7) return;
+    if (!canAttempt('ep2-timeline')) {
+      // 밤 게이트와 requires가 일치하는 한 도달하지 않지만, 무반응 잠금 방지용 안내
+      setFeedback('아직 확인하지 못한 정황이 있다. 그날 밤의 조각이 부족하다…');
+      return;
+    }
     const answer = slots.join('-');
     const idx4 = slots.indexOf(4);
     const idx5 = slots.indexOf(5);
@@ -172,7 +171,7 @@ export default function Reservoir() {
 
       {overlayOpen && (
         <div style={overlayStyles.overlay}>
-          <div className={shake ? 'shake' : undefined} style={overlayStyles.panel}>
+          <div className={shake} style={overlayStyles.panel}>
             <h3 style={overlayStyles.title}>그날 밤의 타임라인</h3>
             <p style={overlayStyles.hint}>일곱 조각을 시간 순서대로 배열하세요.</p>
             {feedback && <p style={overlayStyles.feedback}>{feedback}</p>}

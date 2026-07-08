@@ -8,6 +8,7 @@ import Narration from '../Narration';
 import Keypad from '../Keypad';
 import TapLabel from '../TapLabel';
 import { useTwoTap } from '../../lib/useTwoTap';
+import { useShake } from '../../lib/useShake';
 
 const NOTE_KEYS = [
   { note: 'C', freq: 261.63, label: '도' },
@@ -31,30 +32,17 @@ export default function Room2Class() {
   const [keypadConfig, setKeypadConfig] = useState<{
     title: string; length: number; puzzleId: string;
   } | null>(null);
-  const [shake, setShake] = useState(false);
   const [organSequence, setOrganSequence] = useState<string[]>([]);
+  // 풍금 오음처럼 dispatch를 거치지 않는 자체 오답도 shake에 합산
+  const [localWrong, setLocalWrong] = useState(0);
+  const shake = useShake(wrongAttempts + localWrong);
 
-  const prevWrongAttempts = useRef(wrongAttempts);
   const prevSolvedLen = useRef(solved.length);
-  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => () => {
-    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
-  }, []);
 
   // Play class BGM on mount
   useEffect(() => {
     playBgm('class');
   }, []);
-
-  // Shake on wrong answer
-  useEffect(() => {
-    if (wrongAttempts > prevWrongAttempts.current) {
-      setShake(true);
-      shakeTimer.current = setTimeout(() => setShake(false), 600);
-    }
-    prevWrongAttempts.current = wrongAttempts;
-  }, [wrongAttempts]);
 
   // Trigger shard particles + sfx when class-final is solved
   useEffect(() => {
@@ -104,6 +92,7 @@ export default function Room2Class() {
     if (next.join(',') !== targetSlice.join(',')) {
       // Wrong note — reset
       playSfx('wrong');
+      setLocalWrong((n) => n + 1);
       setOrganSequence([]);
       return;
     }
@@ -192,7 +181,7 @@ export default function Room2Class() {
   return (
     <div
       style={{ width: '100%', height: '100%', position: 'relative' }}
-      className={shake ? 'shake' : undefined}
+      className={shake}
     >
       <svg
         viewBox="0 0 800 400"

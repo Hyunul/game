@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { playSfx } from '../../lib/audio';
 import { fx } from '../../lib/effects';
+import { useEscape } from '../../lib/useEscape';
 
 interface Props {
   open: boolean;
@@ -86,6 +87,8 @@ export default function PhotoAssembly({ open, onSubmit, onClose }: Props) {
   useEffect(() => () => {
     if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
   }, []);
+
+  useEscape(open, onClose);
 
   if (!open) return null;
 

@@ -1,6 +1,7 @@
 'use client';
 import { useGame } from '../lib/GameContext';
 import { canAttemptWith } from '../lib/gameState';
+import { useEscape } from '../lib/useEscape';
 
 interface Props {
   open: boolean;
@@ -9,6 +10,7 @@ interface Props {
 
 export default function HintModal({ open, onClose }: Props) {
   const { state, dispatch, episode } = useGame();
+  useEscape(open, onClose);
 
   if (!open) return null;
 
@@ -28,7 +30,8 @@ export default function HintModal({ open, onClose }: Props) {
 
   const hintsUsed = puzzle ? (state.hintsUsed[puzzle.id] ?? 0) : 0;
   const currentHint = puzzle && hintsUsed > 0 ? puzzle.hints[hintsUsed - 1] : null;
-  const canUseMore = puzzle && hintsUsed < 2;
+  // 힌트 배열 길이를 넘어선 사용 방지 — 배열이 2개 미만이어도 빈 힌트가 뜨지 않게
+  const canUseMore = puzzle && hintsUsed < Math.min(2, puzzle.hints.length);
 
   function handleUseHint() {
     if (!puzzle) return;

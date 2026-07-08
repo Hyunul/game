@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { playSfx } from '../../lib/audio';
+import { useEscape } from '../../lib/useEscape';
 
 interface Props {
   open: boolean;
@@ -18,6 +19,8 @@ export default function JamoLock({ open, title, length, onSubmit, onClose }: Pro
   useEffect(() => {
     if (open) setEntries([]);
   }, [open]);
+
+  useEscape(open, onClose);
 
   if (!open) return null;
 

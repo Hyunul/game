@@ -9,6 +9,7 @@ import Keypad from '../../Keypad';
 import ContradictionPicker from '../../puzzles/ContradictionPicker';
 import TapLabel from '../../TapLabel';
 import { useTwoTap } from '../../../lib/useTwoTap';
+import { useShake } from '../../../lib/useShake';
 import { eraTint, handleWatchUse } from './era';
 import RoomNav from '../../RoomNav';
 
@@ -38,20 +39,17 @@ export default function Anbang() {
   const [contradictionOpen, setContradictionOpen] = useState(false);
   const [contradictionWrongSignal, setContradictionWrongSignal] = useState(0);
   const [sewingSequence, setSewingSequence] = useState<string[]>([]);
-  const [shake, setShake] = useState(false);
+  const shake = useShake(wrongAttempts);
   const [flashback, setFlashback] = useState(false);
   const [flashbackLine, setFlashbackLine] = useState(0);
   const navGuard = useRef(false);
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flashbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const prevWrongAttempts = useRef(wrongAttempts);
   const prevFloorboardSolved = useRef(solved.includes('ep2-floorboard'));
 
   useEffect(() => () => {
     if (navTimer.current !== null) clearTimeout(navTimer.current);
     if (flashbackTimer.current !== null) clearTimeout(flashbackTimer.current);
-    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
   }, []);
 
   function canAttempt(puzzleId: string) {
@@ -61,14 +59,6 @@ export default function Anbang() {
   useEffect(() => {
     playBgm(era === 'past' ? 'ep2-past' : 'ep2-present');
   }, [era]);
-
-  useEffect(() => {
-    if (wrongAttempts > prevWrongAttempts.current) {
-      setShake(true);
-      shakeTimer.current = setTimeout(() => setShake(false), 600);
-    }
-    prevWrongAttempts.current = wrongAttempts;
-  }, [wrongAttempts]);
 
   // ── 회상 씬: ep2-floorboard 최초 해결 시 ──
   useEffect(() => {
@@ -284,7 +274,7 @@ export default function Anbang() {
   return (
     <div
       style={{ width: '100%', height: '100%', position: 'relative' }}
-      className={shake ? 'shake' : undefined}
+      className={shake}
     >
       <svg
         viewBox="0 0 800 400"
