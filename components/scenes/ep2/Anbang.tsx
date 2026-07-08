@@ -44,12 +44,14 @@ export default function Anbang() {
   const navGuard = useRef(false);
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flashbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevLastResult = useRef<typeof lastResult>(null);
   const prevFloorboardSolved = useRef(solved.includes('ep2-floorboard'));
 
   useEffect(() => () => {
     if (navTimer.current !== null) clearTimeout(navTimer.current);
     if (flashbackTimer.current !== null) clearTimeout(flashbackTimer.current);
+    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
   }, []);
 
   function canAttempt(puzzleId: string) {
@@ -63,7 +65,7 @@ export default function Anbang() {
   useEffect(() => {
     if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
       setShake(true);
-      setTimeout(() => setShake(false), 500);
+      shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
     prevLastResult.current = lastResult;
   }, [lastResult]);
@@ -147,6 +149,7 @@ export default function Anbang() {
   }
 
   function handleSewingButton(petals: number) {
+    if (handleWatchUse(state, dispatch)) return;
     if (era === 'present') return;
     if (solved.includes('ep2-sewingbox')) return;
     if (!canAttempt('ep2-sewingbox')) {

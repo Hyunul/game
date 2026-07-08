@@ -91,7 +91,11 @@ function applySolve(config: EpisodeConfig, s: GameState, puzzleId: string): Game
 export function createGameReducer(config: EpisodeConfig) {
   return function reducer(s: GameState, a: Action): GameState {
     switch (a.type) {
-      case 'START': return a.resume ?? { ...initialState, room: config.hubRoom, phase: 'prologue' };
+      // resume 시 lastResult를 리셋 — 오답 직후 저장된 상태로 복귀할 때
+      // 로드 즉시 흔들림·오답음이 재생되는 것 방지
+      case 'START': return a.resume
+        ? { ...a.resume, lastResult: null }
+        : { ...initialState, room: config.hubRoom, phase: 'prologue' };
       case 'ENTER_ROOM': return { ...s, room: a.room, phase: 'playing', lastResult: null };
       case 'PICKUP':
         return s.inventory.includes(a.itemId) ? s : { ...s, inventory: [...s.inventory, a.itemId] };

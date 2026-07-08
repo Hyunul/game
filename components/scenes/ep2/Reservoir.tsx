@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../../lib/GameContext';
 import { canAttemptWith } from '../../../lib/gameState';
 import { playSfx, playBgm } from '../../../lib/audio';
-import Narration from '../../Narration';
 import TapLabel from '../../TapLabel';
 import { useTwoTap } from '../../../lib/useTwoTap';
 
@@ -34,10 +33,16 @@ export default function Reservoir() {
 
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [slots, setSlots] = useState<(number | null)[]>([null, null, null, null, null, null, null]);
-  const [narration, setNarration] = useState<string | null>(null);
+  // 오답 피드백 — 오버레이(z=70)가 열린 채라 Narration(z=45)은 가려지므로 패널 안에 표시
+  const [feedback, setFeedback] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
   const prevLastResult = useRef<typeof lastResult>(null);
   const lastWasMurderOrder = useRef(false);
+  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
+  }, []);
 
   useEffect(() => {
     playBgm('ep2-night');
@@ -46,12 +51,12 @@ export default function Reservoir() {
   useEffect(() => {
     if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
       setShake(true);
-      setNarration(
+      setFeedback(
         lastWasMurderOrder.current
           ? '…정말 그럴까? 조서를 다시 보자. 물가로 달려간 사람은 맨손이었다. 그리고 시계는, 그보다 뒤에 멈췄다.'
           : '무언가 앞뒤가 맞지 않는다…',
       );
-      setTimeout(() => setShake(false), 500);
+      shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
     prevLastResult.current = lastResult;
   }, [lastResult]);
@@ -70,6 +75,7 @@ export default function Reservoir() {
     const emptyIdx = slots.findIndex((s) => s === null);
     if (emptyIdx === -1) return;
     playSfx('click');
+    setFeedback(null);
     const next = [...slots];
     next[emptyIdx] = num;
     setSlots(next);
@@ -77,6 +83,7 @@ export default function Reservoir() {
 
   function returnCard(idx: number) {
     playSfx('click');
+    setFeedback(null);
     const next = [...slots];
     next[idx] = null;
     setSlots(next);
@@ -168,6 +175,7 @@ export default function Reservoir() {
           <div className={shake ? 'shake' : undefined} style={overlayStyles.panel}>
             <h3 style={overlayStyles.title}>그날 밤의 타임라인</h3>
             <p style={overlayStyles.hint}>일곱 조각을 시간 순서대로 배열하세요.</p>
+            {feedback && <p style={overlayStyles.feedback}>{feedback}</p>}
 
             {/* Slots */}
             <div style={overlayStyles.slotRow}>
@@ -231,7 +239,6 @@ export default function Reservoir() {
         </div>
       )}
 
-      <Narration text={narration} onDone={() => setNarration(null)} />
       <TapLabel name={armedId === 'shore' ? '물가를 살펴본다' : null} />
     </div>
   );
@@ -268,6 +275,16 @@ const overlayStyles: Record<string, React.CSSProperties> = {
     color: 'rgba(232,211,168,0.7)',
     fontSize: '0.82rem',
     textAlign: 'center',
+  },
+  feedback: {
+    margin: '0 0 16px',
+    padding: '10px 14px',
+    borderRadius: '8px',
+    backgroundColor: 'rgba(200,88,88,0.15)',
+    border: '1px solid rgba(200,88,88,0.4)',
+    color: '#e8b8a8',
+    fontSize: '0.85rem',
+    lineHeight: 1.6,
   },
   slotRow: {
     display: 'flex',

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { playSfx } from '../../lib/audio';
 import { fx } from '../../lib/effects';
 
@@ -73,6 +73,7 @@ export default function PhotoAssembly({ open, onSubmit, onClose }: Props) {
   const [placed, setPlaced] = useState<Partial<Record<Quadrant, string>>>({});
   const [selected, setSelected] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
+  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -81,6 +82,10 @@ export default function PhotoAssembly({ open, onSubmit, onClose }: Props) {
       setShake(false);
     }
   }, [open]);
+
+  useEffect(() => () => {
+    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
+  }, []);
 
   if (!open) return null;
 
@@ -121,7 +126,7 @@ export default function PhotoAssembly({ open, onSubmit, onClose }: Props) {
       } else {
         playSfx('wrong');
         setShake(true);
-        setTimeout(() => setShake(false), 500);
+        shakeTimer.current = setTimeout(() => setShake(false), 600);
       }
     }
   }

@@ -27,8 +27,10 @@ export default function Inventory() {
   const openDocItem = openDocId ? episode.items[openDocId] : null;
 
   return (
-    <div style={styles.wrapper}>
+    <>
+      {/* wrapper(z=40) 스택 컨텍스트 밖에 렌더 — 씬 오버레이(z=80)에 가려지지 않도록 */}
       <DocViewer item={openDocItem ?? null} onClose={() => setOpenDocId(null)} />
+      <div style={styles.wrapper}>
       {selectedItem && (
         <div style={styles.desc}>
           {selectedItem.doc ? (
@@ -66,7 +68,8 @@ export default function Inventory() {
           );
         })}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

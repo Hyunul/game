@@ -53,9 +53,9 @@ export default function HandwritingPicker({
 
   useEffect(() => {
     if (!open || wrongSignal === undefined) return;
-    playSfx('wrong');
+    // 오답음은 ATTEMPT 디스패치를 받은 GameContext가 재생 — 여기서 또 울리면 중복
     setShake(true);
-    const t = setTimeout(() => setShake(false), 500);
+    const t = setTimeout(() => setShake(false), 600);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wrongSignal]);

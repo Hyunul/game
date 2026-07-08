@@ -31,6 +31,15 @@ describe('gameState', () => {
     expect(s.lastResult).toBe('correct');
   });
 
+  it('START resume 시 lastResult가 리셋된다 — 오답 직후 저장 복귀 오발 방지', () => {
+    let s = reducer(initialState, { type: 'SOLVE', puzzleId: 'home-calendar' });
+    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'home-phone', answer: '1234' });
+    expect(s.lastResult).toBe('wrong');
+    const resumed = reducer(initialState, { type: 'START', resume: s });
+    expect(resumed.lastResult).toBeNull();
+    expect(resumed.solved).toEqual(s.solved);
+  });
+
   it('requiresItem이 인벤토리에 없으면 시도 불가', () => {
     expect(canAttempt(initialState, 'home-sewingbox')).toBe(false);
     const s = reducer(initialState, { type: 'PICKUP', itemId: 'backscratcher' });
