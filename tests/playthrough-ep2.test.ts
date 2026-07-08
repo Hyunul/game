@@ -198,21 +198,36 @@ describe('ep2 v2 full playthrough', () => {
     expect(s.phase).toBe('epilogue');
   });
 
-  it('밤 게이트 미충족 저장으로 resume하면 저수지 대신 헛간에서 시작한다', () => {
+  it('밤 게이트 미충족 저장으로 resume하면 직전 방(없으면 헛간)으로 되돌린다', () => {
     const badSave: GameState = {
       ...initialState,
       phase: 'playing',
       room: 'reservoir',
+      prevRoom: null,
       era: 'past',
       // watch-lid가 빠진 채 저수지에 저장된(게이트 수정 전) 상태
       solved: ['ep2-photo', 'ep2-handwriting', 'ep2-contradiction', 'ep2-lantern', 'ep2-toolwall'],
     };
+    // 직전 방 기록이 없으면 fallback(헛간)
     const resumed = reducer(initialState, { type: 'START', resume: badSave });
     expect(resumed.room).toBe('heotgan');
+
+    // 직전 방 기록이 있으면 그 방으로
+    const withPrev: GameState = { ...badSave, prevRoom: 'anbang' };
+    const resumedPrev = reducer(initialState, { type: 'START', resume: withPrev });
+    expect(resumedPrev.room).toBe('anbang');
 
     // 게이트를 모두 충족한 저장은 저수지 그대로 복귀
     const goodSave: GameState = { ...badSave, solved: [...badSave.solved, 'ep2-watch-lid'] };
     const resumedOk = reducer(initialState, { type: 'START', resume: goodSave });
     expect(resumedOk.room).toBe('reservoir');
+  });
+
+  it('ENTER_ROOM은 직전 방을 prevRoom에 기록한다', () => {
+    let s = reducer(initialState, { type: 'START' });
+    s = reducer(s, { type: 'ENTER_ROOM', room: 'sarangbang' });
+    s = reducer(s, { type: 'ENTER_ROOM', room: 'anbang' });
+    expect(s.prevRoom).toBe('sarangbang');
+    expect(s.room).toBe('anbang');
   });
 });

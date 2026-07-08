@@ -21,6 +21,7 @@ export function loadGame(key: string = KEY): GameState | null {
       wrongAttempts: typeof s.wrongAttempts === 'number' ? s.wrongAttempts : 0,
       era: s.era === 'past' ? 'past' : 'present',
       selectedItem: s.selectedItem ?? null,
+      prevRoom: s.prevRoom ?? null,
       lastResult: null,
     } as GameState;
   } catch { return null; }

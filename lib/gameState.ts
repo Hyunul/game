@@ -7,6 +7,8 @@ export type Phase = 'title' | 'prologue' | 'playing' | 'memory' | 'epilogue';
 export interface GameState {
   phase: Phase;
   room: AnyRoomId;
+  /** 직전에 있던 방 — 입장 게이트에 걸린 저장을 되돌릴 목적지로 쓴다 */
+  prevRoom: AnyRoomId | null;
   solved: string[];
   inventory: string[];
   memoryShards: AnyRoomId[];          // 'home' | 'class' | 'store'
@@ -20,7 +22,7 @@ export interface GameState {
 }
 
 export const initialState: GameState = {
-  phase: 'title', room: 'attic', solved: [], inventory: [],
+  phase: 'title', room: 'attic', prevRoom: null, solved: [], inventory: [],
   memoryShards: [], selectedItem: null, lastResult: null, wrongAttempts: 0,
   hintsUsed: {},
   era: 'present',
@@ -102,14 +104,21 @@ export function createGameReducer(config: EpisodeConfig) {
         let next: GameState = {
           ...a.resume, lastResult: null, wrongAttempts: a.resume.wrongAttempts ?? 0,
         };
-        // 방 입장 게이트 검증 — 조건 미달인 방에 저장된 상태로 복귀하면 fallback으로
+        // 방 입장 게이트 검증 — 조건 미달인 방에 저장된 상태로 복귀하면
+        // 직전 방(prevRoom)으로, 기록이 없으면 fallback으로 되돌린다.
+        // 단 prevRoom 자체가 게이트에 걸리는 방이면 안전하게 fallback 사용.
         const gate = config.roomGates?.[next.room];
         if (gate && !gate.requires.every((r) => next.solved.includes(r))) {
-          next = { ...next, room: gate.fallback };
+          const prev = next.prevRoom;
+          const target = prev && prev !== next.room && !config.roomGates?.[prev]
+            ? prev
+            : gate.fallback;
+          next = { ...next, room: target };
         }
         return next;
       }
-      case 'ENTER_ROOM': return { ...s, room: a.room, phase: 'playing', lastResult: null };
+      case 'ENTER_ROOM':
+        return { ...s, room: a.room, prevRoom: s.room, phase: 'playing', lastResult: null };
       case 'PICKUP':
         return s.inventory.includes(a.itemId) ? s : { ...s, inventory: [...s.inventory, a.itemId] };
       case 'SELECT_ITEM': return { ...s, selectedItem: a.itemId };
