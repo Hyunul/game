@@ -111,8 +111,14 @@ export default function Bueok() {
         {/* 어둑한 부엌 */}
         <rect width="800" height="400" fill="#4a3a28" />
         <rect x="0" y="320" width="800" height="80" fill="#2e2418" />
-        {/* 그을린 벽 */}
-        <ellipse cx="250" cy="140" rx="120" ry="90" fill="#3a2c1c" opacity="0.8" />
+        {/* 아궁이 위 벽의 그을음 — 위로 갈수록 옅게 번진 자국 */}
+        <defs>
+          <linearGradient id="soot" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stopColor="#241a0e" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#241a0e" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d="M 160 230 Q 180 120 250 90 Q 320 120 340 230 Z" fill="url(#soot)" />
 
         {/* 살창으로 드는 빛 */}
         <g aria-hidden="true">
@@ -131,11 +137,17 @@ export default function Bueok() {
           role="button" aria-label="아궁이" tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleAgungi()}
         >
-          {/* 부뚜막 */}
-          <path d="M 120 320 L 140 220 L 360 220 L 380 320 Z" fill="#5a4632" stroke="#3a2810" strokeWidth="2" />
-          {/* 가마솥 */}
-          <ellipse cx="250" cy="218" rx="70" ry="18" fill="#1a1e26" stroke="#0a0e14" strokeWidth="2" />
-          <path d="M 182 218 Q 190 260 250 262 Q 310 260 318 218" fill="#20242c" stroke="#0a0e14" strokeWidth="2" />
+          {/* 부뚜막 — 가마솥이 걸리는 아궁이 단 */}
+          <path d="M 110 320 L 126 232 L 374 232 L 390 320 Z" fill="#5a4632" stroke="#3a2810" strokeWidth="2" />
+          <line x1="126" y1="248" x2="374" y2="248" stroke="#3a2810" strokeWidth="1.5" opacity="0.5" />
+          {/* 가마솥 — 부뚜막에 반쯤 잠겨 걸려 있다 */}
+          <path d="M 186 240 Q 196 208 250 204 Q 304 208 314 240 Z" fill="#2a2a28" stroke="#141412" strokeWidth="2" />
+          <ellipse cx="250" cy="206" rx="56" ry="10" fill="#3a3a36" stroke="#141412" strokeWidth="2" />
+          {/* 솥뚜껑 손잡이 */}
+          <ellipse cx="250" cy="202" rx="34" ry="6" fill="#2e2e2a" stroke="#141412" strokeWidth="1.5" />
+          <rect x="244" y="192" width="12" height="8" rx="3" fill="#4a4a44" stroke="#141412" strokeWidth="1" />
+          {/* 솥전 (테두리) */}
+          <path d="M 186 240 L 176 236 M 314 240 L 324 236" stroke="#141412" strokeWidth="3" strokeLinecap="round" />
           {/* 아궁이 입 */}
           <path d="M 210 320 Q 210 280 250 280 Q 290 280 290 320 Z" fill="#100a06" stroke="#3a2810" strokeWidth="2" />
           {heatSolved && (

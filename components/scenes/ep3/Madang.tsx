@@ -246,6 +246,19 @@ export default function Madang() {
           <text x="252" y="148" textAnchor="middle" fontSize="12" fill="#3a2c18">뒷문(안방)</text>
         </g>
 
+        {/* ── 담장 (대문 양옆) ── */}
+        <g aria-hidden="true">
+          <rect x="0" y="196" width="30" height="104" fill="#b09870" stroke="#7a6040" strokeWidth="1.5" />
+          <rect x="120" y="196" width="60" height="104" fill="#b09870" stroke="#7a6040" strokeWidth="1.5" />
+          <line x1="0" y1="230" x2="30" y2="230" stroke="#7a6040" strokeWidth="1" opacity="0.6" />
+          <line x1="120" y1="230" x2="180" y2="230" stroke="#7a6040" strokeWidth="1" opacity="0.6" />
+          <line x1="0" y1="264" x2="30" y2="264" stroke="#7a6040" strokeWidth="1" opacity="0.6" />
+          <line x1="120" y1="264" x2="180" y2="264" stroke="#7a6040" strokeWidth="1" opacity="0.6" />
+          {/* 담장 기와 */}
+          <rect x="-4" y="184" width="40" height="14" rx="4" fill="#4a3826" />
+          <rect x="114" y="184" width="72" height="14" rx="4" fill="#4a3826" />
+        </g>
+
         {/* ── 대문 + 문살 그림자 ── */}
         <g
           className="hotspot"
@@ -254,13 +267,21 @@ export default function Madang() {
           role="button" aria-label="대문과 그림자" tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleGate()}
         >
-          <rect x="30" y="180" width="90" height="120" fill="#4a3520" stroke="#2a1c10" strokeWidth="2.5" />
-          {[52, 72, 92].map((x) => (
+          {/* 문기둥 */}
+          <rect x="24" y="172" width="10" height="130" fill="#3a2810" />
+          <rect x="116" y="172" width="10" height="130" fill="#3a2810" />
+          {/* 대문 지붕 */}
+          <polygon points="12,176 138,176 128,156 22,156" fill="#4a3826" stroke="#2a1c10" strokeWidth="2" />
+          {/* 문짝 */}
+          <rect x="34" y="180" width="82" height="120" fill="#4a3520" stroke="#2a1c10" strokeWidth="2.5" />
+          {[54, 74, 94].map((x) => (
             <line key={x} x1={x} y1="186" x2={x} y2="294" stroke="#2a1c10" strokeWidth="2.5" />
           ))}
-          <line x1="34" y1="230" x2="116" y2="230" stroke="#2a1c10" strokeWidth="2.5" />
-          {/* 마당의 그림자 자국 */}
-          <polygon points="120,300 240,320 240,336 120,314" fill="#5a4a34" opacity="0.5" />
+          <line x1="38" y1="230" x2="112" y2="230" stroke="#2a1c10" strokeWidth="2.5" />
+          {/* 마당에 드리운 문살 그림자 — 대문 밑동에서 댓돌 쪽으로 */}
+          <polygon points="116,302 250,324 250,338 116,314" fill="#3a2f20" opacity="0.35" />
+          <line x1="130" y1="306" x2="252" y2="327" stroke="#3a2f20" strokeWidth="3" opacity="0.3" />
+          <line x1="126" y1="310" x2="248" y2="333" stroke="#3a2f20" strokeWidth="3" opacity="0.3" />
         </g>
 
         {/* ── 댓돌 ── */}
@@ -278,7 +299,7 @@ export default function Madang() {
           onKeyDown={(e) => e.key === 'Enter' && handleJangdok()}
         >
           {[0, 1, 2, 3].map((i) => (
-            <g key={i} transform={`translate(${628 + (i % 2) * 62}, ${296 + Math.floor(i / 2) * 42})`}>
+            <g key={i} transform={`translate(${440 + (i % 2) * 62}, ${300 + Math.floor(i / 2) * 40})`}>
               <path d="M 6 30 Q 0 12 12 4 Q 24 -2 36 4 Q 48 12 42 30 Q 38 40 24 40 Q 10 40 6 30" fill="#5a3e26" stroke="#3a2810" strokeWidth="1.5" />
               <ellipse cx="24" cy="5" rx="14" ry="4" fill="#6a4c30" stroke="#3a2810" strokeWidth="1" />
             </g>
@@ -309,15 +330,20 @@ export default function Madang() {
           role="button" aria-label="빨랫줄" tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleClothesline()}
         >
-          <line x1="640" y1="120" x2="784" y2="140" stroke="#c8b088" strokeWidth="2" />
-          <line x1="640" y1="120" x2="640" y2="280" stroke="#5a4632" strokeWidth="4" />
-          <line x1="784" y1="140" x2="784" y2="280" stroke="#5a4632" strokeWidth="4" />
-          {/* 옷가지 */}
+          {/* 장대 두 개 — 본채 오른쪽 마당에 낮게 */}
+          <line x1="652" y1="180" x2="652" y2="316" stroke="#5a4632" strokeWidth="4" />
+          <line x1="780" y1="188" x2="780" y2="320" stroke="#5a4632" strokeWidth="4" />
+          <line x1="652" y1="184" x2="780" y2="192" stroke="#c8b088" strokeWidth="2" />
+          {/* 옷가지 — 줄에 널려 늘어진다 */}
           {(clotheslineSolved
-            ? [{ x: 652, c: '#efe8d8' }, { x: 684, c: '#e8e0cc' }, { x: 716, c: '#9ab8c8' }, { x: 748, c: '#d8ccb0' }]
-            : [{ x: 652, c: '#9ab8c8' }, { x: 684, c: '#d8ccb0' }, { x: 716, c: '#efe8d8' }, { x: 748, c: '#e8e0cc' }]
+            ? [{ x: 660, c: '#efe8d8' }, { x: 690, c: '#e8e0cc' }, { x: 720, c: '#9ab8c8' }, { x: 750, c: '#d8ccb0' }]
+            : [{ x: 660, c: '#9ab8c8' }, { x: 690, c: '#d8ccb0' }, { x: 720, c: '#efe8d8' }, { x: 750, c: '#e8e0cc' }]
           ).map((o, i) => (
-            <rect key={i} x={o.x} y={124 + i * 4} width="26" height={30 + (i % 2) * 8} fill={o.c} stroke="#8a7a60" strokeWidth="1" />
+            <g key={i}>
+              <rect x={o.x} y={186 + i * 1.5} width="24" height={30 + (i % 2) * 8} fill={o.c} stroke="#8a7a60" strokeWidth="1" />
+              {/* 줄에 걸친 접힘 */}
+              <rect x={o.x} y={186 + i * 1.5} width="24" height="5" fill={o.c} stroke="#8a7a60" strokeWidth="0.8" opacity="0.85" />
+            </g>
           ))}
         </g>
       </svg>

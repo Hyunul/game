@@ -175,7 +175,17 @@ export default function AnbangEp3() {
           <line key={x} x1={x} y1="302" x2={x} y2="400" stroke="#75582f" strokeWidth="1.5" opacity="0.4" />
         ))}
 
-        {/* ── 벽장 ── */}
+        {/* 창호지 문 (배경 장식) */}
+        <g aria-hidden="true">
+          <rect x="330" y="70" width="150" height="130" fill="#e8e0c8" stroke="#6a5030" strokeWidth="3" />
+          <line x1="405" y1="72" x2="405" y2="198" stroke="#6a5030" strokeWidth="2.5" />
+          <line x1="332" y1="114" x2="478" y2="114" stroke="#6a5030" strokeWidth="2" />
+          <line x1="332" y1="158" x2="478" y2="158" stroke="#6a5030" strokeWidth="2" />
+          <line x1="368" y1="72" x2="368" y2="198" stroke="#6a5030" strokeWidth="1.5" opacity="0.7" />
+          <line x1="442" y1="72" x2="442" y2="198" stroke="#6a5030" strokeWidth="1.5" opacity="0.7" />
+        </g>
+
+        {/* ── 벽장 (바닥까지 내려선 장) ── */}
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
@@ -183,16 +193,47 @@ export default function AnbangEp3() {
           role="button" aria-label="벽장" tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleCloset()}
         >
-          <rect x="60" y="70" width="180" height="190" fill="#6a4c2c" stroke="#3a2810" strokeWidth="2.5" />
-          <line x1="150" y1="72" x2="150" y2="258" stroke="#3a2810" strokeWidth="2" />
-          <circle cx="140" cy="165" r="4" fill="#c8b088" />
-          <circle cx="160" cy="165" r="4" fill="#c8b088" />
+          <rect x="60" y="70" width="180" height="240" fill="#6a4c2c" stroke="#3a2810" strokeWidth="2.5" />
+          <line x1="150" y1="72" x2="150" y2="308" stroke="#3a2810" strokeWidth="2" />
+          <line x1="62" y1="290" x2="238" y2="290" stroke="#3a2810" strokeWidth="1.5" opacity="0.6" />
+          <circle cx="140" cy="180" r="4" fill="#c8b088" />
+          <circle cx="160" cy="180" r="4" fill="#c8b088" />
           {closetSolved && (
             <g opacity="0.9">
               <rect x="72" y="90" width="66" height="16" fill="#e8dcc0" />
               <rect x="72" y="110" width="66" height="16" fill="#d8ccb0" />
               <rect x="72" y="130" width="66" height="16" fill="#e8dcc0" />
             </g>
+          )}
+        </g>
+
+        {/* ── 반닫이 (최종) — 바닥에 놓인 궤 ── */}
+        <g
+          className="hotspot"
+          style={{ cursor: 'pointer' }}
+          onClick={(e) => { e.stopPropagation(); guard('bandaji', handleBandaji); }}
+          role="button" aria-label="봉인된 반닫이" tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && handleBandaji()}
+        >
+          <rect x="540" y="200" width="200" height="110" rx="3" fill="#4a3018" stroke="#2a1c10" strokeWidth="3" />
+          {/* 앞널 경계 (반닫이 여닫이 선) */}
+          <line x1="540" y1="248" x2="740" y2="248" stroke="#2a1c10" strokeWidth="2.5" />
+          {/* 짧은 발 */}
+          <rect x="548" y="310" width="14" height="8" fill="#2a1c10" />
+          <rect x="718" y="310" width="14" height="8" fill="#2a1c10" />
+          {/* 놋 장석 */}
+          <circle cx="640" cy="248" r="12" fill="#c8a94e" stroke="#8a6a2a" strokeWidth="2" />
+          <rect x="554" y="210" width="12" height="30" rx="2" fill="#c8a94e" opacity="0.8" />
+          <rect x="714" y="210" width="12" height="30" rx="2" fill="#c8a94e" opacity="0.8" />
+          <rect x="554" y="268" width="12" height="30" rx="2" fill="#c8a94e" opacity="0.8" />
+          <rect x="714" y="268" width="12" height="30" rx="2" fill="#c8a94e" opacity="0.8" />
+          {/* 종이 봉인 — 여닫이 선을 가로질러 붙어 있다 */}
+          {!sealBroken && (
+            <rect x="624" y="220" width="32" height="56" fill="#efe3c0" stroke="#b8a070" strokeWidth="1"
+              transform="rotate(4 640 248)" />
+          )}
+          {sealBroken && !solved.includes('ep3-name') && (
+            <circle cx="640" cy="248" r="18" fill="#ffd24a" opacity="0.25" />
           )}
         </g>
 
@@ -204,22 +245,22 @@ export default function AnbangEp3() {
           role="button" aria-label="문갑" tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleMungap()}
         >
-          <rect x="300" y="230" width="200" height="70" fill="#5a3e26" stroke="#3a2810" strokeWidth="2.5" />
-          <line x1="400" y1="232" x2="400" y2="298" stroke="#3a2810" strokeWidth="1.5" />
-          <circle cx="352" cy="264" r="4" fill="#c8b088" />
-          <circle cx="448" cy="264" r="4" fill="#c8b088" />
-          {/* 봉투 꽂이 */}
-          <rect x="330" y="196" width="140" height="34" fill="#4a3018" stroke="#2a1c10" strokeWidth="1.5" />
+          <rect x="290" y="240" width="200" height="70" fill="#5a3e26" stroke="#3a2810" strokeWidth="2.5" />
+          <line x1="390" y1="242" x2="390" y2="308" stroke="#3a2810" strokeWidth="1.5" />
+          <circle cx="342" cy="274" r="4" fill="#c8b088" />
+          <circle cx="438" cy="274" r="4" fill="#c8b088" />
+          {/* 봉투 꽂이 — 문갑 위에 올려져 있다 */}
+          <rect x="320" y="206" width="140" height="34" fill="#4a3018" stroke="#2a1c10" strokeWidth="1.5" />
           {[0, 1, 2, 3, 4, 5].map((i) => (
-            <rect key={i} x={338 + i * 22} y={postmarkSolved ? 202 : 200 + (i % 3) * 4} width="16" height="24"
+            <rect key={i} x={328 + i * 22} y={postmarkSolved ? 212 : 210 + (i % 3) * 4} width="16" height="24"
               fill="#efe3c0" stroke="#b8a070" strokeWidth="1"
-              transform={postmarkSolved ? undefined : `rotate(${(i % 2 ? 6 : -5)} ${346 + i * 22} 212)`} />
+              transform={postmarkSolved ? undefined : `rotate(${(i % 2 ? 6 : -5)} ${336 + i * 22} 222)`} />
           ))}
           {/* 비밀칸 */}
-          {postmarkSolved && <rect x="360" y="300" width="80" height="10" fill="#3a2810" />}
+          {postmarkSolved && <rect x="350" y="310" width="80" height="10" fill="#3a2810" />}
         </g>
 
-        {/* ── 서안 (대조) ── */}
+        {/* ── 서안 (대조) — 방 앞쪽 가운데 ── */}
         <g
           className="hotspot"
           style={{ cursor: 'pointer' }}
@@ -227,38 +268,19 @@ export default function AnbangEp3() {
           role="button" aria-label="서안 — 기록을 펼친다" tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleSeoan()}
         >
-          <rect x="560" y="262" width="170" height="12" fill="#6a4c2c" stroke="#4a3018" strokeWidth="1.5" />
-          <line x1="574" y1="274" x2="570" y2="310" stroke="#4a3018" strokeWidth="4" />
-          <line x1="716" y1="274" x2="720" y2="310" stroke="#4a3018" strokeWidth="4" />
-          {/* 펼친 책 두 권 */}
-          <path d="M 580 258 L 612 250 L 644 258 L 644 262 L 612 255 L 580 262 Z" fill="#efe3c0" stroke="#8a7a58" strokeWidth="1" />
-          <path d="M 650 258 L 682 250 L 714 258 L 714 262 L 682 255 L 650 262 Z" fill="#e0d0a8" stroke="#8a7a58" strokeWidth="1" />
+          {/* 상판 (도톰하게) */}
+          <rect x="300" y="332" width="180" height="14" rx="3" fill="#7a5636" stroke="#4a3018" strokeWidth="1.5" />
+          {/* 두루마리 다리 */}
+          <path d="M 314 346 q -6 18 -10 24 M 466 346 q 6 18 10 24" stroke="#4a3018" strokeWidth="6" fill="none" strokeLinecap="round" />
+          {/* 펼친 책 두 권 (상판 위) */}
+          <g>
+            <path d="M 322 330 L 356 322 L 390 330 L 390 334 L 356 327 L 322 334 Z" fill="#efe3c0" stroke="#8a7a58" strokeWidth="1.2" />
+            <line x1="330" y1="329" x2="350" y2="325" stroke="#8a6a3a" strokeWidth="0.8" opacity="0.7" />
+            <path d="M 396 330 L 430 322 L 464 330 L 464 334 L 430 327 L 396 334 Z" fill="#e0d0a8" stroke="#8a7a58" strokeWidth="1.2" />
+            <line x1="436" y1="325" x2="456" y2="329" stroke="#a04030" strokeWidth="0.8" opacity="0.6" />
+          </g>
           {foundCount > 0 && (
-            <text x="647" y="242" textAnchor="middle" fontSize="12" fill="#7a4f1e">{foundCount}/5</text>
-          )}
-        </g>
-
-        {/* ── 반닫이 (최종) ── */}
-        <g
-          className="hotspot"
-          style={{ cursor: 'pointer' }}
-          onClick={(e) => { e.stopPropagation(); guard('bandaji', handleBandaji); }}
-          role="button" aria-label="봉인된 반닫이" tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && handleBandaji()}
-        >
-          <rect x="300" y="96" width="200" height="90" fill="#4a3018" stroke="#2a1c10" strokeWidth="3" />
-          <line x1="300" y1="140" x2="500" y2="140" stroke="#2a1c10" strokeWidth="2.5" />
-          {/* 놋 장석 */}
-          <circle cx="400" cy="140" r="12" fill="#c8a94e" stroke="#8a6a2a" strokeWidth="2" />
-          <rect x="316" y="104" width="12" height="30" rx="2" fill="#c8a94e" opacity="0.8" />
-          <rect x="472" y="104" width="12" height="30" rx="2" fill="#c8a94e" opacity="0.8" />
-          {/* 종이 봉인 */}
-          {!sealBroken && (
-            <rect x="384" y="112" width="32" height="56" fill="#efe3c0" stroke="#b8a070" strokeWidth="1"
-              transform="rotate(4 400 140)" />
-          )}
-          {sealBroken && !solved.includes('ep3-name') && (
-            <circle cx="400" cy="140" r="18" fill="#ffd24a" opacity="0.25" />
+            <text x="390" y="314" textAnchor="middle" fontSize="12" fill="#7a4f1e">{foundCount}/5</text>
           )}
         </g>
       </svg>

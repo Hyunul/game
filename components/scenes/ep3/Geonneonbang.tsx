@@ -97,9 +97,9 @@ export default function Geonneonbang() {
         {[140, 300, 460, 620].map((x) => (
           <line key={x} x1={x} y1="302" x2={x} y2="400" stroke="#7a5a34" strokeWidth="1.5" opacity="0.4" />
         ))}
-        {/* 벽지 얼룩 — 오래 비어 있던 방 */}
-        <ellipse cx="620" cy="120" rx="60" ry="40" fill="#b8a078" opacity="0.6" />
-        <ellipse cx="160" cy="90" rx="44" ry="30" fill="#b8a078" opacity="0.5" />
+        {/* 오래 비어 있던 방 — 가구가 있던 자리의 벽지 자국 */}
+        <rect x="580" y="90" width="110" height="140" fill="#d2bc94" opacity="0.5" />
+        <rect x="580" y="90" width="110" height="140" fill="none" stroke="#a8946c" strokeWidth="1.5" opacity="0.5" strokeDasharray="4 3" />
 
         {/* 작은 창 */}
         <g aria-hidden="true">
@@ -121,15 +121,21 @@ export default function Geonneonbang() {
           <line x1="100" y1="260" x2="94" y2="330" stroke="#3a2810" strokeWidth="5" />
           <line x1="230" y1="260" x2="236" y2="330" stroke="#3a2810" strokeWidth="5" />
           <line x1="97" y1="300" x2="233" y2="300" stroke="#3a2810" strokeWidth="3" />
-          {/* 머리 */}
-          <path d="M 120 250 L 120 212 Q 120 200 134 200 L 186 200 Q 198 200 198 214 L 198 250"
-            fill="#20242c" stroke="#0a0e14" strokeWidth="2" />
-          <circle cx="196" cy="226" r="10" fill="#3a3e46" stroke="#0a0e14" strokeWidth="1.5" />
-          {/* 걸린 천 */}
+          {/* 몸체 — 받침판 위에 선 아암형 머리 */}
+          <rect x="112" y="242" width="106" height="8" rx="2" fill="#141820" stroke="#0a0e14" strokeWidth="1.5" />
+          <rect x="196" y="204" width="16" height="40" rx="4" fill="#20242c" stroke="#0a0e14" strokeWidth="2" />
+          <rect x="138" y="200" width="70" height="14" rx="6" fill="#20242c" stroke="#0a0e14" strokeWidth="2" />
+          {/* 바늘대 */}
+          <rect x="136" y="212" width="10" height="18" rx="2" fill="#20242c" stroke="#0a0e14" strokeWidth="1.5" />
+          <line x1="141" y1="230" x2="141" y2="240" stroke="#c8c8b0" strokeWidth="1.5" />
+          {/* 손잡이 바퀴 */}
+          <circle cx="212" cy="222" r="11" fill="#3a3e46" stroke="#0a0e14" strokeWidth="2" />
+          <circle cx="212" cy="222" r="4" fill="#20242c" />
+          {/* 걸린 천 — 바늘 밑에 물려 있다 */}
           {!clothTaken && (
             <g>
-              <rect x="128" y="238" width="56" height="26" fill="#e8dcc0" stroke="#b8a070" strokeWidth="1" transform="rotate(-4 156 251)" />
-              <path d="M 134 246 h 40 M 136 252 v 8 M 168 246 v 12" stroke="#a04030" strokeWidth="1.2" fill="none" />
+              <rect x="118" y="234" width="58" height="18" fill="#e8dcc0" stroke="#b8a070" strokeWidth="1" transform="rotate(-3 147 243)" />
+              <path d="M 126 242 h 40 M 128 246 v 4 M 160 240 v 8" stroke="#a04030" strokeWidth="1.2" fill="none" />
             </g>
           )}
         </g>
