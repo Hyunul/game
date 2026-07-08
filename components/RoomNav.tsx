@@ -12,17 +12,15 @@ interface Props {
   onGo: (room: string) => void;
 }
 
-/** 장면 하단 모서리의 소형 방 이동 버튼. 거대한 문 히트박스를 대체한다. */
+/** 방 이동 버튼. 데스크톱은 장면 상단 모서리, 모바일은 화면 하단 고정
+ *  (장면이 작아져 상단 배치가 핫스팟을 가리는 것 방지) — 스타일은 effects.css. */
 export default function RoomNav({ targets, onGo }: Props) {
   return (
     <>
       {targets.map((t) => (
         <button
           key={t.room}
-          style={{
-            ...styles.btn,
-            ...(t.side === 'left' ? { left: '12px' } : { right: '12px' }),
-          }}
+          className={`room-nav-btn ${t.side === 'left' ? 'room-nav-left' : 'room-nav-right'}`}
           onClick={() => { playSfx('click'); onGo(t.room); }}
           aria-label={`${t.label}(으)로 이동`}
         >
@@ -32,21 +30,3 @@ export default function RoomNav({ targets, onGo }: Props) {
     </>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  btn: {
-    position: 'absolute',
-    top: '12px',
-    zIndex: 20,
-    minHeight: '40px',
-    padding: '8px 14px',
-    backgroundColor: 'rgba(20,14,8,0.82)',
-    color: '#e8d3a8',
-    border: '1px solid rgba(232,211,168,0.35)',
-    borderRadius: '999px',
-    fontSize: '0.85rem',
-    fontWeight: 600,
-    cursor: 'pointer',
-    letterSpacing: '0.02em',
-  },
-};

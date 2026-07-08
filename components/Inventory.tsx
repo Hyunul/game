@@ -42,7 +42,7 @@ export default function Inventory() {
           )}
         </div>
       )}
-      <div style={styles.bar}>
+      <div className="inv-bar" style={styles.bar}>
         {Array.from({ length: Math.max(SLOT_COUNT, state.inventory.length) }, (_, i) => {
           const itemId = state.inventory[i] as ItemId | undefined;
           const item = itemId ? episode.items[itemId] : null;
@@ -50,6 +50,7 @@ export default function Inventory() {
           return (
             <button
               key={i}
+              className="inv-slot"
               style={{
                 ...styles.slot,
                 border: isSelected
@@ -62,7 +63,7 @@ export default function Inventory() {
               aria-label={item ? item.name : '빈 슬롯'}
             >
               {item ? (
-                <span style={styles.icon}>{item.icon}</span>
+                <span className="inv-icon" style={styles.icon}>{item.icon}</span>
               ) : null}
             </button>
           );
@@ -113,8 +114,7 @@ const styles: Record<string, React.CSSProperties> = {
     maxWidth: '600px',
   },
   slot: {
-    width: '52px',
-    height: '52px',
+    // width/height는 .inv-slot(effects.css)에서 — 모바일 축소를 위해 클래스로 관리
     backgroundColor: 'rgba(232,211,168,0.05)',
     borderRadius: '6px',
     display: 'flex',
@@ -124,7 +124,7 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
   },
   icon: {
-    fontSize: '1.6rem',
+    // 크기는 .inv-icon(effects.css)에서
     lineHeight: 1,
   },
 };

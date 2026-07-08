@@ -22,6 +22,43 @@
 .shake { animation: shake-x .3s ease-in-out 2; }
 /* .shake와 동일 — 연속 오답 시 클래스를 교대해 애니메이션을 강제 재시작 */
 .shake2 { animation: shake-x .3s ease-in-out 2; }
+/* 방 이동 버튼 — 데스크톱: 장면 상단 모서리 오버레이 */
+.room-nav-btn {
+  position: absolute;
+  top: 12px;
+  z-index: 20;
+  min-height: 40px;
+  padding: 8px 14px;
+  background-color: rgba(20, 14, 8, 0.82);
+  color: #e8d3a8;
+  border: 1px solid rgba(232, 211, 168, 0.35);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+.room-nav-left { left: 12px; }
+.room-nav-right { right: 12px; }
+/* 모바일: 장면이 작아 상단 오버레이가 핫스팟을 가리므로 화면 하단(엄지 영역)에 고정 */
+@media (max-width: 600px) {
+  .room-nav-btn {
+    position: fixed;
+    top: auto;
+    bottom: 108px;
+    z-index: 46;
+  }
+}
+
+/* 인벤토리 슬롯 — 모바일에서 6칸이 한 줄에 들어가도록 축소 */
+.inv-slot { width: 52px; height: 52px; }
+.inv-icon { font-size: 1.6rem; }
+@media (max-width: 600px) {
+  .inv-slot { width: 44px; height: 44px; }
+  .inv-bar { gap: 6px !important; }
+  .inv-icon { font-size: 1.3rem; }
+}
+
 /* 사물 바운스 (클릭 시) */
 @keyframes squash { 0%{transform:scale(1)} 35%{transform:scale(1.08,.94)} 70%{transform:scale(.97,1.04)} 100%{transform:scale(1)} }
 .bounce { animation: squash .35s ease-out; transform-box: fill-box; transform-origin: center; }

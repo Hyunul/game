@@ -245,13 +245,14 @@ export default function Reservoir() {
 
 const overlayStyles: Record<string, React.CSSProperties> = {
   overlay: {
-    position: 'absolute',
+    // fixed — 장면 상자에 갇히면 모바일에서 패널이 잘려 카드 배열이 어렵다
+    position: 'fixed',
     inset: 0,
     backgroundColor: 'rgba(6,4,10,0.85)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 70,
+    zIndex: 80,
     padding: '16px',
   },
   panel: {
