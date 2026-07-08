@@ -21,6 +21,11 @@ const ROOM_NAMES: Record<string, string> = {
   geonneonbang: '건넌방',
   bueok: '부엌',
   'ep3-anbang': '안방',
+  'ep4-attic': '다락방',
+  'ep4-maru': '마루',
+  'ep4-anbang': '안방',
+  'ep4-golbang': '골방',
+  'ep4-booth': '녹음 부스 — 회상',
 };
 
 interface Props {

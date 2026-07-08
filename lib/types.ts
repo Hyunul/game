@@ -1,7 +1,8 @@
 export type RoomId = 'attic' | 'home' | 'class' | 'store';
 export type Ep2RoomId = 'ep2-attic' | 'sarangbang' | 'anbang' | 'heotgan' | 'reservoir';
 export type Ep3RoomId = 'ep3-attic' | 'madang' | 'geonneonbang' | 'bueok' | 'ep3-anbang';
-export type AnyRoomId = RoomId | Ep2RoomId | Ep3RoomId;
+export type Ep4RoomId = 'ep4-attic' | 'ep4-maru' | 'ep4-anbang' | 'ep4-golbang' | 'ep4-booth';
+export type AnyRoomId = RoomId | Ep2RoomId | Ep3RoomId | Ep4RoomId;
 export type Era = 'past' | 'present';
 
 export type ItemId =
