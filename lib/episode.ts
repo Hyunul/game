@@ -11,4 +11,8 @@ export interface EpisodeConfig {
   epilogueAt: number;
   /** 최종 퍼즐 해결 후 복귀할 허브 방 */
   hubRoom: AnyRoomId;
+  /** 입장 조건이 있는 방 — resume 시 requires 미충족이면 fallback 방으로 되돌린다.
+   *  (예: ep2 저수지는 밤 게이트 6퍼즐을 모두 풀어야 진입 가능. 게이트 수정 전
+   *   저장이나 손상된 저장으로 조건 미달인 채 갇힌 방에서 시작하는 것 방지) */
+  roomGates?: Record<string, { requires: string[]; fallback: AnyRoomId }>;
 }

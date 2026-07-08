@@ -197,4 +197,22 @@ describe('ep2 v2 full playthrough', () => {
     expect(s.solved).toContain('ep2-timeline');
     expect(s.phase).toBe('epilogue');
   });
+
+  it('밤 게이트 미충족 저장으로 resume하면 저수지 대신 헛간에서 시작한다', () => {
+    const badSave: GameState = {
+      ...initialState,
+      phase: 'playing',
+      room: 'reservoir',
+      era: 'past',
+      // watch-lid가 빠진 채 저수지에 저장된(게이트 수정 전) 상태
+      solved: ['ep2-photo', 'ep2-handwriting', 'ep2-contradiction', 'ep2-lantern', 'ep2-toolwall'],
+    };
+    const resumed = reducer(initialState, { type: 'START', resume: badSave });
+    expect(resumed.room).toBe('heotgan');
+
+    // 게이트를 모두 충족한 저장은 저수지 그대로 복귀
+    const goodSave: GameState = { ...badSave, solved: [...badSave.solved, 'ep2-watch-lid'] };
+    const resumedOk = reducer(initialState, { type: 'START', resume: goodSave });
+    expect(resumedOk.room).toBe('reservoir');
+  });
 });

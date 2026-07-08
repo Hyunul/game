@@ -97,9 +97,18 @@ export function createGameReducer(config: EpisodeConfig) {
     switch (a.type) {
       // resume 시 lastResult를 리셋 — 오답 직후 저장된 상태로 복귀할 때
       // 로드 즉시 흔들림·오답음이 재생되는 것 방지
-      case 'START': return a.resume
-        ? { ...a.resume, lastResult: null, wrongAttempts: a.resume.wrongAttempts ?? 0 }
-        : { ...initialState, room: config.hubRoom, phase: 'prologue' };
+      case 'START': {
+        if (!a.resume) return { ...initialState, room: config.hubRoom, phase: 'prologue' };
+        let next: GameState = {
+          ...a.resume, lastResult: null, wrongAttempts: a.resume.wrongAttempts ?? 0,
+        };
+        // 방 입장 게이트 검증 — 조건 미달인 방에 저장된 상태로 복귀하면 fallback으로
+        const gate = config.roomGates?.[next.room];
+        if (gate && !gate.requires.every((r) => next.solved.includes(r))) {
+          next = { ...next, room: gate.fallback };
+        }
+        return next;
+      }
       case 'ENTER_ROOM': return { ...s, room: a.room, phase: 'playing', lastResult: null };
       case 'PICKUP':
         return s.inventory.includes(a.itemId) ? s : { ...s, inventory: [...s.inventory, a.itemId] };

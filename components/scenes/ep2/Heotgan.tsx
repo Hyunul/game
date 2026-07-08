@@ -12,11 +12,11 @@ import { useTwoTap } from '../../../lib/useTwoTap';
 import { useShake } from '../../../lib/useShake';
 import { eraTint, handleWatchUse } from './era';
 import RoomNav from '../../RoomNav';
-import { EP2_ITEMS } from '../../../lib/puzzles-ep2';
+import { EP2_ITEMS, EP2_NIGHT_GATE } from '../../../lib/puzzles-ep2';
 
-// 밤 이벤트 게이트 — ep2-timeline의 requires와 반드시 일치해야 한다.
-// 빠지면 그 퍼즐을 안 푼 채 밤(헛간·저수지 잠금)에 진입해 클리어 불가 소프트락.
-export const NIGHT_GATE_PUZZLES = ['ep2-photo', 'ep2-handwriting', 'ep2-contradiction', 'ep2-lantern', 'ep2-watch-lid', 'ep2-toolwall'];
+// 밤 이벤트 게이트 — 정의는 lib/puzzles-ep2.ts(EP2_NIGHT_GATE)로 일원화.
+// START resume의 방 게이트(roomGates)와 같은 목록을 공유한다.
+export const NIGHT_GATE_PUZZLES = EP2_NIGHT_GATE;
 
 const FLASHBACK_LINES = [
   '1978년 8월 15일 초저녁.',

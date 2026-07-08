@@ -296,6 +296,13 @@ export const EP2_PUZZLES: Puzzle[] = [
     ] },
 ];
 
+/** 밤 이벤트(저수지 진입) 게이트 — ep2-timeline의 requires와 반드시 일치해야 한다.
+ *  Heotgan의 밤 발동 조건과 START resume의 방 게이트 검증이 함께 사용한다. */
+export const EP2_NIGHT_GATE = [
+  'ep2-photo', 'ep2-handwriting', 'ep2-contradiction',
+  'ep2-lantern', 'ep2-watch-lid', 'ep2-toolwall',
+];
+
 export const EP2_CONFIG: EpisodeConfig = {
   id: 'ep2',
   saveKey: 'memory-box-save-ep2-v2',
@@ -304,4 +311,6 @@ export const EP2_CONFIG: EpisodeConfig = {
   finalPuzzles: { reservoir: 'ep2-timeline' },
   epilogueAt: 1,
   hubRoom: 'ep2-attic',
+  // 조건 미달 저장(게이트 수정 전 저장 등)으로 저수지에서 시작하는 것 방지
+  roomGates: { reservoir: { requires: EP2_NIGHT_GATE, fallback: 'heotgan' } },
 };
