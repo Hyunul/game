@@ -23,7 +23,7 @@ const TARGET_SEQUENCE = ['C', 'E', 'G', 'E', 'C'];
 
 export default function Room2Class() {
   const { state, dispatch } = useGame();
-  const { solved, inventory, selectedItem, lastResult } = state;
+  const { solved, inventory, selectedItem, wrongAttempts } = state;
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
@@ -34,8 +34,13 @@ export default function Room2Class() {
   const [shake, setShake] = useState(false);
   const [organSequence, setOrganSequence] = useState<string[]>([]);
 
-  const prevLastResult = useRef<typeof lastResult>(null);
+  const prevWrongAttempts = useRef(wrongAttempts);
   const prevSolvedLen = useRef(solved.length);
+  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
+  }, []);
 
   // Play class BGM on mount
   useEffect(() => {
@@ -44,12 +49,12 @@ export default function Room2Class() {
 
   // Shake on wrong answer
   useEffect(() => {
-    if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
+    if (wrongAttempts > prevWrongAttempts.current) {
       setShake(true);
-      setTimeout(() => setShake(false), 500);
+      shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
-    prevLastResult.current = lastResult;
-  }, [lastResult]);
+    prevWrongAttempts.current = wrongAttempts;
+  }, [wrongAttempts]);
 
   // Trigger shard particles + sfx when class-final is solved
   useEffect(() => {

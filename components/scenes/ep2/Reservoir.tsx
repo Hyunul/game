@@ -28,7 +28,7 @@ const SHUFFLE_ORDER = [4, 1, 6, 3, 7, 2, 5];
 
 export default function Reservoir() {
   const { state, dispatch, episode } = useGame();
-  const { lastResult } = state;
+  const { wrongAttempts } = state;
   const { guard, armedId } = useTwoTap();
 
   const [overlayOpen, setOverlayOpen] = useState(false);
@@ -36,7 +36,7 @@ export default function Reservoir() {
   // 오답 피드백 — 오버레이(z=70)가 열린 채라 Narration(z=45)은 가려지므로 패널 안에 표시
   const [feedback, setFeedback] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
-  const prevLastResult = useRef<typeof lastResult>(null);
+  const prevWrongAttempts = useRef(wrongAttempts);
   const lastWasMurderOrder = useRef(false);
   const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -49,7 +49,7 @@ export default function Reservoir() {
   }, []);
 
   useEffect(() => {
-    if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
+    if (wrongAttempts > prevWrongAttempts.current) {
       setShake(true);
       setFeedback(
         lastWasMurderOrder.current
@@ -58,8 +58,8 @@ export default function Reservoir() {
       );
       shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
-    prevLastResult.current = lastResult;
-  }, [lastResult]);
+    prevWrongAttempts.current = wrongAttempts;
+  }, [wrongAttempts]);
 
   function canAttempt(puzzleId: string) {
     return canAttemptWith(episode, state, puzzleId);

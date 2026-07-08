@@ -11,7 +11,7 @@ import { useTwoTap } from '../../lib/useTwoTap';
 
 export default function Room1Home() {
   const { state, dispatch } = useGame();
-  const { solved, inventory, selectedItem, lastResult } = state;
+  const { solved, inventory, selectedItem, wrongAttempts } = state;
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
@@ -21,7 +21,12 @@ export default function Room1Home() {
   } | null>(null);
   const [shake, setShake] = useState(false);
 
-  const prevLastResult = useRef<typeof lastResult>(null);
+  const prevWrongAttempts = useRef(wrongAttempts);
+  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
+  }, []);
 
   // Play home BGM on mount
   useEffect(() => {
@@ -30,12 +35,12 @@ export default function Room1Home() {
 
   // Shake on wrong answer
   useEffect(() => {
-    if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
+    if (wrongAttempts > prevWrongAttempts.current) {
       setShake(true);
-      setTimeout(() => setShake(false), 500);
+      shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
-    prevLastResult.current = lastResult;
-  }, [lastResult]);
+    prevWrongAttempts.current = wrongAttempts;
+  }, [wrongAttempts]);
 
   // Trigger shard particles + sfx when home-final is solved
   const prevSolvedLen = useRef(solved.length);

@@ -23,7 +23,7 @@ const CORRECT_SNACKS = new Set(['apollo', 'jjondegi', 'caramel']);
 
 export default function Room3Store() {
   const { state, dispatch } = useGame();
-  const { solved, selectedItem, lastResult } = state;
+  const { solved, selectedItem, wrongAttempts } = state;
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
@@ -34,18 +34,23 @@ export default function Room3Store() {
   const [keypadOpen, setKeypadOpen] = useState(false);
   const [crankAnim, setCrankAnim] = useState(false);
 
-  const prevLastResult = useRef<typeof lastResult>(null);
+  const prevWrongAttempts = useRef(wrongAttempts);
   const prevSolvedLen = useRef(solved.length);
+  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
+  }, []);
 
   useEffect(() => { playBgm('store'); }, []);
 
   useEffect(() => {
-    if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
+    if (wrongAttempts > prevWrongAttempts.current) {
       setShake(true);
-      setTimeout(() => setShake(false), 500);
+      shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
-    prevLastResult.current = lastResult;
-  }, [lastResult]);
+    prevWrongAttempts.current = wrongAttempts;
+  }, [wrongAttempts]);
 
   useEffect(() => {
     if (solved.includes('store-final') && solved.length !== prevSolvedLen.current) {

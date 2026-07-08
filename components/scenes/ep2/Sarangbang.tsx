@@ -15,7 +15,7 @@ import RoomNav from '../../RoomNav';
 
 export default function Sarangbang() {
   const { state, dispatch, episode } = useGame();
-  const { solved, lastResult, era, inventory } = state;
+  const { solved, wrongAttempts, era, inventory } = state;
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export default function Sarangbang() {
     if (shakeTimer.current !== null) clearTimeout(shakeTimer.current);
   }, []);
 
-  const prevLastResult = useRef<typeof lastResult>(null);
+  const prevWrongAttempts = useRef(wrongAttempts);
   const prevDrawerSolved = useRef(solved.includes('ep2-drawer'));
 
   function canAttempt(puzzleId: string) {
@@ -53,12 +53,12 @@ export default function Sarangbang() {
   }, [era]);
 
   useEffect(() => {
-    if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
+    if (wrongAttempts > prevWrongAttempts.current) {
       setShake(true);
       shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
-    prevLastResult.current = lastResult;
-  }, [lastResult]);
+    prevWrongAttempts.current = wrongAttempts;
+  }, [wrongAttempts]);
 
   // ── 회상 씬: ep2-drawer 최초 해결 시 ──
   useEffect(() => {

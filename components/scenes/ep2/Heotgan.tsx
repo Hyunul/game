@@ -23,7 +23,7 @@ const FLASHBACK_LINES = [
 
 export default function Heotgan() {
   const { state, dispatch, episode } = useGame();
-  const { solved, lastResult, era, selectedItem } = state;
+  const { solved, wrongAttempts, era, selectedItem } = state;
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function Heotgan() {
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flashbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const prevLastResult = useRef<typeof lastResult>(null);
+  const prevWrongAttempts = useRef(wrongAttempts);
   const prevHandwritingSolved = useRef(solved.includes('ep2-handwriting'));
 
   useEffect(() => () => {
@@ -59,12 +59,12 @@ export default function Heotgan() {
   }, [era, nightEvent]);
 
   useEffect(() => {
-    if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
+    if (wrongAttempts > prevWrongAttempts.current) {
       setShake(true);
       shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
-    prevLastResult.current = lastResult;
-  }, [lastResult]);
+    prevWrongAttempts.current = wrongAttempts;
+  }, [wrongAttempts]);
 
   // ── 밤 이벤트 조건 감시 (R1) ──
   useEffect(() => {

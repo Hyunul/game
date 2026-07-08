@@ -31,6 +31,16 @@ describe('gameState', () => {
     expect(s.lastResult).toBe('correct');
   });
 
+  it('연속 오답마다 wrongAttempts가 증가한다 — 두 번째 오답부터 연출 누락 방지', () => {
+    let s = reducer(initialState, { type: 'SOLVE', puzzleId: 'home-calendar' });
+    expect(s.wrongAttempts).toBe(0);
+    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'home-phone', answer: '1111' });
+    expect(s.wrongAttempts).toBe(1);
+    s = reducer(s, { type: 'ATTEMPT', puzzleId: 'home-phone', answer: '2222' });
+    expect(s.wrongAttempts).toBe(2);
+    expect(s.lastResult).toBe('wrong');
+  });
+
   it('START resume 시 lastResult가 리셋된다 — 오답 직후 저장 복귀 오발 방지', () => {
     let s = reducer(initialState, { type: 'SOLVE', puzzleId: 'home-calendar' });
     s = reducer(s, { type: 'ATTEMPT', puzzleId: 'home-phone', answer: '1234' });

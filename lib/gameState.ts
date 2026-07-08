@@ -12,13 +12,17 @@ export interface GameState {
   memoryShards: AnyRoomId[];          // 'home' | 'class' | 'store'
   selectedItem: string | null;     // 인벤토리에서 선택 중인 아이템
   lastResult: 'correct' | 'wrong' | null;
+  // 오답 누적 횟수. lastResult는 'wrong'→'wrong'으로 값이 안 변해
+  // 연속 오답을 감지 못 하므로, 이 카운터 증가를 오답 '이벤트'로 쓴다.
+  wrongAttempts: number;
   hintsUsed: Record<string, number>; // puzzleId -> 0|1|2
   era: Era;
 }
 
 export const initialState: GameState = {
   phase: 'title', room: 'attic', solved: [], inventory: [],
-  memoryShards: [], selectedItem: null, lastResult: null, hintsUsed: {},
+  memoryShards: [], selectedItem: null, lastResult: null, wrongAttempts: 0,
+  hintsUsed: {},
   era: 'present',
 };
 
@@ -94,7 +98,7 @@ export function createGameReducer(config: EpisodeConfig) {
       // resume 시 lastResult를 리셋 — 오답 직후 저장된 상태로 복귀할 때
       // 로드 즉시 흔들림·오답음이 재생되는 것 방지
       case 'START': return a.resume
-        ? { ...a.resume, lastResult: null }
+        ? { ...a.resume, lastResult: null, wrongAttempts: a.resume.wrongAttempts ?? 0 }
         : { ...initialState, room: config.hubRoom, phase: 'prologue' };
       case 'ENTER_ROOM': return { ...s, room: a.room, phase: 'playing', lastResult: null };
       case 'PICKUP':
@@ -105,7 +109,7 @@ export function createGameReducer(config: EpisodeConfig) {
         if (!canAttemptWith(config, s, a.puzzleId)) return s;
         const p = getPuzzleFrom(config, a.puzzleId);
         if (p.answer !== undefined && p.answer !== a.answer)
-          return { ...s, lastResult: 'wrong' };
+          return { ...s, lastResult: 'wrong', wrongAttempts: (s.wrongAttempts ?? 0) + 1 };
         return applySolve(config, s, a.puzzleId);
       }
       case 'USE_HINT': {

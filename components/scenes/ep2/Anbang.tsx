@@ -27,7 +27,7 @@ const CREAK_BOARD_INDEX = 2; // 동쪽 세 번째 널 (0-indexed)
 
 export default function Anbang() {
   const { state, dispatch, episode } = useGame();
-  const { solved, lastResult, era, inventory } = state;
+  const { solved, wrongAttempts, era, inventory } = state;
 
   const { guard, armedId } = useTwoTap();
   const [narration, setNarration] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export default function Anbang() {
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flashbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const prevLastResult = useRef<typeof lastResult>(null);
+  const prevWrongAttempts = useRef(wrongAttempts);
   const prevFloorboardSolved = useRef(solved.includes('ep2-floorboard'));
 
   useEffect(() => () => {
@@ -63,12 +63,12 @@ export default function Anbang() {
   }, [era]);
 
   useEffect(() => {
-    if (lastResult === 'wrong' && lastResult !== prevLastResult.current) {
+    if (wrongAttempts > prevWrongAttempts.current) {
       setShake(true);
       shakeTimer.current = setTimeout(() => setShake(false), 600);
     }
-    prevLastResult.current = lastResult;
-  }, [lastResult]);
+    prevWrongAttempts.current = wrongAttempts;
+  }, [wrongAttempts]);
 
   // ── 회상 씬: ep2-floorboard 최초 해결 시 ──
   useEffect(() => {
