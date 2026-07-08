@@ -16,8 +16,7 @@ import { EP2_ITEMS } from '../../../lib/puzzles-ep2';
 
 // 밤 이벤트 게이트 — ep2-timeline의 requires와 반드시 일치해야 한다.
 // 빠지면 그 퍼즐을 안 푼 채 밤(헛간·저수지 잠금)에 진입해 클리어 불가 소프트락.
-// toolwall은 ep2-photo의 requires로 보장되지만 watch-lid는 여기서만 강제된다.
-export const NIGHT_GATE_PUZZLES = ['ep2-photo', 'ep2-handwriting', 'ep2-contradiction', 'ep2-lantern', 'ep2-watch-lid'];
+export const NIGHT_GATE_PUZZLES = ['ep2-photo', 'ep2-handwriting', 'ep2-contradiction', 'ep2-lantern', 'ep2-watch-lid', 'ep2-toolwall'];
 
 const FLASHBACK_LINES = [
   '1978년 8월 15일 초저녁.',

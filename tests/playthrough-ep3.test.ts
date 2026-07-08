@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { initialState, createGameReducer, canAttemptWith, GameState } from '@/lib/gameState';
+import { resolveEp3TruthPair } from '@/lib/ep3TruthPair';
 import { EP3_CONFIG, EP3_TRUTH_PAIRS } from '@/lib/puzzles-ep3';
 
 const reducer = createGameReducer(EP3_CONFIG);
@@ -138,5 +139,22 @@ describe('ep3 full playthrough', () => {
     expect(canAttempt(s, 'ep3-name')).toBe(false);
     s = { ...s, solved: [...s.solved, 'ep3-truth-5'] };
     expect(canAttempt(s, 'ep3-name')).toBe(true);
+  });
+
+  it('keeps an already found truth pair from counting as a new wrong attempt', () => {
+    // Given: the first truth pair was already found and the next letter is also available.
+    const s = {
+      ...initialState,
+      phase: 'playing' as const,
+      room: 'ep3-anbang' as const,
+      solved: ['ep3-backdoor', 'ep3-truth-1'],
+      inventory: ['doc-ledger', 'letter-1', 'letter-2'],
+    };
+
+    // When: the player selects the already found pair again.
+    const result = resolveEp3TruthPair(EP3_TRUTH_PAIRS['ep3-truth-1'], s.solved, (pid) => canAttempt(s, pid));
+
+    // Then: the pair is treated as already found instead of being submitted as a wrong answer.
+    expect(result).toEqual({ kind: 'already-found', puzzleId: 'ep3-truth-1' });
   });
 });

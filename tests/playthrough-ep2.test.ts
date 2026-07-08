@@ -179,6 +179,9 @@ describe('ep2 v2 full playthrough', () => {
     expect(s.era).toBe('past');
     expect(canAttempt(s, 'ep2-timeline')).toBe(true);
 
+    const missingToolwall: GameState = { ...s, solved: s.solved.filter((id) => id !== 'ep2-toolwall') };
+    expect(canAttempt(missingToolwall, 'ep2-timeline')).toBe(false);
+
     // negative: 타살 배열 (조서의 사람을 밀어 넣은 시점으로 배치) — 풀리지 않는다
     const murderOrder = reducer(s, { type: 'ATTEMPT', puzzleId: 'ep2-timeline', answer: '1-2-3-6-5-4-7' });
     expect(murderOrder.solved).not.toContain('ep2-timeline');

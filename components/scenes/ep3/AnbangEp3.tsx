@@ -13,10 +13,11 @@ import NameLock from '../../puzzles/NameLock';
 import { useTwoTap } from '../../../lib/useTwoTap';
 import { useShake } from '../../../lib/useShake';
 import {
-  EP3_LEDGER_LINES, EP3_LETTER_LINES, EP3_TRUTH_PAIRS, EP3_TRUTH_REVEALS,
+  EP3_LEDGER_LINES, EP3_LETTER_LINES, EP3_TRUTH_REVEALS,
 } from '../../../lib/puzzles-ep3';
+import { EP3_TRUTH_IDS, resolveEp3TruthPair } from '../../../lib/ep3TruthPair';
 
-const TRUTH_IDS = Object.keys(EP3_TRUTH_PAIRS);
+const TRUTH_IDS = EP3_TRUTH_IDS;
 
 /** 문갑의 편지봉투 — 전시 위치(e1~e6)와 소인. 번진 것은 가계부와 대조해 복원한다 */
 const ENVELOPE_ITEMS = [
@@ -100,21 +101,23 @@ export default function AnbangEp3() {
   }
 
   function handleCompareSubmit(answer: string) {
-    // 이 짝이 정답인 진실 조각을 찾는다
-    const hit = TRUTH_IDS.find((pid) => EP3_TRUTH_PAIRS[pid] === answer && canAttempt(pid));
-    if (hit) {
-      dispatch({ type: 'ATTEMPT', puzzleId: hit, answer });
+    const result = resolveEp3TruthPair(answer, solved, canAttempt);
+    switch (result.kind) {
+    case 'new':
+      dispatch({ type: 'ATTEMPT', puzzleId: result.puzzleId, answer });
       playSfx('shard');
-      setReveal(EP3_TRUTH_REVEALS[hit]);
+      setReveal(EP3_TRUTH_REVEALS[result.puzzleId]);
       return;
-    }
-    // 오답 — 시도 가능한 아무 미해결 조각에 오답 제출 (오답음·흔들림 공용 처리)
-    const target = TRUTH_IDS.find((pid) => canAttempt(pid));
-    if (target) {
-      dispatch({ type: 'ATTEMPT', puzzleId: target, answer });
-    } else {
+    case 'already-found':
+      setReveal(EP3_TRUTH_REVEALS[result.puzzleId]);
+      return;
+    case 'wrong':
+      dispatch({ type: 'ATTEMPT', puzzleId: result.puzzleId, answer });
+      return;
+    case 'blocked':
       say('아직 두 기록을 견줄 준비가 되지 않았다.');
       setCompareOpen(false);
+      return;
     }
   }
 
