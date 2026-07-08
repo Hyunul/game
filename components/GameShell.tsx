@@ -16,6 +16,11 @@ const ROOM_NAMES: Record<string, string> = {
   heotgan: '헛간과 마당',
   reservoir: '저수지 가는 길',
   'ep2-attic': '다락방',
+  'ep3-attic': '다락방',
+  madang: '별채 마당',
+  geonneonbang: '건넌방',
+  bueok: '부엌',
+  'ep3-anbang': '안방',
 };
 
 interface Props {

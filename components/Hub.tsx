@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { loadGame, clearSave } from '../lib/save';
 import { playSfx } from '../lib/audio';
 
-export type EpisodeKey = 'ep1' | 'ep2';
+export type EpisodeKey = 'ep1' | 'ep2' | 'ep3';
 
 interface Props {
   onSelect: (ep: EpisodeKey, resume: boolean) => void;
@@ -12,6 +12,7 @@ interface Props {
 const EP1_SAVE_KEY = 'memory-box-save';
 // v2 퍼즐 전면 개편으로 v1 저장과 비호환 — 키를 올려 구저장을 무시한다
 const EP2_SAVE_KEY = 'memory-box-save-ep2-v2';
+const EP3_SAVE_KEY = 'memory-box-save-ep3';
 const EP1_CLEARED_KEY = 'memory-box-ep1-cleared';
 
 interface CardMeta {
@@ -40,6 +41,14 @@ const CARDS: CardMeta[] = [
     difficulty: '고난도',
     desc: '1978년 여름, 저수지에서 큰아버지가 세상을 떠났다. 편지와 일기, 낡은 문서 속 모순을 하나씩 맞춰가며 그날 밤의 진실에 다가간다.',
   },
+  {
+    key: 'ep3',
+    title: '지워진 이름',
+    genre: '추리 방탈출',
+    playtime: '약 1시간',
+    difficulty: '고난도',
+    desc: '가족사진에서 얼굴이 접혀 가려진 사람 — 고모. 할머니의 가계부와 고모의 편지, 두 기록을 대조하며 집안이 지운 이름의 진실을 되살린다.',
+  },
 ];
 
 /** 에피소드 일러스트 (카드 헤더) */
@@ -59,6 +68,30 @@ function CardArt({ ep }: { ep: EpisodeKey }) {
         <circle cx="168" cy="26" r="4" fill="#ffd24a" opacity="0.8" />
         <circle cx="208" cy="42" r="2.5" fill="#ffe9a8" opacity="0.7" />
         <text x="160" y="34" textAnchor="middle" fontSize="13" opacity="0.9">📷</text>
+      </svg>
+    );
+  }
+  if (ep === 'ep3') {
+    return (
+      <svg viewBox="0 0 320 130" width="100%" style={{ display: 'block' }} aria-hidden="true">
+        <rect width="320" height="130" fill="#241a14" />
+        {/* 등잔 불빛 */}
+        <circle cx="252" cy="44" r="30" fill="#ffd24a" opacity="0.12" />
+        <rect x="246" y="44" width="12" height="18" fill="#5a3e26" />
+        <path d="M 250 40 q 2 -8 4 0 q 2 -6 3 2 q -3 5 -7 -2" fill="#ffd24a" opacity="0.85" />
+        {/* 펼쳐진 두 권의 기록 */}
+        <path d="M 60 84 L 110 72 L 160 84 L 160 96 L 110 85 L 60 96 Z" fill="#e8dcc0" stroke="#8a7a58" strokeWidth="1.5" />
+        <path d="M 170 84 L 220 72 L 270 84 L 270 96 L 220 85 L 170 96 Z" fill="#d8c8a0" stroke="#8a7a58" strokeWidth="1.5" />
+        {/* 기록의 줄들 */}
+        <line x1="74" y1="84" x2="102" y2="78" stroke="#8a6a3a" strokeWidth="1" opacity="0.7" />
+        <line x1="74" y1="89" x2="102" y2="83" stroke="#8a6a3a" strokeWidth="1" opacity="0.7" />
+        <line x1="184" y1="84" x2="212" y2="78" stroke="#a04030" strokeWidth="1" opacity="0.6" />
+        <line x1="184" y1="89" x2="212" y2="83" stroke="#a04030" strokeWidth="1" opacity="0.6" />
+        {/* 접힌 사진 귀퉁이 */}
+        <rect x="120" y="24" width="52" height="36" rx="2" fill="#d8c8a8" stroke="#8a7a58" strokeWidth="1.5" />
+        <polygon points="172,24 172,60 156,60" fill="#a89878" />
+        <circle cx="136" cy="40" r="5" fill="#6a5a40" />
+        <circle cx="152" cy="42" r="5" fill="#6a5a40" />
       </svg>
     );
   }
@@ -86,23 +119,30 @@ export default function Hub({ onSelect }: Props) {
     ep1: 'none' | 'progress';
     ep1Cleared: boolean;
     ep2: 'none' | 'progress' | 'cleared';
-  }>({ ep1: 'none', ep1Cleared: false, ep2: 'none' });
+    ep3: 'none' | 'progress' | 'cleared';
+  }>({ ep1: 'none', ep1Cleared: false, ep2: 'none', ep3: 'none' });
 
   useEffect(() => {
     const ep1Save = loadGame(EP1_SAVE_KEY);
     const ep2Save = loadGame(EP2_SAVE_KEY);
+    const ep3Save = loadGame(EP3_SAVE_KEY);
     let ep1Cleared = false;
     try { ep1Cleared = localStorage.getItem(EP1_CLEARED_KEY) === '1'; } catch { /* noop */ }
     setSaves({
       ep1: ep1Save ? 'progress' : 'none',
       ep1Cleared,
       ep2: ep2Save ? (ep2Save.phase === 'epilogue' ? 'cleared' : 'progress') : 'none',
+      ep3: ep3Save ? (ep3Save.phase === 'epilogue' ? 'cleared' : 'progress') : 'none',
     });
   }, []);
 
+  const SAVE_KEYS: Record<EpisodeKey, string> = {
+    ep1: EP1_SAVE_KEY, ep2: EP2_SAVE_KEY, ep3: EP3_SAVE_KEY,
+  };
+
   function start(ep: EpisodeKey, resume: boolean) {
     playSfx('click');
-    if (!resume) clearSave(ep === 'ep1' ? EP1_SAVE_KEY : EP2_SAVE_KEY);
+    if (!resume) clearSave(SAVE_KEYS[ep]);
     onSelect(ep, resume);
   }
 
@@ -120,8 +160,8 @@ export default function Hub({ onSelect }: Props) {
 
       <div style={styles.cardRow}>
         {CARDS.map((c) => {
-          const saveState = c.key === 'ep1' ? saves.ep1 : saves.ep2;
-          const cleared = c.key === 'ep1' ? saves.ep1Cleared : saves.ep2 === 'cleared';
+          const saveState = c.key === 'ep1' ? saves.ep1 : c.key === 'ep2' ? saves.ep2 : saves.ep3;
+          const cleared = c.key === 'ep1' ? saves.ep1Cleared : saveState === 'cleared';
           const hasProgress = saveState === 'progress' || saveState === 'cleared';
           const primaryLabel =
             saveState === 'cleared' ? '다시 보기' : saveState === 'progress' ? '이어하기' : '시작하기';

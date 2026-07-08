@@ -1,7 +1,7 @@
 import { Puzzle, Item, AnyRoomId } from './types';
 
 export interface EpisodeConfig {
-  id: 'ep1' | 'ep2';
+  id: 'ep1' | 'ep2' | 'ep3';
   saveKey: string;
   puzzles: Puzzle[];
   items: Record<string, Item>;
