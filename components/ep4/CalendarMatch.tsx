@@ -28,12 +28,19 @@ export default function CalendarMatch({ open, onSubmit, onClose }: Props) {
 
   useEffect(() => {
     if (!open || !allPlaced || done) return;
+    // setDone이 이 effect를 재실행시켜 cleanup으로 타이머를 지우지 않도록,
+    // 제출 타이머는 done 전용 effect에서 건다
     setDone(true);
     playSfx('correct');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allPlaced, open, done]);
+
+  useEffect(() => {
+    if (!done) return;
     const t = setTimeout(() => onSubmit('matched'), 1100);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allPlaced, open, done]);
+  }, [done]);
 
   if (!open) return null;
 
@@ -164,7 +171,8 @@ const styles: Record<string, React.CSSProperties> = {
   stamp: {
     minWidth: '64px', minHeight: '44px', fontSize: '0.9rem', fontWeight: 700,
     backgroundColor: '#3a2810', color: '#e8b0a0',
-    border: '2px dashed rgba(232,150,130,0.5)', borderRadius: '8px', cursor: 'pointer',
+    borderWidth: '2px', borderStyle: 'dashed', borderColor: 'rgba(232,150,130,0.5)',
+    borderRadius: '8px', cursor: 'pointer',
   },
   stampSel: { filter: 'brightness(1.4) drop-shadow(0 0 6px rgba(232,150,130,0.5))', borderStyle: 'solid' },
   hintLine: { fontSize: '0.8rem', opacity: 0.65, textAlign: 'center', marginTop: '14px', minHeight: '1.2em' },

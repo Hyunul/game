@@ -176,7 +176,8 @@ const styles: Record<string, React.CSSProperties> = {
   slotCol: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flex: 1 },
   slot: {
     width: '100%', minHeight: '44px', borderRadius: '6px',
-    border: '1px dashed rgba(232,211,168,0.3)', backgroundColor: 'rgba(0,0,0,0.25)',
+    borderWidth: '1px', borderStyle: 'dashed', borderColor: 'rgba(232,211,168,0.3)',
+    backgroundColor: 'rgba(0,0,0,0.25)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontSize: '0.72rem', fontFamily: 'monospace',
   },
@@ -193,7 +194,8 @@ const styles: Record<string, React.CSSProperties> = {
   tape: {
     minWidth: '58px', minHeight: '42px', fontSize: '0.85rem', fontFamily: 'monospace', fontWeight: 700,
     backgroundColor: '#3a2810', color: '#e8d3a8',
-    border: '1px solid rgba(232,211,168,0.3)', borderRadius: '6px', cursor: 'pointer',
+    borderWidth: '1px', borderStyle: 'solid', borderColor: 'rgba(232,211,168,0.3)',
+    borderRadius: '6px', cursor: 'pointer',
   },
   tapeSel: { filter: 'brightness(1.4) drop-shadow(0 0 6px rgba(200,168,106,0.6))' },
   blankTape: { borderStyle: 'dashed', backgroundColor: '#241a10' },

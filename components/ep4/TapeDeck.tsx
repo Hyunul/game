@@ -75,7 +75,12 @@ export default function TapeDeck({ open, onClose }: Props) {
     }
 
     const seg = TAPE_SEGMENTS.find((sg) => sg.counter === counterStr);
-    const heard = seg ? segmentLines(seg.id, solved) : [];
+    // seg-042는 첫 청취가 곧 ep4-counter의 해결 — 시도 가능하면 아직 미해결이어도 들린다
+    const effectiveSolved =
+      seg?.id === 'seg-042' && !solved.includes('ep4-counter') && can('ep4-counter')
+        ? [...solved, 'ep4-counter']
+        : solved;
+    const heard = seg ? segmentLines(seg.id, effectiveSolved) : [];
     if (heard.length === 0) {
       setLines(['…지직… (아무것도 들리지 않는다)']);
     } else {

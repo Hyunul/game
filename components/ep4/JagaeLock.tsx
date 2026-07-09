@@ -18,11 +18,14 @@ const REEL_3 = ['울', '아', '이', '주', '녀'];
 
 /** 자개장 이름 자물쇠 — 라디오에서 들은 예명을 되살린다 (NameLock 3릴 변형) */
 export default function JagaeLock({ open, wrongSignal, onSubmit, onClose }: Props) {
-  const [idx, setIdx] = useState([0, 0, 0]);
+  // 초기 위치는 정답과 다르게 어긋나 있어야 한다
+  const INITIAL = [2, 4, 1];
+  const [idx, setIdx] = useState(INITIAL);
   const [shake, setShake] = useState(false);
   const reels = [REEL_1, REEL_2, REEL_3];
 
-  useEffect(() => { if (open) { setIdx([0, 0, 0]); setShake(false); } }, [open]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (open) { setIdx(INITIAL); setShake(false); } }, [open]);
 
   useEffect(() => {
     if (!open || wrongSignal === undefined) return;
