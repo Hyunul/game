@@ -272,6 +272,17 @@ const MELODIES: Record<string, { freq: number; dur: number }[]> = {
     { freq: 1318.5, dur: 1.0 }, // E6 bell
     { freq: 0,      dur: 4.0 }, // rest
   ],
+  ep4: [
+    // 밤의 자장가 — 낮은 E단조, 릴이 도는 듯한 느린 3박
+    { freq: 164.81, dur: 2.0 }, // E3
+    { freq: 196.0,  dur: 1.0 }, // G3
+    { freq: 246.94, dur: 2.0 }, // B3
+    { freq: 196.0,  dur: 1.0 }, // G3
+    { freq: 164.81, dur: 2.5 }, // E3
+    { freq: 146.83, dur: 2.0 }, // D3
+    { freq: 164.81, dur: 3.0 }, // E3
+    { freq: 0,      dur: 2.0 }, // rest
+  ],
   ep3: [
     // 자장가풍 — 느린 G장조 펜타토닉, 낮게 흔들리는 요람
     { freq: 392.0,  dur: 1.5 }, // G4
@@ -301,7 +312,7 @@ function scheduleBgm(): void {
 }
 
 export function playBgm(
-  room: 'attic' | 'home' | 'class' | 'store' | 'ep2-past' | 'ep2-present' | 'ep2-night' | 'ep3',
+  room: 'attic' | 'home' | 'class' | 'store' | 'ep2-past' | 'ep2-present' | 'ep2-night' | 'ep3' | 'ep4',
 ): void {
   if (typeof window === 'undefined' || !ctx) return;
   if (bgmRoom === room) return;
