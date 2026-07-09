@@ -185,7 +185,7 @@ export const EP4_PUZZLES: Puzzle[] = [
 
 export const EP4_CONFIG: EpisodeConfig = {
   id: 'ep4',
-  saveKey: 'memory-box-ep4',
+  saveKey: 'memory-box-save-ep4',
   puzzles: EP4_PUZZLES,
   items: EP4_ITEMS,
   finalPuzzles: {

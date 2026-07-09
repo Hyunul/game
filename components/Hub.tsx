@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { loadGame, clearSave } from '../lib/save';
 import { playSfx } from '../lib/audio';
 
-export type EpisodeKey = 'ep1' | 'ep2' | 'ep3';
+export type EpisodeKey = 'ep1' | 'ep2' | 'ep3' | 'ep4';
 
 interface Props {
   onSelect: (ep: EpisodeKey, resume: boolean) => void;
@@ -13,6 +13,7 @@ const EP1_SAVE_KEY = 'memory-box-save';
 // v2 퍼즐 전면 개편으로 v1 저장과 비호환 — 키를 올려 구저장을 무시한다
 const EP2_SAVE_KEY = 'memory-box-save-ep2-v2';
 const EP3_SAVE_KEY = 'memory-box-save-ep3';
+const EP4_SAVE_KEY = 'memory-box-save-ep4';
 const EP1_CLEARED_KEY = 'memory-box-ep1-cleared';
 
 interface CardMeta {
@@ -49,6 +50,14 @@ const CARDS: CardMeta[] = [
     difficulty: '고난도',
     desc: '가족사진에서 얼굴이 접혀 가려진 사람 — 고모. 할머니의 가계부와 고모의 편지, 두 기록을 대조하며 집안이 지운 이름의 진실을 되살린다.',
   },
+  {
+    key: 'ep4',
+    title: '사라진 목소리',
+    genre: '추리 방탈출',
+    playtime: '60~80분',
+    difficulty: '최고난도',
+    desc: '라벨 대신 세 자리 숫자만 적힌 카세트 더미. 어느 날 노래를 뚝 멈춘 어머니 — 옛집의 릴 데크로 테이프를 되감으며, 숫자에 숨은 뜻과 골방의 비밀에 다가간다.',
+  },
 ];
 
 /** 에피소드 일러스트 (카드 헤더) */
@@ -68,6 +77,30 @@ function CardArt({ ep }: { ep: EpisodeKey }) {
         <circle cx="168" cy="26" r="4" fill="#ffd24a" opacity="0.8" />
         <circle cx="208" cy="42" r="2.5" fill="#ffe9a8" opacity="0.7" />
         <text x="160" y="34" textAnchor="middle" fontSize="13" opacity="0.9">📷</text>
+      </svg>
+    );
+  }
+  if (ep === 'ep4') {
+    return (
+      <svg viewBox="0 0 320 130" width="100%" style={{ display: 'block' }} aria-hidden="true">
+        <rect width="320" height="130" fill="#1c130c" />
+        {/* 백열등 온기 */}
+        <circle cx="160" cy="20" r="34" fill="#ffcf7a" opacity="0.12" />
+        <circle cx="160" cy="16" r="7" fill="#ffcf7a" opacity="0.85" />
+        {/* 릴 데크 */}
+        <rect x="96" y="52" width="128" height="44" rx="6" fill="#8a8478" stroke="#5a544a" strokeWidth="2" />
+        <circle cx="128" cy="72" r="13" fill="#141210" stroke="#c8a86a" strokeWidth="1.5" />
+        <circle cx="192" cy="72" r="13" fill="#141210" stroke="#c8a86a" strokeWidth="1.5" />
+        <rect x="148" y="65" width="24" height="12" rx="2" fill="#0c0a06" />
+        <text x="160" y="74" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="#e8d3a8">042</text>
+        {/* 흩어진 테이프 */}
+        {[{ x: 34, y: 100, n: '007' }, { x: 246, y: 96, n: '015' }, { x: 140, y: 106, n: '' }].map((t, i) => (
+          <g key={i} transform={`translate(${t.x}, ${t.y}) rotate(${i * 5 - 5})`}>
+            <rect width="42" height="24" rx="2" fill="#2a2018" stroke="#4a3a28" strokeWidth="1.5" />
+            <rect x="5" y="4" width="32" height="8" rx="1" fill="#e8dcc0" />
+            {t.n && <text x="21" y="11" textAnchor="middle" fontSize="7" fontFamily="monospace" fill="#3a2a18">{t.n}</text>}
+          </g>
+        ))}
       </svg>
     );
   }
@@ -120,12 +153,14 @@ export default function Hub({ onSelect }: Props) {
     ep1Cleared: boolean;
     ep2: 'none' | 'progress' | 'cleared';
     ep3: 'none' | 'progress' | 'cleared';
-  }>({ ep1: 'none', ep1Cleared: false, ep2: 'none', ep3: 'none' });
+    ep4: 'none' | 'progress' | 'cleared';
+  }>({ ep1: 'none', ep1Cleared: false, ep2: 'none', ep3: 'none', ep4: 'none' });
 
   useEffect(() => {
     const ep1Save = loadGame(EP1_SAVE_KEY);
     const ep2Save = loadGame(EP2_SAVE_KEY);
     const ep3Save = loadGame(EP3_SAVE_KEY);
+    const ep4Save = loadGame(EP4_SAVE_KEY);
     let ep1Cleared = false;
     try { ep1Cleared = localStorage.getItem(EP1_CLEARED_KEY) === '1'; } catch { /* noop */ }
     setSaves({
@@ -133,11 +168,12 @@ export default function Hub({ onSelect }: Props) {
       ep1Cleared,
       ep2: ep2Save ? (ep2Save.phase === 'epilogue' ? 'cleared' : 'progress') : 'none',
       ep3: ep3Save ? (ep3Save.phase === 'epilogue' ? 'cleared' : 'progress') : 'none',
+      ep4: ep4Save ? (ep4Save.phase === 'epilogue' ? 'cleared' : 'progress') : 'none',
     });
   }, []);
 
   const SAVE_KEYS: Record<EpisodeKey, string> = {
-    ep1: EP1_SAVE_KEY, ep2: EP2_SAVE_KEY, ep3: EP3_SAVE_KEY,
+    ep1: EP1_SAVE_KEY, ep2: EP2_SAVE_KEY, ep3: EP3_SAVE_KEY, ep4: EP4_SAVE_KEY,
   };
 
   function start(ep: EpisodeKey, resume: boolean) {
@@ -160,7 +196,10 @@ export default function Hub({ onSelect }: Props) {
 
       <div style={styles.cardRow}>
         {CARDS.map((c) => {
-          const saveState = c.key === 'ep1' ? saves.ep1 : c.key === 'ep2' ? saves.ep2 : saves.ep3;
+          const saveState =
+            c.key === 'ep1' ? saves.ep1 :
+            c.key === 'ep2' ? saves.ep2 :
+            c.key === 'ep3' ? saves.ep3 : saves.ep4;
           const cleared = c.key === 'ep1' ? saves.ep1Cleared : saveState === 'cleared';
           const hasProgress = saveState === 'progress' || saveState === 'cleared';
           const primaryLabel =

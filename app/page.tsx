@@ -24,6 +24,14 @@ import Geonneonbang from '../components/scenes/ep3/Geonneonbang';
 import Bueok from '../components/scenes/ep3/Bueok';
 import AnbangEp3 from '../components/scenes/ep3/AnbangEp3';
 import Ep3Epilogue from '../components/scenes/ep3/Ep3Epilogue';
+import { EP4_CONFIG } from '../lib/puzzles-ep4';
+import Ep4Prologue from '../components/scenes/ep4/Ep4Prologue';
+import Ep4Maru from '../components/scenes/ep4/Ep4Maru';
+import Ep4Anbang from '../components/scenes/ep4/Ep4Anbang';
+import Ep4Golbang from '../components/scenes/ep4/Ep4Golbang';
+import Ep4Booth from '../components/scenes/ep4/Ep4Booth';
+import Ep4Epilogue from '../components/scenes/ep4/Ep4Epilogue';
+import Ep4Memory from '../components/ep4/Ep4Memory';
 import { eraTint, handleWatchUse } from '../components/scenes/ep2/era';
 import { playBgm } from '../lib/audio';
 
@@ -247,6 +255,65 @@ function Ep3App({ onExitToHub, resume }: { onExitToHub: () => void; resume: bool
   );
 }
 
+function Ep4InnerApp({ onExitToHub, resume }: { onExitToHub: () => void; resume: boolean }) {
+  const { state, dispatch } = useGame();
+  const startedRef = useRef(false);
+
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    if (resume) {
+      const saved = loadGame(EP4_CONFIG.saveKey);
+      dispatch({ type: 'START', resume: saved ?? undefined });
+    } else {
+      dispatch({ type: 'START' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (state.phase === 'prologue') {
+    return <Ep4Prologue />;
+  }
+
+  if (state.phase === 'memory') {
+    return <Ep4Memory />;
+  }
+
+  if (state.phase === 'epilogue') {
+    return <Ep4Epilogue onExitToHub={onExitToHub} />;
+  }
+
+  if (state.phase === 'playing') {
+    const scene =
+      state.room === 'ep4-maru' ? <Ep4Maru /> :
+      state.room === 'ep4-anbang' ? <Ep4Anbang /> :
+      state.room === 'ep4-golbang' ? <Ep4Golbang /> :
+      state.room === 'ep4-booth' ? <Ep4Booth /> :
+      null;
+    if (scene) {
+      return <GameShell onExitToHub={onExitToHub}>{scene}</GameShell>;
+    }
+  }
+
+  return (
+    <GameShell onExitToHub={onExitToHub}>
+      <div style={placeholderStyles.box}>
+        <p style={placeholderStyles.text}>
+          (EP4 장면 준비 중 — Room: {state.room}, Phase: {state.phase})
+        </p>
+      </div>
+    </GameShell>
+  );
+}
+
+function Ep4App({ onExitToHub, resume }: { onExitToHub: () => void; resume: boolean }) {
+  return (
+    <GameProvider episode={EP4_CONFIG}>
+      <Ep4InnerApp onExitToHub={onExitToHub} resume={resume} />
+    </GameProvider>
+  );
+}
+
 export default function Home() {
   const [screen, setScreen] = useState<'hub' | EpisodeKey>('hub');
   const [resume, setResume] = useState(false);
@@ -270,6 +337,10 @@ export default function Home() {
 
   if (screen === 'ep3') {
     return <Ep3App onExitToHub={handleExitToHub} resume={resume} />;
+  }
+
+  if (screen === 'ep4') {
+    return <Ep4App onExitToHub={handleExitToHub} resume={resume} />;
   }
 
   return <Hub onSelect={handleSelect} />;
