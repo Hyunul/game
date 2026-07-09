@@ -77,7 +77,7 @@ export default function Ep4Golbang() {
 
   // ── 릴 상자 (스플라이스) ──
   function handleReelbox() {
-    if (spliceSolved) { say('이어 붙인 오디션 테이프는 데크에 걸 수 있게 챙겨두었다.'); return; }
+    if (spliceSolved) { say('이어 붙인 오디션 테이프는 챙겨두었다. 릴 가장자리에 "203" — 마루의 데크를 그 카운터로 감아 들어보자.'); return; }
     if (canAttempt('ep4-splice')) { setSpliceOpen(true); return; }
     say('릴 상자. 끊어진 조각들이 있다 — 벽감을 먼저 열어야 한다.');
   }

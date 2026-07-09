@@ -67,7 +67,7 @@ export const EP4_ITEMS: Record<string, Item> = {
   },
   'audition-tape': {
     id: 'audition-tape', name: '복원된 오디션 테이프', icon: '📼',
-    desc: '이어 붙인 테이프. 데크에 걸면 그날로 돌아갈 수 있을 것 같다.',
+    desc: '이어 붙인 테이프. 릴 가장자리에 연필로 쓴 숫자 — "203". 데크 카운터 자리일 것이다.',
   },
   'tape-035': {
     id: 'tape-035', name: '숫자 없는 테이프', icon: '📼',
